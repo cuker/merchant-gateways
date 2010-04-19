@@ -8,8 +8,9 @@ except ImportError:
     import elementtree.ElementTree as ET  #  TODO  give a darn about this library??
 
 import re
+
 from merchant_gateways.lib.post import post  #  TODO  move me to gateway.py
-from merchant_gateways import response
+from merchant_gateways.billing import response
 
 # For more information on the Authorize.Net Gateway please visit their {Integration Center}[http://developer.authorize.net/]
 
