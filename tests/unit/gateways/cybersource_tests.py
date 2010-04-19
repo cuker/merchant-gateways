@@ -31,14 +31,18 @@ class CybersourceTests(MerchantGatewaysTestSuite,
         self.assert_none(self.response.params['authorizationCode'])
         self.assert_none(self.response.fraud_review)
 
-        assert self.response.params == {'authorizationCode': None, 'avsCodeRaw': None, 'currency': None,
-                                        'merchantReferenceCode': 'a1efca956703a2a5037178a8a28f7357',
-                                        'authorizedDateTime': None, 'reconciliationID': None,
-                                        'amount': None,  #  TODO  is this valid?
-                                        'requestID': '2004338415330008402434',
-                                        'processorResponse': None, 'reasonCode': '231', 'avsCode': None,
-                                        'decision': 'REJECT',
-                                        'requestToken': 'Afvvj7KfIgU12gooCFE2/DanQIApt+G1OgTSA+R9PTnyhFTb0KRjgFY+ynyIFNdoKKAghwgx'}
+        reference = { 'authorizationCode': None, 'avsCodeRaw': None, 'currency': None,
+                      'merchantReferenceCode': 'a1efca956703a2a5037178a8a28f7357',
+                      'authorizedDateTime': None, 'reconciliationID': None,
+                      'amount': None,  #  TODO  is this valid?
+                      'cvCode': None, 'cvCodeRaw': None,
+                      'requestID': '2004338415330008402434',
+                      'processorResponse': None, 'reasonCode': '231', 'avsCode': None,
+                      'decision': 'REJECT',
+                      'requestToken': 'Afvvj7KfIgU12gooCFE2/DanQIApt+G1OgTSA+R9PTnyhFTb0KRjgFY+ynyIFNdoKKAghwgx'}
+
+        self.assert_equal(self.response.params, reference)
+
         # TODO retire for is_test: 'test': False,
         # 'message': 'TODO',
         assert self.response.authorization == '1;2004338415330008402434;Afvvj7KfIgU12gooCFE2/DanQIApt+G1OgTSA+R9PTnyhFTb0KRjgFY+ynyIFNdoKKAghwgx'
@@ -90,6 +94,8 @@ class CybersourceTests(MerchantGatewaysTestSuite,
                 avsCode="A",
                 avsCodeRaw="I7",
                 currency="USD",
+                cvCode=None,
+                cvCodeRaw=None,
                 decision="ACCEPT",
                 merchantReferenceCode="TEST11111111111",
                 processorResponse="100",
@@ -101,10 +107,17 @@ class CybersourceTests(MerchantGatewaysTestSuite,
 
     def test_parse(self):
         soap = self.successful_authorization_response()
+
         sample = self.gateway.parse(soap)
         # TODO
         reference = self.parsed_authentication_response()
         self.assert_equal(reference, sample)  #  TODO  invent an assert_diff that can spot differences
+
+    def test_parse_purchase_response(self):
+        soap = self.successful_purchase_response()
+        sample = self.gateway.parse(soap)
+        self.assert_equal(sample['cvCode'], 'M')
+        self.assert_equal(sample['cvCodeRaw'], 'M')  #  TODO  what to do with the raw code?
 
     def test_setup_address_hash(self):  #  TODO  everyone should fixup like these (Payflow does it a different way)
         g = self.gateway
@@ -207,6 +220,13 @@ class CybersourceTests(MerchantGatewaysTestSuite,
 #
 #        response = self.gateway.purchase(self.amount, self.credit_card, self.options)
 #        assert_equal 'Y', response.avs_result['code']
+
+    def test_cvv_result(self):
+        self.test_successful_authorization()
+        cvv = self.response.cvv_result
+        return # TODO
+        self.assert_equal( 'M', cvv.code )
+        self.assert_equal( 'Match', cvv.message )
 
     def successful_authorization_response(self): #  TODO  get a real SOAP lib!
         return '''<?xml version="1.0" encoding="utf-8"?>
@@ -404,13 +424,6 @@ class CyberSourceTest < Test::Unit::TestCase
 
   def test_default_currency
     assert_equal 'USD', CyberSourceGateway.default_currency
-  end
-
-  def test_cvv_result
-    self.gateway.expects(:ssl_post).returns(successful_purchase_response)
-
-    response = self.gateway.purchase(self.amount, self.credit_card, self.options)
-    assert_equal 'M', response.cvv_result['code']
   end
 
   def test_successful_credit_request

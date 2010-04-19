@@ -1,6 +1,8 @@
 
 from gateway import Gateway, default_dict
 from merchant_gateways.billing import response
+from merchant_gateways.billing.avs_result import AVSResult
+from merchant_gateways.billing.cvv_result import CVVResult
 from lxml import etree
 
 
@@ -84,7 +86,7 @@ class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
             nodes = doc.xpath('//c:'+key, namespaces=namespace) #  TODO squeak if more than one in there!
             result[key] = len(nodes) and nodes[0].text or None
 
-        return result
+        return result  #  TOODO  does parse_element have anything we need?
 
     def soap_keys(self):
         return ( 'amount',               'merchantReferenceCode',
@@ -93,6 +95,8 @@ class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
                  'avsCode',              'reconciliationID',
                  'avsCodeRaw',           'requestID',
                  'currency',             'requestToken',
+                 'cvCode',
+                 'cvCodeRaw',
                  'decision' )
 
     class Response(response.Response):
@@ -131,9 +135,9 @@ class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
 
         return Cybersource.Response(self.success, self.message, self.result,
                                         is_test=self.is_test,
-                                        authorization=authorization
-                            #          :avs_result => { :code => response[:avsCode] },
-                            #          :cvv_result => response[:cvCode]
+                                        authorization=authorization,
+#                                      :avs_result => { :code => response[:avsCode] },
+                                #      cvv_result=CVVResult(code=self.result['cvCode'])
                                     )  #  TODO  inherit what Payflow do here
 
     def build_request(self, body, **options):

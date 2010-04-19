@@ -1,7 +1,5 @@
 
 from merchant_gateways.billing.gateways.authorize_net import AuthorizeNet  #  test target is _always_ first line!
-from merchant_gateways.billing.avs_result import AVSResult
-from merchant_gateways.billing.cvv_result import CVVResult
 from merchant_gateways.billing.credit_card import CreditCard
 from tests.test_helper import *
 
@@ -107,7 +105,7 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
         self.assert_equal( 'M', cvv.code )
         self.assert_equal( 'Match', cvv.message )  #  TODO  huh??
 
- ## TODO  put low-level methods into chrono order        
+ ## TODO  put low-level methods into chrono order
 
     def test_post_data(self):
         action = 'AUTH_ONLY'
