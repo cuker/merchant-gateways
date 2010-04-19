@@ -3,6 +3,7 @@ from merchant_gateways.billing.avs_result import AVSResult
 from merchant_gateways.billing.cvv_result import CVVResult
 from StringIO import StringIO  #  TODO  need this?
 from urllib import urlencode
+import re
 
 try:
     import xml.etree.ElementTree as ET
@@ -217,7 +218,7 @@ class AuthorizeNet(Gateway):
         return response['response_code'] == self.FRAUD_REVIEW
 
     def parse(self, body):
-        fields = [f[1:-1] for f in body.split(',')]  #  TODO  replace the [1:-1] with something that actually trims $$
+        fields = [ re.sub(r'^\$', '', re.sub(r'\$$', '', f)) for f in body.split(',') ]
 
         results = dict(
             response_code=    int(fields[self.RESPONSE_CODE]),
@@ -227,7 +228,7 @@ class AuthorizeNet(Gateway):
             transaction_id=       fields[self.TRANSACTION_ID],
             card_code=            fields[self.CARD_CODE_RESPONSE_CODE]
             )
-        return results  #  TODO  test me directly
+        return results
 
     def post_data(self, action, parameters = {}):
         post = {}
