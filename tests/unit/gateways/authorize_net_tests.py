@@ -113,6 +113,41 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
 #        assert_equal 'M', response.cvv_result['code']
 #      end
 
+    def test_parse(self):
+        reference = { 'response_reason_code': '1', 'card_code': 'P', 'response_reason_text': 'This transaction has been approved.', 
+                      'avs_result_code': 'Y', 'response_code': 1, 'transaction_id': '508141794' }
+
+        self.assert_equal(reference, self.gateway.parse(self.successful_authorization_response()))
+
+#    def successful_purchase_response(self):
+#    def fraud_review_response(self):
+#      def test_failure_without_response_reason_text
+#      def test_response_under_review_by_fraud_service
+#      def failed_credit_response
+#      def successful_recurring_response
+#      def successful_update_recurring_response
+#      def successful_cancel_recurring_response
+#    def failed_authorization_response(self):
+
+
+#        '$1$,$1$,$1$,$This transaction has been approved.$,$advE7f$,$Y$,$508141794$,$5b3fe66005f3da0ebe51$,$$,$1.00$,$CC$,$auth_only$,$$,$Longbob$,$Longsen$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$2860A297E0FE804BCB9EF8738599645C$,$P$,$2$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$'
+#{'response_reason_code': '1', 'card_code': 'P', 'response_reason_text': 'This transaction has been approved.', 'avs_result_code': 'Y', 'response_code': 1, 'transaction_id': '508141794'}
+#.'$1$,$1$,$1$,$This transaction has been approved.$,$advE7f$,$Y$,$508141794$,$5b3fe66005f3da0ebe51$,$$,$1.00$,$CC$,$auth_only$,$$,$Longbob$,$Longsen$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$2860A297E0FE804BCB9EF8738599645C$,$P$,$2$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$'
+#{'response_reason_code': '1', 'card_code': 'P', 'response_reason_text': 'This transaction has been approved.', 'avs_result_code': 'Y', 'response_code': 1, 'transaction_id': '508141794'}
+#.'$2$,$1$,$1$,$This transaction was declined.$,$advE7f$,$Y$,$508141794$,$5b3fe66005f3da0ebe51$,$$,$1.00$,$CC$,$auth_only$,$$,$Longbob$,$Longsen$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$2860A297E0FE804BCB9EF8738599645C$,$P$,$2$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$'
+#{'response_reason_code': '1', 'card_code': 'P', 'response_reason_text': 'This transaction was declined.', 'avs_result_code': 'Y', 'response_code': 2, 'transaction_id': '508141794'}
+#.'$4$,$$,$253$,$Thank you! For security reasons your order is currently being reviewed.$,$$,$X$,$0$,$$,$$,$1.00$,$$,$auth_capture$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$207BCBBF78E85CF174C87AE286B472D2$,$M$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$'
+#{'response_reason_code': '253', 'card_code': 'M', 'response_reason_text': 'Thank you! For security reasons your order is currently being reviewed.', 'avs_result_code': 'X', 'response_code': 4, 'transaction_id': '0'}
+#.'$4$,$$,$253$,$Thank you! For security reasons your order is currently being reviewed.$,$$,$X$,$0$,$$,$$,$1.00$,$$,$auth_capture$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$207BCBBF78E85CF174C87AE286B472D2$,$M$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$'
+#{'response_reason_code': '253', 'card_code': 'M', 'response_reason_text': 'Thank you! For security reasons your order is currently being reviewed.', 'avs_result_code': 'X', 'response_code': 4, 'transaction_id': '0'}
+#..'$1$,$1$,$1$,$This transaction has been approved.$,$advE7f$,$Y$,$508141794$,$5b3fe66005f3da0ebe51$,$$,$1.00$,$CC$,$auth_only$,$$,$Longbob$,$Longsen$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$2860A297E0FE804BCB9EF8738599645C$,$P$,$2$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$'
+#{'response_reason_code': '1', 'card_code': 'P', 'response_reason_text': 'This transaction has been approved.', 'avs_result_code': 'Y', 'response_code': 1, 'transaction_id': '508141794'}
+#.test_successful_purchase (tests.unit.gateways.authorize_net_tests.AuthorizeNetTests)
+#'$1$,$1$,$1$,$This transaction has been approved.$,$d1GENk$,$Y$,$508141795$,$32968c18334f16525227$,$Store purchase$,$1.00$,$CC$,$auth_capture$,$$,$Longbob$,$Longsen$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$269862C030129C1173727CC10B1935ED$,$P$,$2$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$'
+#{'response_reason_code': '1', 'card_code': 'P', 'response_reason_text': 'This transaction has been approved.', 'avs_result_code': 'Y', 'response_code': 1, 'transaction_id': '508141795'}
+
+
+
 
     '''  def test_add_address_outsite_north_america
         result = {}
