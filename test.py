@@ -7,7 +7,7 @@ sys.path.append(here + '/..')
 import unittest
 
 from tests.unit.avs_result_test import *
-#from tests.unit.cvv_result_test import *
+from tests.unit.cvv_result_test import *
 #from tests.unit.credit_card_formatting_tests import *
 #from tests.unit.credit_card_methods_tests import *
 from tests.unit.credit_card_tests import *
