@@ -1,5 +1,7 @@
 from gateway import Gateway
-from StringIO import StringIO
+from merchant_gateways.billing.avs_result import AVSResult
+from merchant_gateways.billing.cvv_result import CVVResult
+from StringIO import StringIO  #  TODO  need this?
 from urllib import urlencode
 
 try:
@@ -203,7 +205,7 @@ class AuthorizeNet(Gateway):
                 is_test=self.is_test,
                 authorization=self.response['transaction_id'],
                 fraud_review=self.is_fraud_review(self.response),
-                avs_result={ 'code': self.response['avs_result_code'] },  # TODO  create the avs object here?
+                avs_result=AVSResult(code=self.response['avs_result_code']),
            # TODO     cvv_result=self.response['card_code']
                 )  #  TODO  also pass the options in
         return r

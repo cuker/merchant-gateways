@@ -9,6 +9,8 @@ class Response(object):
         self.authorization = options.get('authorization', None)  #  TODO  just jam them in??
         self.fraud_review = options.get('fraud_review', None)
         self.is_test = options['is_test']
+        self.avs_result = options.get('avs_result', None)
+        self.cvv_result = options.get('cvv_result', None)  #   TODO  some gateways do this the wrong way
 
     def to_dict(self):
         return {'success': self.success,

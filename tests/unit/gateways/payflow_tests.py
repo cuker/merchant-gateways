@@ -67,6 +67,15 @@ class PayflowTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.CommonTe
         self.assert_equal( 'Y', avs.street_match )
         self.assert_equal( 'Y', avs.postal_match )
 
+#   TODO  cvv_result here
+#  def test_cvv_result
+#    @gateway.expects(:ssl_post).returns(successful_authorization_response)
+#
+#    response = @gateway.purchase(@amount, @credit_card, @options)
+#    assert_equal 'M', response.cvv_result['code']
+#  end
+#
+
     def test_build_headers(self):
         self.assertEqual({'Content-Length': '42',
                              'Content-Type': 'text/xml',
@@ -188,13 +197,6 @@ class PayflowTest < Test::Unit::TestCase
     assert_equal 'A', response.avs_result['code']
     assert_equal 'Y', response.avs_result['street_match']
     assert_equal 'N', response.avs_result['postal_match']
-  end
-
-  def test_cvv_result
-    @gateway.expects(:ssl_post).returns(successful_authorization_response)
-
-    response = @gateway.purchase(@amount, @credit_card, @options)
-    assert_equal 'M', response.cvv_result['code']
   end
 
   def test_using_test_mode

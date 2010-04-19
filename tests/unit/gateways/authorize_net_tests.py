@@ -73,6 +73,28 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
                       '$269862C030129C1173727CC10B1935ED$,$P$,$2$,' + \
                       '$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$'
 
+    def test_avs_result(self):
+        self.test_successful_authorization()  #  no jury would convict me
+        avs = self.response.avs_result
+        self.assert_equal( 'Y', avs.code )
+        self.assert_equal( 'Y', avs.street_match )
+        self.assert_equal( 'Y', avs.postal_match )
+        
+#      def test_avs_result
+#        self.gateway.expects(:ssl_post).returns(fraud_review_response)  #  no jury
+#
+#        response = self.gateway.purchase(self.amount, self.credit_card)
+#        assert_equal 'X', response.avs_result['code']
+#      end
+#
+#      def test_cvv_result
+#        self.gateway.expects(:ssl_post).returns(fraud_review_response)
+#
+#        response = self.gateway.purchase(self.amount, self.credit_card)
+#        assert_equal 'M', response.cvv_result['code']
+#      end
+
+
     '''  def test_add_address_outsite_north_america
         result = {}
 
@@ -176,19 +198,6 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
         assert_equal "Thank you! For security reasons your order is currently being reviewed", response.message
       end
 
-      def test_avs_result
-        self.gateway.expects(:ssl_post).returns(fraud_review_response)
-
-        response = self.gateway.purchase(self.amount, self.credit_card)
-        assert_equal 'X', response.avs_result['code']
-      end
-
-      def test_cvv_result
-        self.gateway.expects(:ssl_post).returns(fraud_review_response)
-
-        response = self.gateway.purchase(self.amount, self.credit_card)
-        assert_equal 'M', response.cvv_result['code']
-      end
 
       # ARB Unit Tests
 
