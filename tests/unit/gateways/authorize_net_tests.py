@@ -114,13 +114,22 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
 #      end
 
     def test_parse(self):
-        reference = { 'response_reason_code': '1', 'card_code': 'P', 'response_reason_text': 'This transaction has been approved.', 
+        reference = { 'response_reason_code': '1', 'card_code': 'P', 'response_reason_text': 'This transaction has been approved.',
                       'avs_result_code': 'Y', 'response_code': 1, 'transaction_id': '508141794' }
 
         self.assert_equal(reference, self.gateway.parse(self.successful_authorization_response()))
 
-#    def successful_purchase_response(self):
-#    def fraud_review_response(self):
+        reference = {'card_code': 'P', 'response_reason_text': 'This transaction has been approved.', 'response_reason_code': '1',
+                     'avs_result_code': 'Y', 'response_code': 1, 'transaction_id': '508141795'}
+
+        self.assert_equal(reference, self.gateway.parse(self.successful_purchase_response()))
+
+        reference = {'response_reason_code': '253', 'card_code': 'M',
+                     'response_reason_text': 'Thank you! For security reasons your order is currently being reviewed.',
+                     'avs_result_code': 'X', 'response_code': 4, 'transaction_id': '0'}
+        
+        self.assert_equal(reference, self.gateway.parse(self.fraud_review_response()))
+
 #      def test_failure_without_response_reason_text
 #      def test_response_under_review_by_fraud_service
 #      def failed_credit_response
