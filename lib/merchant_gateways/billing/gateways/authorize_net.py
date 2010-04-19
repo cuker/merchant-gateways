@@ -230,7 +230,9 @@ class AuthorizeNet(Gateway):
             )
         return results
 
-    def post_data(self, action, parameters = {}):
+    def post_data(self, action, parameters = {}):  #  TODO  **
+        #print repr(action)
+        #print repr(parameters)
         post = {}
 
         post['version'] = self.API_VERSION
@@ -246,6 +248,7 @@ class AuthorizeNet(Gateway):
         #request = post.merge(parameters).collect { |key, value| "x_#{key}=#{CGI.escape(value.to_s)}" }.join("&")
         request = {}
         [request.setdefault('x_' + key, value) for key, value in post.iteritems()]
+        #print '?' + urlencode(request)
         return '?' + urlencode(request)
 
     def add_invoice(self, post, options):
