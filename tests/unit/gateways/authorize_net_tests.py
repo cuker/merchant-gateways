@@ -74,19 +74,26 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
                       '$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$'
 
     def test_avs_result(self):
-        self.test_successful_authorization()  #  no jury would convict me
+        self.test_successful_authorization()
         avs = self.response.avs_result
         self.assert_equal( 'Y', avs.code )
         self.assert_equal( 'Y', avs.street_match )
         self.assert_equal( 'Y', avs.postal_match )
-        
-#      def test_avs_result
-#        self.gateway.expects(:ssl_post).returns(fraud_review_response)  #  no jury
-#
-#        response = self.gateway.purchase(self.amount, self.credit_card)
-#        assert_equal 'X', response.avs_result['code']
-#      end
-#
+
+    def test_fraudulent_avs_result(self):
+        self.mock_webservice(self.fraud_review_response())  #  TODO  abstract test on this
+        self.response = self.gateway.authorize(self.amount, self.credit_card, **self.options)
+        avs = self.response.avs_result
+        self.assert_equal( 'X', avs.code )
+        self.assert_equal( 'Y', avs.street_match )
+        self.assert_equal( 'Y', avs.postal_match )
+
+    def fraud_review_response(self):
+        return ( "$4$,$$,$253$,$Thank you! For security reasons your order is currently being reviewed.$,$$,$X$,$0$,$$," +
+                 "$$,$1.00$,$$,$auth_capture$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$," +
+                 "$$,$207BCBBF78E85CF174C87AE286B472D2$,$M$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$," +
+                 "$$,$$,$$,$$,$$,$$,$$,$$,$$,$$" )
+
 #      def test_cvv_result
 #        self.gateway.expects(:ssl_post).returns(fraud_review_response)
 #
@@ -260,10 +267,6 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
 
       def failed_credit_response
         '$3$,$2$,$54$,$The referenced transaction does not meet the criteria for issuing a credit.$,$$,$P$,$0$,$$,$$,$1.00$,$CC$,$credit$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$39265D8BA0CDD4F045B5F4129B2AAA01$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$'
-      end
-
-      def fraud_review_response
-        "$4$,$$,$253$,$Thank you! For security reasons your order is currently being reviewed.$,$$,$X$,$0$,$$,$$,$1.00$,$$,$auth_capture$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$207BCBBF78E85CF174C87AE286B472D2$,$M$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$"
       end
 
       def successful_recurring_response
