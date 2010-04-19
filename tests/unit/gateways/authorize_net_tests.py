@@ -94,7 +94,19 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
                  "$$,$207BCBBF78E85CF174C87AE286B472D2$,$M$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$," +
                  "$$,$$,$$,$$,$$,$$,$$,$$,$$,$$" )
 
-#      def test_cvv_result
+    def test_cvv_result(self):
+        self.test_successful_authorization()
+        cvv = self.response.cvv_result
+        self.assert_equal( 'P', cvv.code )
+        self.assert_equal( 'Not Processed', cvv.message )  #  TODO  huh?
+
+    def test_fraudulent_cvv_result(self):
+        self.mock_webservice(self.fraud_review_response())
+        self.response = self.gateway.authorize(self.amount, self.credit_card, **self.options)
+        cvv = self.response.cvv_result
+        self.assert_equal( 'M', cvv.code )
+        self.assert_equal( 'Match', cvv.message )  #  TODO  huh??
+
 #        self.gateway.expects(:ssl_post).returns(fraud_review_response)
 #
 #        response = self.gateway.purchase(self.amount, self.credit_card)
