@@ -3,6 +3,7 @@ from merchant_gateways.billing.gateways.payflow import Payflow
 from merchant_gateways.billing.credit_card import CreditCard
 from tests.test_helper import *
 from pprint import pprint
+#from merchant_gateways.billing import response  #  TODO need this?
 
 
 class PayflowTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.CommonTests):
