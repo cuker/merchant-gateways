@@ -154,9 +154,9 @@ class AuthorizeNet(Gateway):
         #requires!(options, :card_number)
         assert('card_number' in options)
 
-        post = { 'trans_id': identification,
-                 'card_num': options['card_number']
-               }
+        post = dict( trans_id= identification,
+                     card_num= options['card_number'] )
+
         self.add_invoice(post, options)
 
         self.commit('CREDIT', money, post)
@@ -217,15 +217,15 @@ class AuthorizeNet(Gateway):
     def parse(self, body):
         fields = [f[1:-1] for f in body.split(',')]  #  TODO  replace the [1:-1] with something that actually trims $$
 
-        results = {
-          'response_code': int(fields[self.RESPONSE_CODE]),
-          'response_reason_code': fields[self.RESPONSE_REASON_CODE],
-          'response_reason_text': fields[self.RESPONSE_REASON_TEXT],
-          'avs_result_code': fields[self.AVS_RESULT_CODE],
-          'transaction_id': fields[self.TRANSACTION_ID],
-          'card_code': fields[self.CARD_CODE_RESPONSE_CODE]
-        }
-        return results
+        results = dict(
+            response_code=    int(fields[self.RESPONSE_CODE]),
+            response_reason_code= fields[self.RESPONSE_REASON_CODE],
+            response_reason_text= fields[self.RESPONSE_REASON_TEXT],
+            avs_result_code=      fields[self.AVS_RESULT_CODE],
+            transaction_id=       fields[self.TRANSACTION_ID],
+            card_code=            fields[self.CARD_CODE_RESPONSE_CODE]
+            )
+        return results  #  TODO  test me directly
 
     def post_data(self, action, parameters = {}):
         post = {}
