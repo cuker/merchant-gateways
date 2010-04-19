@@ -1,5 +1,7 @@
 
-from merchant_gateways.billing.gateways.authorize_net import AuthorizeNet
+from merchant_gateways.billing.gateways.authorize_net import AuthorizeNet  #  test target is _always_ first line!
+from merchant_gateways.billing.avs_result import AVSResult
+from merchant_gateways.billing.cvv_result import CVVResult
 from merchant_gateways.billing.credit_card import CreditCard
 from tests.test_helper import *
 
