@@ -42,16 +42,16 @@ class AuthorizeNet(Gateway):
     APPROVED, DECLINED, ERROR, FRAUD_REVIEW = 1, 2, 3, 4
     RESPONSE_CODE, RESPONSE_REASON_CODE, RESPONSE_REASON_TEXT = 0, 2, 3
     AVS_RESULT_CODE, TRANSACTION_ID, CARD_CODE_RESPONSE_CODE = 5, 6, 38
-    RECURRING_ACTIONS = {
-      u'create': 'ARBCreateSubscription',
-      u'update': 'ARBUpdateSubscription',
-      u'cancel': 'ARBCancelSubscription'
-    }
+#    RECURRING_ACTIONS = {  TODO
+#      u'create': 'ARBCreateSubscription',
+#      u'update': 'ARBUpdateSubscription',
+#      u'cancel': 'ARBCancelSubscription'
+#    }
     test_url = "https://test.authorize.net/gateway/transact.dll"
     live_url = "https://secure.authorize.net/gateway/transact.dll"
 
-    arb_test_url = 'https://apitest.authorize.net/xml/v1/request.api'
-    arb_live_url = 'https://api.authorize.net/xml/v1/request.api'
+#    arb_test_url = 'https://apitest.authorize.net/xml/v1/request.api'
+#    arb_live_url = 'https://api.authorize.net/xml/v1/request.api'
 
     supported_countries = ['US']
     supported_cardtypes = ['visa', 'master', 'american_express', 'discover']
