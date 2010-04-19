@@ -29,14 +29,14 @@ class CreditCard(object):
                  verification_value=None):
         self.number = re.sub('[^\d]', '', str(number))  #  TODO TDD that sub!
         self.month = int(month)
-#        self.year = int(year)
+        self.year = int(year)    #  TODO tdd this line
         self.card_type = card_type.lower()  #  TODO tdd that lower()
         self.first_name = first_name
         self.last_name = last_name
 #        self.start_month = start_month
 #        self.start_year = start_year
 #        self.issue_number = issue_number
-#        self.verification_value = verification_value
+        self.verification_value = verification_value  #  TODO tdd this line
         self.errors = dict()
 
 #    #should be in mixin
@@ -136,12 +136,12 @@ class CreditCard(object):
 #
 #    def has_name(self):
 #        return self.first_name and self.last_name
-#
-#    def _is_blank(self, svar):
-#        if svar == None:
-#            return True
-#        return (not svar.strip() == '')
-#
+
+    def _is_blank(self, svar):  #  TODO tdd this line
+        if svar == None:
+            return True
+        return (not svar.strip() == '')
+
 #    def has_first_name(self):
 #        return self._is_blank(self.first_name.strip())
 #
@@ -151,9 +151,9 @@ class CreditCard(object):
     def name(self):
         return "%s %s" % (self.first_name, self.last_name)
 
-#    def has_verification_value(self):
-#        return self._is_blank(self.verification_value)
-#
+    def has_verification_value(self):
+        return self._is_blank(self.verification_value)    #  TODO tdd this line
+
 #    def display_number(self):
 #        return CreditCard.mask(self.number)
 #
