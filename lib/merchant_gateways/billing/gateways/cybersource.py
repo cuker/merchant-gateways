@@ -28,7 +28,7 @@ class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
            You must supply an order_id in the options hash'''
         # TODO requires!(options, :order_id, :email)
         self.options = self.setup_address_hash(**self.options)  #  TODO  why authorize uses this not? (and could it suck less?)
-        # TODO commit(build_purchase_request(money, creditcard, options), options)
+        # TODO return self.commit(build_purchase_request(money, creditcard, options), **options)
 
     def build_auth_request(self, money, credit_card, **options):  #  TODO  money == grandTotalAmount - doc & cement that
         template = '''<billTo>
@@ -133,11 +133,11 @@ class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
         authorization = [str(self.options['order_id']), self.result['requestID'], self.result['requestToken']]
         authorization = ';'.join(authorization)
 
-        return Cybersource.Response(self.success, self.message, self.result,
+        return Cybersource.Response( self.success, self.message, self.result,
                                         is_test=self.is_test,
                                         authorization=authorization,
 #                                      :avs_result => { :code => response[:avsCode] },
-                                #      cvv_result=CVVResult(code=self.result['cvCode'])
+                                     cvv_result=CVVResult(code=self.result['cvCode'])
                                     )  #  TODO  inherit what Payflow do here
 
     def build_request(self, body, **options):

@@ -125,7 +125,6 @@ class MerchantGatewaysTestSuite(MerchantGatewaysUtilitiesTestSuite):
             self.assert_equal(repr(True), repr(self.response.is_test))
 
         def test_successful_purchase(self):
-            print self
             self.mock_get_webservice(self.successful_purchase_response())
             self.response = self.gateway.purchase(self.amount, self.credit_card, **self.options)
             self.assert_successful_purchase()
