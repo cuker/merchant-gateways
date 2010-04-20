@@ -12,9 +12,9 @@ class CreditCard(object):
                  #optional verification_value (CVV, CVV2, etc).
                  #Gateways will try to run validation on the passed in value if it is supplied
                  verification_value=None):
-        self.number = re.sub('[^\d]', '', str(number))  #  TODO TDD that sub!
+        self.number = re.sub('[^\d]', '', str(number))
         self.month = int(month)
-        self.year = int(year)    #  TODO tdd this line
+        self.year = int(year)    #  CONSIDER  throw the correct error if the year is not a number
         self.card_type = card_type.lower()  #  TODO tdd that lower()
         self.first_name = first_name
         self.last_name = last_name

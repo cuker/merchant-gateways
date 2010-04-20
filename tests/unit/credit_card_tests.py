@@ -46,6 +46,13 @@ class CreditCardTest(MerchantGatewaysUtilitiesTestSuite):
         self.assert_equal("visa", c.card_type)
         self.assert_valid(c)
 
+
+    def test_constructor_should_trim_blanks(self):
+        c = self.credit_card(number='4111 1111 1111 1111 ', year='1929')
+
+        self.assert_equal('4111111111111111', c.number)  #  CONSIDER maybe the output methods should also trim!
+        self.assert_equal(1929, c.year)
+        
     '''def test_new_credit_card_should_not_be_valid
     c = CreditCard.new
 
