@@ -96,7 +96,11 @@ class PayflowTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.CommonTe
         address = self.gateway.add_address('BillTo',
                                            name= 'Severus Snape',
                                            phone='(555)555-5555',
-                                           address1='1234 My Street'  #  TODO  address or street?
+                                           address1='1234 My Street',  #  TODO  address2 ?
+                                           city='Ottowa',
+                                           state='ON',
+                                           country='CA',
+                                           zip='K1C2N6'
                                             )
         self.assert_xml_text(address, '/BillTo/Name', 'Severus Snape')
 
@@ -105,7 +109,7 @@ class PayflowTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.CommonTe
                                    <Phone>(555)555-5555</Phone>
                                    <Address>
                                      <Street>1234 My Street</Street>
-                                     <City>Ottawa</City>
+                                     <City>Ottowa</City>
                                      <State>ON</State>
                                      <Country>CA</Country>
                                      <Zip>K1C2N6</Zip>
@@ -115,7 +119,12 @@ class PayflowTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.CommonTe
     def test_add_address_ship_to(self):
         address = self.gateway.add_address('ShipTo', name= 'Regulus Black',
                                            phone='(555)555-5555',
-                                           address1='1234 My Street')
+                                           address1='1234 My Street',
+                                           city='Ottowa',
+                                           state='ON',
+                                           country='CA',
+                                           zip='K1C2N6'
+                                            )
         self.assert_xml_text(address, '/ShipTo/Name', 'Regulus Black')
 
         self.assert_match_xml('''<ShipTo>
@@ -123,7 +132,7 @@ class PayflowTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.CommonTe
                                    <Phone>(555)555-5555</Phone>
                                    <Address>
                                      <Street>1234 My Street</Street>
-                                     <City>Ottawa</City>
+                                     <City>Ottowa</City>
                                      <State>ON</State>
                                      <Country>CA</Country>
                                      <Zip>K1C2N6</Zip>
@@ -144,6 +153,10 @@ class PayflowTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.CommonTe
         self.assert_xml_text(address, '/ShipTo/Name', 'Dumbledore')
         addy = self.assert_xml(address, '/ShipTo/Address')
         self.assert_xml_text(addy, 'Street', '39446 Hogwart Avenue')
+        self.assert_xml_text(addy, 'City', 'London')
+        self.assert_xml_text(addy, 'State', 'England')
+        self.assert_xml_text(addy, 'Country', 'UK')
+        self.assert_xml_text(addy, 'Zip', 'N1 0')
 
     #          xml.tag! 'Name', address[:name] unless address[:name].blank?
 #          xml.tag! 'EMail', options[:email] unless options[:email].blank?

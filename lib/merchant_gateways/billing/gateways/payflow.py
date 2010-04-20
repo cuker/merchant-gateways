@@ -126,10 +126,10 @@ xmlns="http://www.paypal.com/XMLPay">
                       E.Phone('(555)555-5555'),
                       E.Address(
                               E.Street(address['address1']),
-                              E.City('Ottawa'),
-                              E.State('ON'),
-                              E.Country('CA'),
-                              E.Zip('K1C2N6')
+                              E.City(address['city']),
+                              E.State(address['state']),
+                              E.Country(address['country']),
+                              E.Zip(address['zip'])
                       )
                 )
         )
