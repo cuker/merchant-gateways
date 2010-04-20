@@ -117,6 +117,8 @@ xmlns="http://www.paypal.com/XMLPay">
     def add_address(self, _where_to, address):
         if not address:  return ''
         address = default_dict(address)
+        from pprint import pprint
+        pprint(address)
 
         return xStr(
                 E(_where_to,
@@ -131,25 +133,6 @@ xmlns="http://www.paypal.com/XMLPay">
                       )
                 )
         )
-
-        template = '''<%(_where_to)s>
-                        <Name>%(name)s</Name>
-                        <Phone>(555)555-5555</Phone>
-                        <Address>
-                          <Street>1234 My Street</Street>
-                          <City>Ottawa</City>
-                          <State>ON</State>
-                          <Country>CA</Country>
-                          <Zip>K1C2N6</Zip>
-                        </Address>
-                      </%(_where_to)s>'''
-
-        fields = dict( name='',
-                      _where_to=_where_to )
-
-        fields.update(address)
-        #print template % fields
-        return template % fields
 
     class Response(response.Response):
         def avs_result(self):

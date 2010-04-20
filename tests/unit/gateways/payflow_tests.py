@@ -111,8 +111,7 @@ class PayflowTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.CommonTe
     def test_add_address_ship_to(self):
         address = self.gateway.add_address('ShipTo', { 'name': 'Regulus Black' })
         self.assert_xml_text(address, '/ShipTo/Name', 'Regulus Black')
-        return # TODO
-
+        
         self.assert_match_xml('''<ShipTo>
                                    <Name>Regulus Black</Name>
                                    <Phone>(555)555-5555</Phone>
