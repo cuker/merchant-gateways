@@ -1,22 +1,20 @@
 from tests.test_helper import *
 from merchant_gateways.billing.credit_card import CreditCard
 
-
 class CreditCardTest(MerchantGatewaysUtilitiesTestSuite):
 
     def setUp(self):
         CreditCard.require_verification_value = False
-        self.visa = self.credit_card("4779139500118580",   card_type="visa")
+        self.visa = self.credit_card("4779139500118580", card_type="visa")
         self.solo = self.credit_card("676700000000000000", card_type="solo", issue_number='01')
 
-    def credit_card(self, number = '4242424242424242', **options):  #  TODO  reformat
+    def credit_card(self, number = '4242424242424242', **options):
 
+    #  TODO  use this in every test that whips out a credit card
+        import datetime
+        one_year_hence = datetime.datetime.now() - datetime.timedelta(days=366)
 
-       #  TODO  use this in every test that whips out a credit card
-       import datetime
-       one_year_hence = datetime.datetime.now() - datetime.timedelta(days=366)
-
-       defaults = dict(
+        defaults = dict(
                 number=number,
                 month=9,
                 #year='2090',
@@ -25,23 +23,23 @@ class CreditCardTest(MerchantGatewaysUtilitiesTestSuite):
                 last_name='Longsen',
                 verification_value='123',
                 card_type='visa'
-                )
-       defaults.update(options)
+        )
+        defaults.update(options)
 
-       return CreditCard(**defaults)
+        return CreditCard(**defaults)
 
     def assert_valid(self, validateable):
-         self.assertTrue(validateable.is_valid())  #  uh...
+        self.assertTrue(validateable.is_valid())  #  uh...
 
     def deny_valid(self, validateable):
-         self.assertFalse(validateable.is_valid())  #  uh...
+        self.assertFalse(validateable.is_valid())  #  uh...
 
     def test_constructor_should_properly_assign_values(self):
         c = self.credit_card()
 
         self.assert_equal( "4242424242424242", c.number)
         self.assert_equal( 9, c.month)
-     # TODO   self.assert_equal( Time.now.year + 1, c.year)
+        # TODO   self.assert_equal( Time.now.year + 1, c.year)
         self.assert_equal( "Longbob Longsen", c.name())  # TODO  fullname
         self.assert_equal("visa", c.card_type)
         self.assert_valid(c)
@@ -52,7 +50,7 @@ class CreditCardTest(MerchantGatewaysUtilitiesTestSuite):
 
         self.assert_equal('4111111111111111', c.number)  #  CONSIDER maybe the output methods should also trim!
         self.assert_equal(1929, c.year)
-        
+
     '''def test_new_credit_card_should_not_be_valid
     c = CreditCard.new
 
