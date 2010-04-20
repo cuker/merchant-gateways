@@ -5,7 +5,7 @@ from merchant_gateways.billing.avs_result import AVSResult
 from merchant_gateways.billing.cvv_result import CVVResult
 from lxml import etree
 from lxml.builder import ElementMaker # TODO document we do lxml only !
-E = ElementMaker()
+XML = ElementMaker()
 
 
 class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
@@ -51,27 +51,27 @@ class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
         # TODO fields.update(address).update(options)
         #  TODO  for the love of god SELF.credit_card!!
 
-        return ( xStr(E.billTo(
-                        E.firstName(credit_card.first_name),
-                        E.lastName(credit_card.last_name),
-                        E.street1(fields['address1']),
-                        E.street2(fields['address2']),
-                        E.city(fields['city']),
-                        E.state(fields['state']),
-                        E.postalCode(fields['zip']),
-                        E.country(fields['country']),
-                        E.email(fields['email'])
+        return ( xStr(XML.billTo(
+                        XML.firstName(credit_card.first_name),
+                        XML.lastName(credit_card.last_name),
+                        XML.street1(fields['address1']),
+                        XML.street2(fields['address2']),
+                        XML.city(fields['city']),
+                        XML.state(fields['state']),
+                        XML.postalCode(fields['zip']),
+                        XML.country(fields['country']),
+                        XML.email(fields['email'])
                         )) +
-                xStr(E.purchaseTotals(
-                        E.currency('USD'),
-                        E.grandTotalAmount(grandTotalAmount)
+                xStr(XML.purchaseTotals(
+                        XML.currency('USD'),
+                        XML.grandTotalAmount(grandTotalAmount)
                     )) +
-                xStr(E.card(
-                      E.accountNumber(credit_card.number),
-                      E.expirationMonth(str(credit_card.month)),
-                      E.expirationYear(str(credit_card.year)),
-                      E.cvNumber('123'),  # TODO
-                      E.cardType('001')  #  TODO
+                xStr(XML.card(
+                      XML.accountNumber(credit_card.number),
+                      XML.expirationMonth(str(credit_card.month)),
+                      XML.expirationYear(str(credit_card.year)),
+                      XML.cvNumber('123'),  # TODO
+                      XML.cardType('001')  #  TODO
                     )) +
         (template_p % fields) )
 
@@ -167,14 +167,14 @@ class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
 
     def build_purchase_request(self, money, creditcard, **options):
 
-        E = ElementMaker(
+        XML = ElementMaker(
         #        namespace="http://my.de/fault/namespace",  #  TODO  does this hit the wire??
          #        nsmap=dict(s="http://schemas.xmlsoap.org/soap/envelope/",
           #              wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
            #            )
         )
 
-        my_doc = E.Body(E.billTo)
+        my_doc = XML.Body(XML.billTo)
         #print(etree.tostring(my_doc, pretty_print=True))
 
 #        xml = Builder::XmlMarkup.new :indent => 2
