@@ -10,8 +10,6 @@ class Response(object):
         self.fraud_review = options.get('fraud_review', None)
         self.is_test = options['is_test']
         self.avs_result = options.get('avs_result', None)
-#        print options.keys()
- # TODO       print 'cvv_result' in options.keys()
         self.cvv_result = options.get('cvv_result', None)  #   TODO  some gateways do this the wrong way
 
     def to_dict(self):
