@@ -259,6 +259,9 @@ class PayflowTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.CommonTe
                                       <ExtData Name="CardIssue" Value="01"/>
                                     </Card>''', xml )
 
+    def test_expdate(self):
+        self.assert_equal('209012', self.gateway.expdate(self.credit_card))
+
 '''
 class PayflowTest < Test::Unit::TestCase
   def setup

@@ -176,9 +176,9 @@ xmlns="http://www.paypal.com/XMLPay">
     def add_credit_card(self, credit_card):
         'adds a credit card'
         fields = [
-          XML.CardType(self.credit_card_type(credit_card)),
+          XML.CardType(self.credit_card_type(credit_card)),  #  TODO  test all types
           XML.CardNum(credit_card.number),
-          XML.ExpDate('201109'), # TODO  expdate(credit_card)
+          XML.ExpDate(self.expdate(credit_card)),
           XML.NameOnCard(credit_card.first_name), # TODO  where's the rest of the name?
           XML.CVNum(credit_card.verification_value), # TODO if credit_card.verification_value?
           XML.ExtData(Name='LASTNAME', Value=credit_card.last_name)
@@ -189,9 +189,6 @@ xmlns="http://www.paypal.com/XMLPay">
                 #  TODO  format(credit_card.issue_number, :two_digits))
 
         return xStr(XML.Card(*fields))
-#        xml.tag! 'Card' do
-#          xml.tag! 'CardType', credit_card_type(credit_card)
-#          xml.tag! 'CardNum', credit_card.number
 #          xml.tag! 'ExpDate', expdate(credit_card)
 #          xml.tag! 'NameOnCard', credit_card.first_name
 #          xml.tag! 'CVNum', credit_card.verification_value if credit_card.verification_value?
@@ -207,6 +204,11 @@ xmlns="http://www.paypal.com/XMLPay">
     def credit_card_type(self, credit_card):
         if self.card_brand(credit_card) in [None, '']:  return ''
         return CARD_MAPPING.get(self.card_brand(credit_card), '')
+
+    def expdate(self, credit_card):
+        year  = "%.4i" % credit_card.year
+        month = "%.2i" % credit_card.month
+        return year + month
 
 '''      include PayflowCommonAPI
 
@@ -331,13 +333,6 @@ xmlns="http://www.paypal.com/XMLPay">
         return '' if card_brand(credit_card).blank?
 
         CARD_MAPPING[card_brand(credit_card).to_sym]
-      end
-
-      def expdate(creditcard)
-        year  = sprintf("%.4i", creditcard.year)
-        month = sprintf("%.2i", creditcard.month)
-
-        "#{year}#{month}"
       end
 
       def startdate(creditcard)
