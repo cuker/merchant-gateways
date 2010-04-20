@@ -5,6 +5,7 @@ from merchant_gateways.billing.avs_result import AVSResult
 from merchant_gateways.billing.cvv_result import CVVResult
 from lxml import etree
 from lxml.builder import ElementMaker # TODO document we do lxml only !
+E = ElementMaker()
 
 
 class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
@@ -62,24 +63,10 @@ class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
         fields.update(options['billing_address'])
         fields.update(options)  #  TODO  options should override credit card - everywhere, and doc that!
 
-
         # TODO fields.update(address).update(options)
         #  TODO  for the love of god SELF.credit_card!!
-        fields.update()
-        E = ElementMaker()
-        template_b = '''
-                <firstName>%(first_name)s</firstName>
-                      <lastName>%(last_name)s</lastName>
-                      <street1>%(address1)s</street1>
-                      <street2>%(address2)s</street2>
-                      <city>%(city)s</city>
-                      <state>%(state)s</state>
-                      <postalCode>%(zip)s</postalCode>
-                      <country>%(country)s</country>
-                      <email>%(email)s</email>
-                    '''
 
-        doc = E.billTo(
+        billTo = E.billTo(
                 E.firstName(credit_card.first_name),
 		E.lastName(credit_card.last_name),
 		E.street1(fields['address1']),
@@ -90,8 +77,7 @@ class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
 		E.country(fields['country']),
 		E.email(fields['email'])
 		)
-        billTo = etree.tostring(doc, pretty_print=True)
-        return ( billTo + (template_p % fields) )
+        return ( xStr(billTo) + (template_p % fields) )
 
     def parse(self, soap):  #  TODO build or find a generic soap parse that DOESN'T SUCK
         result = {}
@@ -571,3 +557,6 @@ CREDIT_CARD_CODES = dict( v='001',
 
 TEST_URL = 'https://ics2wstest.ic3.com/commerce/1.x/transactionProcessor'
 LIVE_URL = 'https://ics2ws.ic3.com/commerce/1.x/transactionProcessor'
+
+def xStr(doc):
+    return etree.tostring(doc, pretty_print=True)  #  TODO  take out pretty_print to go out wire!
