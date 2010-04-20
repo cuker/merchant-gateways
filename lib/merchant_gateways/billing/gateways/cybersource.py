@@ -175,7 +175,7 @@ class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
         )
 
         my_doc = E.Body(E.billTo)
-        print(etree.tostring(my_doc, pretty_print=True))
+        #print(etree.tostring(my_doc, pretty_print=True))
 
 #        xml = Builder::XmlMarkup.new :indent => 2
 #        add_address(xml, creditcard, options[:billing_address], options)
