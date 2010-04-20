@@ -31,7 +31,7 @@ class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
         # TODO return self.commit(build_purchase_request(money, creditcard, options), **options)
 
     def build_auth_request(self, money, credit_card, **options):  #  TODO  money == grandTotalAmount - doc & cement that
-        template = '''<billTo>
+        template_b = '''<billTo>
                       <firstName>%(first_name)s</firstName>
                       <lastName>%(last_name)s</lastName>
                       <street1>%(address1)s</street1>
@@ -41,7 +41,8 @@ class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
                       <postalCode>%(zip)s</postalCode>
                       <country>%(country)s</country>
                       <email>%(email)s</email>
-                    </billTo>
+                    </billTo>'''
+	template_p = '''
                     <purchaseTotals>
                       <currency>USD</currency>
                       <grandTotalAmount>%(grandTotalAmount)s</grandTotalAmount>
@@ -74,7 +75,7 @@ class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
         # TODO fields.update(address).update(options)
         #  TODO  for the love of god SELF.credit_card!!
         fields.update()
-        return template % fields
+        return (template_b % fields) + (template_p % fields)
 
     def parse(self, soap):  #  TODO build or find a generic soap parse that DOESN'T SUCK
         result = {}
@@ -555,4 +556,3 @@ CREDIT_CARD_CODES = dict( v='001',
 
 TEST_URL = 'https://ics2wstest.ic3.com/commerce/1.x/transactionProcessor'
 LIVE_URL = 'https://ics2ws.ic3.com/commerce/1.x/transactionProcessor'
-
