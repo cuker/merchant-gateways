@@ -93,7 +93,10 @@ class PayflowTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.CommonTe
         self.assert_match_xml(sample, xml_pay_request)
 
     def test_add_address_bill_to(self):
-        address = self.gateway.add_address('BillTo', { 'name': 'Severus Snape' })
+        address = self.gateway.add_address('BillTo',
+                                           name= 'Severus Snape',
+                                           phone='(555)555-5555'
+                                            )
         self.assert_xml_text(address, '/BillTo/Name', 'Severus Snape')
 
         self.assert_match_xml('''<BillTo>
@@ -109,7 +112,8 @@ class PayflowTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.CommonTe
                                  </BillTo>''', address)  #  TODO  cover the other variables
 
     def test_add_address_ship_to(self):
-        address = self.gateway.add_address('ShipTo', { 'name': 'Regulus Black' })
+        address = self.gateway.add_address('ShipTo', name= 'Regulus Black',
+                                           phone='(555)555-5555')
         self.assert_xml_text(address, '/ShipTo/Name', 'Regulus Black')
 
         self.assert_match_xml('''<ShipTo>
@@ -125,18 +129,20 @@ class PayflowTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.CommonTe
                                  </ShipTo>''', address)  #  TODO  cover the other variables
 
     def test_add_different_address(self):
-        address = self.gateway.add_address('ShipTo', dict(name='Dumbledore',
-                                                          address1='39446 Hogwart Avenue',
-                                                          city='London',
-                                                          state='England', # so?
-                                                          country='UK',
-                                                          zip='N1 0',
-                                                    email='dumbledore@hogwarts.edu',
-                                                    phone='1-526-865-8896' ))
+        address = self.gateway.add_address( 'ShipTo',
+                                            name='Dumbledore',
+                                            address1='39446 Hogwart Avenue',
+                                            city='London',
+                                            state='England', # so?
+                                            country='UK',
+                                            zip='N1 0',
+                                            email='dumbledore@hogwarts.edu',
+                                            phone='1-526-865-8896' )
 
         self.assert_xml_text(address, '/ShipTo/Name', 'Dumbledore')
+        # TODO self.assert_xml_text(address, '/ShipTo/address1', 'Dumbledore')
 
-#          xml.tag! 'Name', address[:name] unless address[:name].blank?
+    #          xml.tag! 'Name', address[:name] unless address[:name].blank?
 #          xml.tag! 'EMail', options[:email] unless options[:email].blank?
 #          xml.tag! 'Phone', address[:phone] unless address[:phone].blank?
 # TODO!         xml.tag! 'CustCode', options[:customer] if !options[:customer].blank? && tag == 'BillTo'

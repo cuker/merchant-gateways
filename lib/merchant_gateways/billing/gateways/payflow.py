@@ -110,11 +110,11 @@ xmlns="http://www.paypal.com/XMLPay">
 
         transaction_type = TRANSACTIONS[action]
 
-        return template % dict( billing_address=self.add_address('BillTo', options.get('address', None)),
+        return template % dict( billing_address=self.add_address('BillTo', **options.get('address', {})),
                                 transaction_type=transaction_type )
         # return template % { 'billing_address': self.add_address('BillTo', options.get('address', None)) }
 
-    def add_address(self, _where_to, address):
+    def add_address(self, _where_to, **address):
         if not address:  return ''
         address = default_dict(address)
         from pprint import pprint
