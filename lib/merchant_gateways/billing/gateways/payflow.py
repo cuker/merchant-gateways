@@ -5,7 +5,7 @@ from pprint import pprint
 from merchant_gateways.billing import response
 from lxml import etree
 from lxml.builder import ElementMaker # TODO document we do lxml only !
-E = ElementMaker()
+XML = ElementMaker()
 
 def xStr(doc):
     return etree.tostring(doc, pretty_print=True)  #  TODO  take out pretty_print to go out wire!
@@ -119,15 +119,15 @@ xmlns="http://www.paypal.com/XMLPay">
         address = default_dict(address)
 
         return xStr(
-                E(_where_to,
-                      E.Name(address['name']),
-                      E.Phone('(555)555-5555'),
-                      E.Address(
-                              E.Street(address['address1']),
-                              E.City(address['city']),
-                              E.State(address['state']),
-                              E.Country(address['country']),
-                              E.Zip(address['zip'])
+                XML(_where_to,
+                      XML.Name(address['name']),
+                      XML.Phone('(555)555-5555'),
+                      XML.Address(
+                              XML.Street(address['address1']),
+                              XML.City(address['city']),
+                              XML.State(address['state']),
+                              XML.Country(address['country']),
+                              XML.Zip(address['zip'])
                       )
                 )
         )
