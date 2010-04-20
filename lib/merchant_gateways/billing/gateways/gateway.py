@@ -14,10 +14,12 @@ class Gateway(object):
         return (card_type in self.supported_cardtypes)
 
     def card_brand(self, source):
+        return source.card_type
         try:
-            result = source.brand
+            result = source.brand  # TODO  use or lose all this
         except AttributeError:
             result = type(source)
+
         return str(result).lower()
 
 #    def is_test(self):
@@ -49,10 +51,10 @@ class Gateway(object):
         except AttributeError:
             return self.default_currency
 
-    def requires_start_data_or_issue_number(credit_card):
+    def requires_start_date_or_issue_number(self, credit_card):  # TODO fully test this thing!
         if self.card_brand(credit_card).strip() == '':
             return False
-        if card_brand(credit_card) in self.DEBIT_CARDS:
+        if self.card_brand(credit_card) in self.DEBIT_CARDS:
             return True
         return False
 
@@ -87,7 +89,7 @@ class Gateway(object):
 
     def setup_address_hash(self, **options):
         'Create all address hash key value pairs so that we still function if we were only provided with one or two of them'
-        
+
         self.options = options # or self.options
         options['billing_address'] = options.get('billing_address', options.get('address', {}))
         options['shipping_address'] = options.get('shipping_address', {})

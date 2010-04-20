@@ -175,14 +175,20 @@ xmlns="http://www.paypal.com/XMLPay">
 
     def add_credit_card(self, credit_card):
         'adds a credit card'
-        return xStr(XML.Card(
-          XML.CardType('Visa'),  # TODO [credit_card_type(credit_card))
+        fields = [
+          XML.CardType(self.credit_card_type(credit_card)),
           XML.CardNum(credit_card.number),
           XML.ExpDate('201109'), # TODO  expdate(credit_card)
           XML.NameOnCard(credit_card.first_name), # TODO  where's the rest of the name?
           XML.CVNum(credit_card.verification_value), # TODO if credit_card.verification_value?
           XML.ExtData(Name='LASTNAME', Value=credit_card.last_name)
-        ))
+        ]
+        if self.requires_start_date_or_issue_number(credit_card):  #  TODO  TDD
+            fields.append(XML.ExtData(Name='CardIssue', Value='01')) # TODO  unless credit_card.start_month.blank? || credit_card.start_year.blank?
+
+                #  TODO  format(credit_card.issue_number, :two_digits))
+
+        return xStr(XML.Card(*fields))
 #        xml.tag! 'Card' do
 #          xml.tag! 'CardType', credit_card_type(credit_card)
 #          xml.tag! 'CardNum', credit_card.number
@@ -197,6 +203,10 @@ xmlns="http://www.paypal.com/XMLPay">
 #          xml.tag! 'ExtData', 'Name' => 'LASTNAME', 'Value' =>  credit_card.last_name
 #        end
 #      end
+
+    def credit_card_type(self, credit_card):
+        if self.card_brand(credit_card) in [None, '']:  return ''
+        return CARD_MAPPING.get(self.card_brand(credit_card), '')
 
 '''      include PayflowCommonAPI
 
@@ -416,4 +426,15 @@ TRANSACTIONS = dict(
         capture        = 'Capture',
         void           = 'Void',
         credit         = 'Credit'
+      )
+
+CARD_MAPPING = dict(
+        visa='Visa',
+        master='MasterCard',
+        discover='Discover',
+        american_express='Amex',
+        jcb='JCB',
+        diners_club='DinersClub',
+        switch='Switch',
+        solo='Solo'
       )
