@@ -7,7 +7,6 @@ from tests.test_helper import *
 
 #  ERGO  all Decimal objects should optionally be Currency objects - Decimal + ISO country code
 
-#  TODO  should we be inheriting (object)?
 #  TODO logging!
 
 class CybersourceTests(MerchantGatewaysTestSuite,
