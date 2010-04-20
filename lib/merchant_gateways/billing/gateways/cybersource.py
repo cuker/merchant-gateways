@@ -34,10 +34,6 @@ class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
 
     def build_auth_request(self, money, credit_card, **options):  #  TODO  money == grandTotalAmount - doc & cement that
         template_p = '''
-                    <purchaseTotals>
-                      <currency>USD</currency>
-                      <grandTotalAmount>%(grandTotalAmount)s</grandTotalAmount>
-                    </purchaseTotals>
                     <card>
                       <accountNumber>%(accountNumber)s</accountNumber>
                       <expirationMonth>%(expirationMonth)s</expirationMonth>
@@ -52,32 +48,35 @@ class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
         fields = default_dict( first_name=credit_card.first_name,
                        last_name=credit_card.last_name,
                         country='USA',  #  TODO vet this default
-                        grandTotalAmount=str(money),
                         accountNumber=credit_card.number,
                        expirationMonth=credit_card.month,
                        expirationYear=credit_card.year
                         )
         #name='',
                        # TODO merge more _where_to=_where_to )
-
+	grandTotalAmount = str(money)
         fields.update(options['billing_address'])
         fields.update(options)  #  TODO  options should override credit card - everywhere, and doc that!
 
         # TODO fields.update(address).update(options)
         #  TODO  for the love of god SELF.credit_card!!
 
-        billTo = E.billTo(
-                E.firstName(credit_card.first_name),
-		E.lastName(credit_card.last_name),
-		E.street1(fields['address1']),
-		E.street2(fields['address2']),
-		E.city(fields['city']),
-		E.state(fields['state']),
-		E.postalCode(fields['zip']),
-		E.country(fields['country']),
-		E.email(fields['email'])
-		)
-        return ( xStr(billTo) + (template_p % fields) )
+        return ( xStr(E.billTo(
+                        E.firstName(credit_card.first_name),
+                        E.lastName(credit_card.last_name),
+                        E.street1(fields['address1']),
+                        E.street2(fields['address2']),
+                        E.city(fields['city']),
+                        E.state(fields['state']),
+                        E.postalCode(fields['zip']),
+                        E.country(fields['country']),
+                        E.email(fields['email'])
+                        )) +
+		xStr(E.purchaseTotals(
+		        E.currency('USD'),
+			E.grandTotalAmount(grandTotalAmount)
+                    )) +
+        (template_p % fields) )
 
     def parse(self, soap):  #  TODO build or find a generic soap parse that DOESN'T SUCK
         result = {}
