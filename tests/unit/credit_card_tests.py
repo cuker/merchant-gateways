@@ -64,7 +64,7 @@ class CreditCardTest(MerchantGatewaysUtilitiesTestSuite):
 
         self.deny_valid(self.visa)
         reference = dict(first_name='this field is required', last_name='this field is required')  #  CONSIDER  match this to Django model-land
-        self.assert_equal(reference, self.visa.errors)
+        self.assert_match_hash(reference, self.visa.errors)
 
     '''
 

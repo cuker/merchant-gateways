@@ -42,7 +42,7 @@ class CybersourceTests(MerchantGatewaysTestSuite,
                       'decision': 'REJECT',
                       'requestToken': 'Afvvj7KfIgU12gooCFE2/DanQIApt+G1OgTSA+R9PTnyhFTb0KRjgFY+ynyIFNdoKKAghwgx'}
 
-        self.assert_equal(self.response.params, reference)
+        self.assert_match_hash(self.response.params, reference)
 
         # TODO retire for is_test: 'test': False,
         # 'message': 'TODO',
@@ -123,10 +123,11 @@ class CybersourceTests(MerchantGatewaysTestSuite,
     def test_setup_address_hash(self):  #  TODO  everyone should fixup like these (Payflow does it a different way)
         g = self.gateway
         self.assert_equal({}, g.setup_address_hash()['billing_address'])
-        self.assert_equal(dict(yo=42), g.setup_address_hash(billing_address=dict(yo=42))['billing_address'])
-        self.assert_equal(dict(yo=42), g.setup_address_hash(address=dict(yo=42))['billing_address'])
+        addy = dict(yo=42)
+        self.assert_equal(addy, g.setup_address_hash(billing_address=addy)['billing_address'])
+        self.assert_equal(addy, g.setup_address_hash(address=addy)['billing_address'])
         self.assert_equal({}, g.setup_address_hash()['shipping_address'])
-        self.assert_equal(dict(yo=42), g.setup_address_hash(shipping_address=dict(yo=42))['shipping_address'])
+        self.assert_equal(addy, g.setup_address_hash(shipping_address=addy)['shipping_address'])
 
     #  TODO  always credit_card never creditcard
 
