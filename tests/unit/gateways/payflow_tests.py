@@ -95,7 +95,8 @@ class PayflowTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.CommonTe
     def test_add_address_bill_to(self):
         address = self.gateway.add_address('BillTo',
                                            name= 'Severus Snape',
-                                           phone='(555)555-5555'
+                                           phone='(555)555-5555',
+                                           address1='1234 My Street'  #  TODO  address or street?
                                             )
         self.assert_xml_text(address, '/BillTo/Name', 'Severus Snape')
 
@@ -113,7 +114,8 @@ class PayflowTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.CommonTe
 
     def test_add_address_ship_to(self):
         address = self.gateway.add_address('ShipTo', name= 'Regulus Black',
-                                           phone='(555)555-5555')
+                                           phone='(555)555-5555',
+                                           address1='1234 My Street')
         self.assert_xml_text(address, '/ShipTo/Name', 'Regulus Black')
 
         self.assert_match_xml('''<ShipTo>
@@ -140,7 +142,8 @@ class PayflowTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.CommonTe
                                             phone='1-526-865-8896' )
 
         self.assert_xml_text(address, '/ShipTo/Name', 'Dumbledore')
-        # TODO self.assert_xml_text(address, '/ShipTo/address1', 'Dumbledore')
+        addy = self.assert_xml(address, '/ShipTo/Address')
+        self.assert_xml_text(addy, 'Street', '39446 Hogwart Avenue')
 
     #          xml.tag! 'Name', address[:name] unless address[:name].blank?
 #          xml.tag! 'EMail', options[:email] unless options[:email].blank?
@@ -170,7 +173,9 @@ class PayflowTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.CommonTe
 
     def test_build_credit_card_request_with_an_address_but_without_a_name(self):
         sample = self.gateway.build_credit_card_request('authorization', '1.00', self.credit_card, address= {'city': 'TODO'})
-        self.assert_match_xml(reference.replace('Ron Weasley', ''), sample)
+        #self.assert_match_xml(reference.replace('Ron Weasley', ''), sample)
+        name = self.assert_xml(sample, '//BillTo/Name')  #  TODO  find empty name
+        # self.assertNone(name.text)
 
         #  CONSIDER  hallow as a feature if the address is a empty {}, it disappears anyway
 

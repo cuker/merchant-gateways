@@ -118,14 +118,14 @@ xmlns="http://www.paypal.com/XMLPay">
         if not address:  return ''
         address = default_dict(address)
         from pprint import pprint
-        pprint(address)
+#        pprint(address)
 
         return xStr(
                 E(_where_to,
                       E.Name(address['name']),
                       E.Phone('(555)555-5555'),
                       E.Address(
-                              E.Street('1234 My Street'),
+                              E.Street(address['address1']),
                               E.City('Ottawa'),
                               E.State('ON'),
                               E.Country('CA'),
@@ -394,4 +394,3 @@ TRANSACTIONS = dict(
         void           = 'Void',
         credit         = 'Credit'
       )
-
