@@ -37,7 +37,7 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
     def assert_failed_authorization(self):
         self.assertEqual('508141794', self.response.authorization)  # uh, we authorize failure around here?
 
-    def assert_successful_purchase(self):  #  TODO  abstract me
+    def assert_successful_purchase(self):
 
         self.assert_success()  #  TODO  what's in the response? and why a PayflowRequest inherits Request but a AuthorizeNet Response IS a Response?
 
