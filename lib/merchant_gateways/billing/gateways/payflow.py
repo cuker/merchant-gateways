@@ -173,6 +173,24 @@ xmlns="http://www.paypal.com/XMLPay">
         r.avs_result = AVSResult(options['avs_result'])  #  TODO  ain't this what constructors are for??
         return r
 
+    def add_credit_card(self, credit_card):
+        'adds a credit card'
+        return xStr(XML.Card())
+#        xml.tag! 'Card' do
+#          xml.tag! 'CardType', credit_card_type(credit_card)
+#          xml.tag! 'CardNum', credit_card.number
+#          xml.tag! 'ExpDate', expdate(credit_card)
+#          xml.tag! 'NameOnCard', credit_card.first_name
+#          xml.tag! 'CVNum', credit_card.verification_value if credit_card.verification_value?
+#
+#          if requires_start_date_or_issue_number?(credit_card)
+#            xml.tag!('ExtData', 'Name' => 'CardStart', 'Value' => startdate(credit_card)) unless credit_card.start_month.blank? || credit_card.start_year.blank?
+#            xml.tag!('ExtData', 'Name' => 'CardIssue', 'Value' => format(credit_card.issue_number, :two_digits)) unless credit_card.issue_number.blank?
+#          end
+#          xml.tag! 'ExtData', 'Name' => 'LASTNAME', 'Value' =>  credit_card.last_name
+#        end
+#      end
+
 '''      include PayflowCommonAPI
 
       RECURRING_ACTIONS = Set.new([:add, :modify, :cancel, :inquiry, :reactivate, :payment])

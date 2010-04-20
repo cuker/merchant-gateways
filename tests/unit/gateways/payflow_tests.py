@@ -226,6 +226,118 @@ class PayflowTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.CommonTe
                     <CvResult>Match</CvResult>
                 </ResponseData>'''
 
+    def test_add_credit_card(self):
+        cc = CreditCard(verification_value="123", number="4242424242424242", year=2011, card_type="visa",
+                                month=9, last_name="Longsen", first_name="Longbob")
+
+        xml = self.gateway.add_credit_card(cc)
+        card = self.assert_xml(xml, '/Card')
+
+#."add_credit_card"
+##<ActiveMerchant::Billing::CreditCard:0xb6fdfbf4 @verification_value="123", @number="5641820000000005", @year=2011, @issue_number=1, @type="switch", @month=9, @last_name="Longsen", @first_name="Longbob">
+#"dunn"
+#...."add_credit_card"
+##<ActiveMerchant::Billing::CreditCard:0xb6fcbf64 @verification_value="123", @number="4242424242424242", @year=2011, @type="visa", @month=9, @last_name="Longsen", @first_name="Longbob">
+#"dunn"
+#......"add_credit_card"
+##<ActiveMerchant::Billing::CreditCard:0xb745dd48 @verification_value="123", @number="4242424242424242", @year=2011, @type="visa", @month=9, @last_name="Longsen", @first_name="Longbob">
+#"dunn"
+#."add_credit_card"
+##<ActiveMerchant::Billing::CreditCard:0xb73eb02c @verification_value="123", @number="4242424242424242", @year=2011, @type="visa", @month=9, @last_name="Longsen", @first_name="Longbob">
+#"dunn"
+#..........<Authorization>
+#  <PayData>
+#    <Invoice>
+#      <BillTo>
+#        <Name>Jim Smith</Name>
+#        <Phone>(555)555-5555</Phone>
+#        <Address>
+#          <Street>1234 My Street</Street>
+#          <City>Ottawa</City>
+#          <State>ON</State>
+#          <Country>CA</Country>
+#          <Zip>K1C2N6</Zip>
+#        </Address>
+#      </BillTo>
+#      <TotalAmt Currency="USD">1.00</TotalAmt>
+#    </Invoice>
+#    <Tender>
+#      <Card>
+#        <CardType>Visa</CardType>
+#        <CardNum>4242424242424242</CardNum>
+#        <ExpDate>201109</ExpDate>
+#        <NameOnCard>Longbob</NameOnCard>
+#        <CVNum>123</CVNum>
+#        <ExtData Name="LASTNAME" Value="Longsen" />
+#      </Card>
+#    </Tender>
+#  </PayData>
+#</Authorization>
+#<Authorization>
+#  <PayData>
+#    <Invoice>
+#      <BillTo>
+#        <Name>Jim Smith</Name>
+#        <Phone>(555)555-5555</Phone>
+#        <Address>
+#          <Street>1234 My Street</Street>
+#          <City>Ottawa</City>
+#          <State>ON</State>
+#          <Country>CA</Country>
+#          <Zip>K1C2N6</Zip>
+#        </Address>
+#      </BillTo>
+#      <TotalAmt Currency="USD">1.00</TotalAmt>
+#    </Invoice>
+#    <Tender>
+#      <Card>
+#        <CardType>Visa</CardType>
+#        <CardNum>4242424242424242</CardNum>
+#        <ExpDate>201109</ExpDate>
+#        <NameOnCard>Longbob</NameOnCard>
+#        <CVNum>123</CVNum>
+#        <ExtData Name="LASTNAME" Value="Longsen" />
+#      </Card>
+#    </Tender>
+#  </PayData>
+#</Authorization>
+#<Sale>
+#  <PayData>
+#    <Invoice>
+#      <BillTo>
+#        <Name>Jim Smith</Name>
+#        <Phone>(555)555-5555</Phone>
+#        <Address>
+#          <Street>1234 My Street</Street>
+#          <City>Ottawa</City>
+#          <State>ON</State>
+#          <Country>CA</Country>
+#          <Zip>K1C2N6</Zip>
+#        </Address>
+#      </BillTo>
+#      <TotalAmt Currency="USD">1.00</TotalAmt>
+#    </Invoice>
+#    <Tender>
+#      <Card>
+#        <CardType>Visa</CardType>
+#        <CardNum>4242424242424242</CardNum>
+#        <ExpDate>201109</ExpDate>
+#        <NameOnCard>Longbob</NameOnCard>
+#        <CVNum>123</CVNum>
+#        <ExtData Name="LASTNAME" Value="Longsen" />
+#      </Card>
+#    </Tender>
+#  </PayData>
+#</Sale>
+#<Card>
+#  <CardType>Switch</CardType>
+#  <CardNum>5641820000000005</CardNum>
+#  <ExpDate>201109</ExpDate>
+#  <NameOnCard>Longbob</NameOnCard>
+#  <CVNum>123</CVNum>
+#  <ExtData Name="CardIssue" Value="01" />
+#  <ExtData Name="LASTNAME" Value="Longsen" />
+#</Card>
 
 '''
 class PayflowTest < Test::Unit::TestCase
