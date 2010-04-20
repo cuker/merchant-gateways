@@ -114,7 +114,7 @@ class PayflowTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.CommonTe
                                      <Country>CA</Country>
                                      <Zip>K1C2N6</Zip>
                                    </Address>
-                                 </BillTo>''', address)  #  TODO  cover the other variables
+                                 </BillTo>''', address)  #  TODO  cover the email!
 
     def test_add_address_ship_to(self):
         address = self.gateway.add_address('ShipTo', name= 'Regulus Black',

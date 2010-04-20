@@ -117,8 +117,6 @@ xmlns="http://www.paypal.com/XMLPay">
     def add_address(self, _where_to, **address):
         if not address:  return ''
         address = default_dict(address)
-        from pprint import pprint
-#        pprint(address)
 
         return xStr(
                 E(_where_to,
