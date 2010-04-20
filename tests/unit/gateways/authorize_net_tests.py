@@ -3,8 +3,6 @@ from merchant_gateways.billing.gateways.authorize_net import AuthorizeNet  #  te
 from merchant_gateways.billing.credit_card import CreditCard
 from tests.test_helper import *
 
-#  TODO  rename the outer folder
-
 #  TODO  all them options gotta be... OPTIONAL!!
 
 #  TODO  require all required parameters

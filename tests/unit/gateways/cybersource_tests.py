@@ -186,7 +186,7 @@ class CybersourceTests(MerchantGatewaysTestSuite,
 
         # why exp_year 2090? Extendicreditus!
 
-        self.assert_match_xml(expect, message)
+        self.assert_match_xml(expect, message)  #  TODO  now parse it back and assert_match_hash it!
 
     def test_build_auth_request_without_street2(self):
         self.money = Decimal('2.00')
