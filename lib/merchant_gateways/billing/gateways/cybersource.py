@@ -166,7 +166,26 @@ class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
 
         return template % body
 
+    def build_purchase_request(self, money, creditcard, **options):
+        from lxml.builder import ElementMaker # lxml only !
 
+        E = ElementMaker(
+        #        namespace="http://my.de/fault/namespace",  #  TODO  does this hit the wire??
+         #        nsmap=dict(s="http://schemas.xmlsoap.org/soap/envelope/",
+          #              wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
+           #            )
+        )
+
+        my_doc = E.Body(E.billTo)
+        print(etree.tostring(my_doc, pretty_print=True))
+
+#        xml = Builder::XmlMarkup.new :indent => 2
+#        add_address(xml, creditcard, options[:billing_address], options)
+#        add_purchase_data(xml, money, true, options)
+#        add_creditcard(xml, creditcard)
+#        add_purchase_service(xml, options)
+#        add_business_rules_data(xml)
+#        xml.target!
 
 '''module ActiveMerchant #:nodoc:
   module Billing #:nodoc:
@@ -343,16 +362,6 @@ class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
         xml = Builder::XmlMarkup.new :indent => 2
         add_purchase_data(xml, money, true, options)
         add_capture_service(xml, request_id, request_token)
-        add_business_rules_data(xml)
-        xml.target!
-      end
-
-      def build_purchase_request(money, creditcard, options)
-        xml = Builder::XmlMarkup.new :indent => 2
-        add_address(xml, creditcard, options[:billing_address], options)
-        add_purchase_data(xml, money, true, options)
-        add_creditcard(xml, creditcard)
-        add_purchase_service(xml, options)
         add_business_rules_data(xml)
         xml.target!
       end

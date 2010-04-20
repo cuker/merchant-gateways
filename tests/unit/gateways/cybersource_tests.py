@@ -1,5 +1,6 @@
 
 from merchant_gateways.billing.gateways.cybersource import Cybersource
+from merchant_gateways.billing.credit_card import CreditCard
 from tests.test_helper import *
 
 #  TODO  get working with many versions of python & django
@@ -111,7 +112,7 @@ class CybersourceTests(MerchantGatewaysTestSuite,
         reference = self.parsed_authentication_response()
         self.assert_equal(reference, sample)  #  TODO  invent an assert_diff that can spot differences
 
-    def assert_match_hash(self, reference, sample):
+    def assert_hash_match(self, reference, sample):
         if reference == sample:  return
 
     def test_parse_purchase_response(self):
@@ -236,6 +237,211 @@ class CybersourceTests(MerchantGatewaysTestSuite,
         return # TODO
         self.assert_equal( 'M', cvv.code )
         self.assert_equal( 'Match', cvv.message )
+
+    def test_(self):
+        amount = 100
+
+        credit_card = CreditCard( verification_value="123",
+                                  number="4111111111111111",
+                                  year=2011,
+                                  card_type="visa",
+                                  month=9,
+                                  last_name="Longsen", first_name="Longbob")  #  TODO  'harry potter'
+
+        options = dict( email="someguy1232@fakeemail.net", order_id="1000", shipping_address={}, currency="USD",
+                        billing_address=dict(country="Canada", address1="1234 My Street", phone="(555)555-5555",
+                                             address2="Apt 1", zip="K1C2N6", company="Widgets Inc", city="Ottawa",
+                                             state="ON"))
+
+   # TODO line_items=[{:sku="WA323232323232323", quantity=2, description="Giant Walrus", code="default", declared_value=100}, {:sku="FAKE1232132113123", quantity=2, description="Marble Snowcone", declared_value=100}]}
+
+        reference = '''<billTo>
+                              <firstName>Longbob</firstName>
+                              <lastName>Longsen</lastName>
+                              <street1>1234 My Street</street1>
+                              <street2>Apt 1</street2>
+                              <city>Ottawa</city>
+                              <state>ON</state>
+                              <postalCode>K1C2N6</postalCode>
+                              <country>Canada</country>
+                              <email>someguy1232@fakeemail.net</email>
+                            </billTo>
+                            <purchaseTotals>
+                              <currency>USD</currency>
+                              <grandTotalAmount>1.00</grandTotalAmount>
+                            </purchaseTotals>
+                            <card>
+                              <accountNumber>4111111111111111</accountNumber>
+                              <expirationMonth>09</expirationMonth>
+                              <expirationYear>2011</expirationYear>
+                              <cvNumber>123</cvNumber>
+                              <cardType>001</cardType>
+                            </card>
+                            <ccAuthService run="true" />
+                            <ccCaptureService run="true" />
+                            <businessRules></businessRules>'''
+
+        sample = self.gateway.build_purchase_request(amount, credit_card, **options)
+        # TODO self.assert_xml_match(reference, sample)
+
+#<billTo>
+#  <firstName>Longbob</firstName>
+#  <lastName>Longsen</lastName>
+#  <street1>1234 My Street</street1>
+#  <street2>Apt 1</street2>
+#  <city>Ottawa</city>
+#  <state>ON</state>
+#  <postalCode>K1C2N6</postalCode>
+#  <country>Canada</country>
+#  <email>someguy1232@fakeemail.net</email>
+#</billTo>
+#<purchaseTotals>
+#  <currency>USD</currency>
+#  <grandTotalAmount>1.00</grandTotalAmount>
+#</purchaseTotals>
+#<card>
+#  <accountNumber>4111111111111111</accountNumber>
+#  <expirationMonth>09</expirationMonth>
+#  <expirationYear>2011</expirationYear>
+#  <cvNumber>123</cvNumber>
+#  <cardType>001</cardType>
+#</card>
+#<ccAuthService run="true" />
+#<ccCaptureService run="true" />
+#<businessRules></businessRules>
+#."money"
+#100
+#"creditcard"
+##<ActiveMerchant::Billing::CreditCard:0xb72d5908 @verification_value="123", @number="4111111111111111", @year=2011, @type="visa", @month=9, @last_name="Longsen", @first_name="Longbob">
+#"options"
+#{:email=>"someguy1232@fakeemail.net", :order_id=>"1000", :shipping_address=>{}, :currency=>"USD", :billing_address=>{:country=>"Canada", :address1=>"1234 My Street", :phone=>"(555)555-5555", :address2=>"Apt 1", :zip=>"K1C2N6", :company=>"Widgets Inc", :city=>"Ottawa", :state=>"ON"}, :line_items=>[{:sku=>"WA323232323232323", :quantity=>2, :description=>"Giant Walrus", :code=>"default", :declared_value=>100}, {:sku=>"FAKE1232132113123", :quantity=>2, :description=>"Marble Snowcone", :declared_value=>100}]}
+#"output"
+#."money"
+#100
+#"creditcard"
+##<ActiveMerchant::Billing::CreditCard:0xb728203c @verification_value="123", @number="4111111111111111", @year=2011, @type="visa", @month=9, @last_name="Longsen", @first_name="Longbob">
+#"options"
+#{:email=>"someguy1232@fakeemail.net", :order_id=>"1000", :shipping_address=>{}, :currency=>"USD", :billing_address=>{:country=>"Canada", :address1=>"1234 My Street", :phone=>"(555)555-5555", :address2=>"Apt 1", :zip=>"K1C2N6", :company=>"Widgets Inc", :city=>"Ottawa", :state=>"ON"}, :line_items=>[{:sku=>"WA323232323232323", :quantity=>2, :description=>"Giant Walrus", :code=>"default", :declared_value=>100}, {:sku=>"FAKE1232132113123", :quantity=>2, :description=>"Marble Snowcone", :declared_value=>100}]}
+#"output"
+#."money"
+#100
+#"creditcard"
+##<ActiveMerchant::Billing::CreditCard:0xb7256680 @verification_value="123", @number="4111111111111111", @year=2011, @type="visa", @month=9, @last_name="Longsen", @first_name="Longbob">
+#"options"
+#{:email=>"someguy1232@fakeemail.net", :order_id=>"1000", :shipping_address=>{}, :currency=>"USD", :billing_address=>{:country=>"Canada", :address1=>"1234 My Street", :phone=>"(555)555-5555", :address2=>"Apt 1", :zip=>"K1C2N6", :company=>"Widgets Inc", :city=>"Ottawa", :state=>"ON"}, :line_items=>[{:sku=>"WA323232323232323", :quantity=>2, :description=>"Giant Walrus", :code=>"default", :declared_value=>100}, {:sku=>"FAKE1232132113123", :quantity=>2, :description=>"Marble Snowcone", :declared_value=>100}]}
+#"output"
+#.."money"
+#100
+#"creditcard"
+##<ActiveMerchant::Billing::CreditCard:0xb71c7e08 @verification_value="123", @number="4111111111111111", @year=2011, @type="visa", @month=9, @last_name="Longsen", @first_name="Longbob">
+#"options"
+#{:email=>"someguy1232@fakeemail.net", :order_id=>"1000", :shipping_address=>{}, :currency=>"USD", :billing_address=>{:country=>"Canada", :address1=>"1234 My Street", :phone=>"(555)555-5555", :address2=>"Apt 1", :zip=>"K1C2N6", :company=>"Widgets Inc", :city=>"Ottawa", :state=>"ON"}, :line_items=>[{:sku=>"WA323232323232323", :quantity=>2, :description=>"Giant Walrus", :code=>"default", :declared_value=>100}, {:sku=>"FAKE1232132113123", :quantity=>2, :description=>"Marble Snowcone", :declared_value=>100}]}
+#"output"
+#....................................<billTo>
+#  <firstName>Longbob</firstName>
+#  <lastName>Longsen</lastName>
+#  <street1>1234 My Street</street1>
+#  <street2>Apt 1</street2>
+#  <city>Ottawa</city>
+#  <state>ON</state>
+#  <postalCode>K1C2N6</postalCode>
+#  <country>Canada</country>
+#  <email>someguy1232@fakeemail.net</email>
+#</billTo>
+#<purchaseTotals>
+#  <currency>USD</currency>
+#  <grandTotalAmount>1.00</grandTotalAmount>
+#</purchaseTotals>
+#<card>
+#  <accountNumber>4111111111111111</accountNumber>
+#  <expirationMonth>09</expirationMonth>
+#  <expirationYear>2011</expirationYear>
+#  <cvNumber>123</cvNumber>
+#  <cardType>001</cardType>
+#</card>
+#<ccAuthService run="true" />
+#<ccCaptureService run="true" />
+#<businessRules></businessRules>
+#<billTo>
+#  <firstName>Longbob</firstName>
+#  <lastName>Longsen</lastName>
+#  <street1>1234 My Street</street1>
+#  <street2>Apt 1</street2>
+#  <city>Ottawa</city>
+#  <state>ON</state>
+#  <postalCode>K1C2N6</postalCode>
+#  <country>Canada</country>
+#  <email>someguy1232@fakeemail.net</email>
+#</billTo>
+#<purchaseTotals>
+#  <currency>USD</currency>
+#  <grandTotalAmount>1.00</grandTotalAmount>
+#</purchaseTotals>
+#<card>
+#  <accountNumber>4111111111111111</accountNumber>
+#  <expirationMonth>09</expirationMonth>
+#  <expirationYear>2011</expirationYear>
+#  <cvNumber>123</cvNumber>
+#  <cardType>001</cardType>
+#</card>
+#<ccAuthService run="true" />
+#<ccCaptureService run="true" />
+#<businessRules></businessRules>
+#<billTo>
+#  <firstName>Longbob</firstName>
+#  <lastName>Longsen</lastName>
+#  <street1>1234 My Street</street1>
+#  <street2>Apt 1</street2>
+#  <city>Ottawa</city>
+#  <state>ON</state>
+#  <postalCode>K1C2N6</postalCode>
+#  <country>Canada</country>
+#  <email>someguy1232@fakeemail.net</email>
+#</billTo>
+#<purchaseTotals>
+#  <currency>USD</currency>
+#  <grandTotalAmount>1.00</grandTotalAmount>
+#</purchaseTotals>
+#<card>
+#  <accountNumber>4111111111111111</accountNumber>
+#  <expirationMonth>09</expirationMonth>
+#  <expirationYear>2011</expirationYear>
+#  <cvNumber>123</cvNumber>
+#  <cardType>001</cardType>
+#</card>
+#<ccAuthService run="true" />
+#<ccCaptureService run="true" />
+#<businessRules></businessRules>
+#<billTo>
+#  <firstName>Longbob</firstName>
+#  <lastName>Longsen</lastName>
+#  <street1>1234 My Street</street1>
+#  <street2>Apt 1</street2>
+#  <city>Ottawa</city>
+#  <state>ON</state>
+#  <postalCode>K1C2N6</postalCode>
+#  <country>Canada</country>
+#  <email>someguy1232@fakeemail.net</email>
+#</billTo>
+#<purchaseTotals>
+#  <currency>USD</currency>
+#  <grandTotalAmount>1.00</grandTotalAmount>
+#</purchaseTotals>
+#<card>
+#  <accountNumber>4111111111111111</accountNumber>
+#  <expirationMonth>09</expirationMonth>
+#  <expirationYear>2011</expirationYear>
+#  <cvNumber>123</cvNumber>
+#  <cardType>001</cardType>
+#</card>
+#<ccAuthService run="true" />
+#<ccCaptureService run="true" />
+#<businessRules></businessRules>
+#................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
+#Finished in 3.810799 seconds.
+#
+#785 tests, 2427 assertions, 0 failures, 0 errors
+
 
     def successful_authorization_response(self): #  TODO  get a real SOAP lib!
         return '''<?xml version="1.0" encoding="utf-8"?>
