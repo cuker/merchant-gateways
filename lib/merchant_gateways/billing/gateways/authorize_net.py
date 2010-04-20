@@ -2,7 +2,7 @@
 from gateway import Gateway
 from merchant_gateways.billing.avs_result import AVSResult
 from merchant_gateways.billing.cvv_result import CVVResult
-from StringIO import StringIO  #  TODO  need this?
+
 from urllib import urlencode
 import re
 
@@ -196,10 +196,7 @@ class AuthorizeNet(Gateway):
 
         pattern = re.compile('TESTMODE')
 
-        if self.is_test or pattern.search(self.message):
-            test_mode = True
-        else:
-            test_mode = False
+        test_mode = self.is_test or pattern.search(self.message)
 
         #test_mode = test? || message =~ /TESTMODE/
 
