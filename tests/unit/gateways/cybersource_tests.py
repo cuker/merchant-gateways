@@ -110,10 +110,29 @@ class CybersourceTests(MerchantGatewaysTestSuite,
         soap = self.successful_authorization_response()
         sample = self.gateway.parse(soap)
         reference = self.parsed_authentication_response()
-        self.assert_equal(reference, sample)  #  TODO  invent an assert_diff that can spot differences
 
-    def assert_hash_match(self, reference, sample):
+        self.assert_match_hash(reference, sample)  #  TODO  invent an assert_diff that can spot differences
+
+    def assert_match_hash(self, reference, sample, diagnostic=''):
         if reference == sample:  return
+        print dir(reference)
+        reference = reference.copy()
+        sample = sample.copy()
+        from pprint import pformat
+
+        for key, value in reference.items():
+            if value == sample.get(key, not(value)):
+                reference.pop(key)
+                sample.pop(key)
+
+        diagnostic = ( 'hashes should not differ by these items:' +
+                       '\n%s\n!=\n%s\n%s' %
+                      ( pformat(reference),
+                        pformat(sample),
+                        diagnostic or '' ) )
+
+        diagnostic = diagnostic.strip()
+        self.assert_equal( reference, sample, diagnostic )
 
     def test_parse_purchase_response(self):
         soap = self.successful_purchase_response()
