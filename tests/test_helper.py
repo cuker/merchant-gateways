@@ -57,6 +57,10 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
         if kw.get('verbose', False):  self.reveal_xml(node)  #  "here have ye been? What have ye seen?"--Morgoth
         return node
 
+    def assert_xml_text(self, xml, path, text):
+        path += '[ contains(text(), "%s") ]' % text  #  TODO  replace many 'text() =' with this; use XPath substitutions so " and ' cause no trouble
+        return self.assert_xml(xml, path)
+
     def reveal_xml(self, node):
         'Spews an XML node as source, for diagnosis'
 
@@ -72,8 +76,8 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
 
     def assert_match_xml(self, reference, sample):
         import re
-        reference = re.sub(r'\n\s*', '\n', reference)
-        sample = re.sub(r'\n\s*', '\n', sample)
+        reference = re.sub(r'\n\s*', '\n', reference).strip()
+        sample = re.sub(r'\n\s*', '\n', sample).strip()
         self.assertEqual(reference, sample, "\n%s\nshould match:%s" % (reference, sample))  #  CONSIDER  use XPath to rotorouter the two samples!
 
     def assert_none(self, *args, **kwargs):

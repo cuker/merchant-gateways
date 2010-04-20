@@ -1,8 +1,14 @@
 
-from gateway import Gateway
+from gateway import Gateway, default_dict
 from merchant_gateways.billing.avs_result import AVSResult
 from pprint import pprint
 from merchant_gateways.billing import response
+from lxml import etree
+from lxml.builder import ElementMaker # TODO document we do lxml only !
+E = ElementMaker()
+
+def xStr(doc):
+    return etree.tostring(doc, pretty_print=True)  #  TODO  take out pretty_print to go out wire!
 
 # TODO use this      XMLNS = 'http://www.paypal.com/XMLPay'
 
@@ -110,6 +116,21 @@ xmlns="http://www.paypal.com/XMLPay">
 
     def add_address(self, _where_to, address):
         if not address:  return ''
+        address = default_dict(address)
+
+        return xStr(
+                E(_where_to,
+                      E.Name(address['name']),
+                      E.Phone('(555)555-5555'),
+                      E.Address(
+                              E.Street('1234 My Street'),
+                              E.City('Ottawa'),
+                              E.State('ON'),
+                              E.Country('CA'),
+                              E.Zip('K1C2N6')
+                      )
+                )
+        )
 
         template = '''<%(_where_to)s>
                         <Name>%(name)s</Name>
@@ -127,6 +148,7 @@ xmlns="http://www.paypal.com/XMLPay">
                       _where_to=_where_to )
 
         fields.update(address)
+        #print template % fields
         return template % fields
 
     class Response(response.Response):

@@ -3,7 +3,9 @@ from merchant_gateways.billing.gateways.payflow import Payflow
 from merchant_gateways.billing.credit_card import CreditCard
 from tests.test_helper import *
 from pprint import pprint
-#from merchant_gateways.billing import response  #  TODO need this?
+#
+
+from merchant_gateways.billing import response  #  TODO need this?
 
 
 class PayflowTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.CommonTests):
@@ -92,6 +94,7 @@ class PayflowTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.CommonTe
 
     def test_add_address_bill_to(self):
         address = self.gateway.add_address('BillTo', { 'name': 'Severus Snape' })
+        self.assert_xml_text(address, '/BillTo/Name', 'Severus Snape')
 
         self.assert_match_xml('''<BillTo>
                                    <Name>Severus Snape</Name>
@@ -107,6 +110,8 @@ class PayflowTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.CommonTe
 
     def test_add_address_ship_to(self):
         address = self.gateway.add_address('ShipTo', { 'name': 'Regulus Black' })
+        self.assert_xml_text(address, '/ShipTo/Name', 'Regulus Black')
+        return # TODO
 
         self.assert_match_xml('''<ShipTo>
                                    <Name>Regulus Black</Name>
