@@ -111,7 +111,7 @@ class PayflowTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.CommonTe
     def test_add_address_ship_to(self):
         address = self.gateway.add_address('ShipTo', { 'name': 'Regulus Black' })
         self.assert_xml_text(address, '/ShipTo/Name', 'Regulus Black')
-        
+
         self.assert_match_xml('''<ShipTo>
                                    <Name>Regulus Black</Name>
                                    <Phone>(555)555-5555</Phone>
@@ -123,6 +123,30 @@ class PayflowTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.CommonTe
                                      <Zip>K1C2N6</Zip>
                                    </Address>
                                  </ShipTo>''', address)  #  TODO  cover the other variables
+
+    def test_add_different_address(self):
+        address = self.gateway.add_address('ShipTo', dict(name='Dumbledore',
+                                                          address1='39446 Hogwart Avenue',
+                                                          city='London',
+                                                          state='England', # so?
+                                                          country='UK',
+                                                          zip='N1 0',
+                                                    email='dumbledore@hogwarts.edu',
+                                                    phone='1-526-865-8896' ))
+
+        self.assert_xml_text(address, '/ShipTo/Name', 'Dumbledore')
+
+#          xml.tag! 'Name', address[:name] unless address[:name].blank?
+#          xml.tag! 'EMail', options[:email] unless options[:email].blank?
+#          xml.tag! 'Phone', address[:phone] unless address[:phone].blank?
+# TODO!         xml.tag! 'CustCode', options[:customer] if !options[:customer].blank? && tag == 'BillTo'
+#
+#          xml.tag! 'Address' do # TODO etc!
+#            xml.tag! 'Street', address[:address1] unless address[:address1].blank?
+#            xml.tag! 'City', address[:city] unless address[:city].blank?
+#            xml.tag! 'State', address[:state].blank? ? "N/A" : address[:state]
+#            xml.tag! 'Country', address[:country] unless address[:country].blank?
+#            xml.tag! 'Zip', address[:zip] unless address[:zip].blank?
 
     def test_build_credit_card_request(self):
         options = { 'address': { 'name': 'Ron Weasley' } }
