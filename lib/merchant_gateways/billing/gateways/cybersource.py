@@ -34,13 +34,6 @@ class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
 
     def build_auth_request(self, money, credit_card, **options):  #  TODO  money == grandTotalAmount - doc & cement that
         template_p = '''
-                    <card>
-                      <accountNumber>%(accountNumber)s</accountNumber>
-                      <expirationMonth>%(expirationMonth)s</expirationMonth>
-                      <expirationYear>%(expirationYear)s</expirationYear>
-                      <cvNumber>123</cvNumber>
-                      <cardType>001</cardType>
-                    </card>
                     <ccAuthService run="true"/>
                     <businessRules>
                     </businessRules>'''
@@ -48,9 +41,6 @@ class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
         fields = default_dict( first_name=credit_card.first_name,
                        last_name=credit_card.last_name,
                         country='USA',  #  TODO vet this default
-                        accountNumber=credit_card.number,
-                       expirationMonth=credit_card.month,
-                       expirationYear=credit_card.year
                         )
         #name='',
                        # TODO merge more _where_to=_where_to )
@@ -75,6 +65,13 @@ class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
 		xStr(E.purchaseTotals(
 		        E.currency('USD'),
 			E.grandTotalAmount(grandTotalAmount)
+                    )) +
+		xStr(E.card(
+                      E.accountNumber(credit_card.number),
+                      E.expirationMonth(str(credit_card.month)),
+                      E.expirationYear(str(credit_card.year)),
+                      E.cvNumber('123'),  # TODO
+                      E.cardType('001')  #  TODO
                     )) +
         (template_p % fields) )
 
