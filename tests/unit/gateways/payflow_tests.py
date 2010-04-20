@@ -237,7 +237,8 @@ class PayflowTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.CommonTe
         self.assert_xml_text(card, 'ExpDate', '201109')
         self.assert_xml_text(card, 'NameOnCard', 'Longbob')
         self.assert_xml_text(card, 'CVNum', '123')
-        # TODO self.assert_xml(card, 'ExtData') # TODO Name="LASTNAME" Value="Longsen" />
+        extdata = self.assert_xml(card, 'ExtData[ @Name = "LASTNAME" ]')
+        self.assert_equal(extdata.attrib['Value'], 'Longsen')
 
 #."add_credit_card"
 ##<ActiveMerchant::Billing::CreditCard:0xb6fdfbf4 @verification_value="123", @number="5641820000000005", @year=2011, @issue_number=1, @type="switch", @month=9, @last_name="Longsen", @first_name="Longbob">

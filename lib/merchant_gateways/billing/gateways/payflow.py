@@ -180,8 +180,8 @@ xmlns="http://www.paypal.com/XMLPay">
           XML.CardNum(credit_card.number),
           XML.ExpDate('201109'), # TODO  expdate(credit_card)
           XML.NameOnCard(credit_card.first_name), # TODO  where's the rest of the name?
-          XML.CVNum(credit_card.verification_value) # TODO if credit_card.verification_value?
-
+          XML.CVNum(credit_card.verification_value), # TODO if credit_card.verification_value?
+          XML.ExtData(Name='LASTNAME', Value=credit_card.last_name)
         ))
 #        xml.tag! 'Card' do
 #          xml.tag! 'CardType', credit_card_type(credit_card)
