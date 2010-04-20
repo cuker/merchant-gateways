@@ -4,6 +4,7 @@ from merchant_gateways.billing import response
 from merchant_gateways.billing.avs_result import AVSResult
 from merchant_gateways.billing.cvv_result import CVVResult
 from lxml import etree
+from lxml.builder import ElementMaker # TODO document we do lxml only !
 
 
 class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
@@ -31,18 +32,7 @@ class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
         # TODO return self.commit(build_purchase_request(money, creditcard, options), **options)
 
     def build_auth_request(self, money, credit_card, **options):  #  TODO  money == grandTotalAmount - doc & cement that
-        template_b = '''<billTo>
-                      <firstName>%(first_name)s</firstName>
-                      <lastName>%(last_name)s</lastName>
-                      <street1>%(address1)s</street1>
-                      <street2>%(address2)s</street2>
-                      <city>%(city)s</city>
-                      <state>%(state)s</state>
-                      <postalCode>%(zip)s</postalCode>
-                      <country>%(country)s</country>
-                      <email>%(email)s</email>
-                    </billTo>'''
-	template_p = '''
+        template_p = '''
                     <purchaseTotals>
                       <currency>USD</currency>
                       <grandTotalAmount>%(grandTotalAmount)s</grandTotalAmount>
@@ -72,10 +62,36 @@ class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
         fields.update(options['billing_address'])
         fields.update(options)  #  TODO  options should override credit card - everywhere, and doc that!
 
+
         # TODO fields.update(address).update(options)
         #  TODO  for the love of god SELF.credit_card!!
         fields.update()
-        return (template_b % fields) + (template_p % fields)
+        E = ElementMaker()
+        template_b = '''
+                <firstName>%(first_name)s</firstName>
+                      <lastName>%(last_name)s</lastName>
+                      <street1>%(address1)s</street1>
+                      <street2>%(address2)s</street2>
+                      <city>%(city)s</city>
+                      <state>%(state)s</state>
+                      <postalCode>%(zip)s</postalCode>
+                      <country>%(country)s</country>
+                      <email>%(email)s</email>
+                    '''
+
+        doc = E.billTo(
+                E.firstName(credit_card.first_name),
+		E.lastName(credit_card.last_name),
+		E.street1(fields['address1']),
+		E.street2(fields['address2']),
+		E.city(fields['city']),
+		E.state(fields['state']),
+		E.postalCode(fields['zip']),
+		E.country(fields['country']),
+		E.email(fields['email'])
+		)
+        billTo = etree.tostring(doc, pretty_print=True)
+        return ( billTo + (template_p % fields) )
 
     def parse(self, soap):  #  TODO build or find a generic soap parse that DOESN'T SUCK
         result = {}
@@ -104,10 +120,10 @@ class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
         pass
 
     '''  def commit(request, options)
-	      response = parse(ssl_post(test? ? TEST_URL : LIVE_URL, build_request(request, options)))
+              response = parse(ssl_post(test? ? TEST_URL : LIVE_URL, build_request(request, options)))
 
-	      success = response[:decision] == "ACCEPT"
-	      message = @@response_codes[('r' + response[:reasonCode]).to_sym] rescue response[:message]
+              success = response[:decision] == "ACCEPT"
+              message = @@response_codes[('r' + response[:reasonCode]).to_sym] rescue response[:message]
         authorization = success ? [ options[:order_id], response[:requestID], response[:requestToken] ].compact.join(";") : nil
 
         Response.new(success, message, response,
@@ -129,7 +145,7 @@ class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
 #
         self.success = self.result['decision'] == "ACCEPT"
         self.message = 'TODO'
-#	      message = self.self.response_codes[('r' + response[:reasonCode]).to_sym] rescue response[:message]
+#             message = self.self.response_codes[('r' + response[:reasonCode]).to_sym] rescue response[:message]
     # TODO       authorization = success ? [ options[:order_id], response[:requestID], response[:requestToken] ].compact.join(";") : nil
         authorization = [str(self.options['order_id']), self.result['requestID'], self.result['requestToken']]
         authorization = ';'.join(authorization)
@@ -168,7 +184,6 @@ class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
         return template % body
 
     def build_purchase_request(self, money, creditcard, **options):
-        from lxml.builder import ElementMaker # lxml only !
 
         E = ElementMaker(
         #        namespace="http://my.de/fault/namespace",  #  TODO  does this hit the wire??
