@@ -20,7 +20,7 @@ class CreditCard(object):
         self.last_name = last_name
 #        self.start_month = start_month
 #        self.start_year = start_year
-#        self.issue_number = issue_number
+        self.issue_number = issue_number
         self.verification_value = verification_value  #  TODO tdd this line
         self.errors = dict()
 

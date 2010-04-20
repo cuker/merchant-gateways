@@ -152,6 +152,7 @@ xmlns="http://www.paypal.com/XMLPay">
 
         for node in root.xpath('*'):
             response[node.tag] = node.text
+
         '''
         root = REXML::XPath.first(xml, "//ResponseData")
 
@@ -184,7 +185,8 @@ xmlns="http://www.paypal.com/XMLPay">
           XML.ExtData(Name='LASTNAME', Value=credit_card.last_name)
         ]
         if self.requires_start_date_or_issue_number(credit_card):  #  TODO  TDD
-            fields.append(XML.ExtData(Name='CardIssue', Value='01')) # TODO  unless credit_card.start_month.blank? || credit_card.start_year.blank?
+            issue = format(credit_card.issue_number, two_digits=True)
+            fields.append(XML.ExtData(Name='CardIssue', Value=issue)) # TODO  unless credit_card.start_month.blank? || credit_card.start_year.blank?
 
                 #  TODO  format(credit_card.issue_number, :two_digits))
 
