@@ -86,6 +86,27 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
 
         return self.assertEqual(*args, **kwargs)
 
+    def assert_match_hash(self, reference, sample, diagnostic=''):
+        if reference == sample:  return
+        print dir(reference)
+        reference = reference.copy()
+        sample = sample.copy()
+        from pprint import pformat
+
+        for key, value in reference.items():
+            if value == sample.get(key, not(value)):
+                reference.pop(key)
+                sample.pop(key)
+
+        diagnostic = ( 'hashes should not differ by these items:' +
+                       '\n%s\n!=\n%s\n%s' %
+                      ( pformat(reference),
+                        pformat(sample),
+                        diagnostic or '' ) )
+
+        diagnostic = diagnostic.strip()
+        self.assert_equal( reference, sample, diagnostic )
+
 class MerchantGatewaysTestSuite(MerchantGatewaysUtilitiesTestSuite):
 
     def setUp(self):
