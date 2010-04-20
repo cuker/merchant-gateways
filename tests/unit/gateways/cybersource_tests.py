@@ -10,7 +10,7 @@ from tests.test_helper import *
 #  TODO logging!
 
 class CybersourceTests(MerchantGatewaysTestSuite,
-                       MerchantGatewaysTestSuite.CommonTests): # TODO
+                       MerchantGatewaysTestSuite.CommonTests):
 
     def gateway_type(self):
         return Cybersource
@@ -231,8 +231,8 @@ class CybersourceTests(MerchantGatewaysTestSuite,
 
     def test_cvv_result_purchase(self):  #  TODO  better names, and why auth has no cvv result? not requested??
         self.test_successful_purchase()
- #       cvv = self.response.cvv_result
         return # TODO
+        cvv = self.response.cvv_result
         self.assert_equal( 'M', cvv.code )
         self.assert_equal( 'Match', cvv.message )
 
