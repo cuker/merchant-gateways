@@ -1,5 +1,5 @@
 
-from merchant_gateways.billing.gateways.payflow import Payflow
+from merchant_gateways.billing.gateways.payflow import Payflow, format
 from merchant_gateways.billing.credit_card import CreditCard
 from tests.test_helper import *
 from pprint import pprint
@@ -261,6 +261,10 @@ class PayflowTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.CommonTe
 
     def test_expdate(self):
         self.assert_equal('209012', self.gateway.expdate(self.credit_card))
+
+    def test_format(self):
+        self.credit_card.issue_number = 9
+        self.assert_equal('09', format(self.credit_card.issue_number, two_digits=True))
 
 '''
 class PayflowTest < Test::Unit::TestCase

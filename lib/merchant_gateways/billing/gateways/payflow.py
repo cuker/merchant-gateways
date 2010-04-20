@@ -198,8 +198,6 @@ xmlns="http://www.paypal.com/XMLPay">
 #            xml.tag!('ExtData', 'Name' => 'CardIssue', 'Value' => format(credit_card.issue_number, :two_digits)) unless credit_card.issue_number.blank?
 #          end
 #          xml.tag! 'ExtData', 'Name' => 'LASTNAME', 'Value' =>  credit_card.last_name
-#        end
-#      end
 
     def credit_card_type(self, credit_card):
         if self.card_brand(credit_card) in [None, '']:  return ''
@@ -433,3 +431,14 @@ CARD_MAPPING = dict(
         switch='Switch',
         solo='Solo'
       )
+
+def format(number, **options):  #  TODO  move to credit_card_formatting!
+    if number in [None, '']:  return ''
+    last = ('000000000000000000000000000000' + str(number))[-2:]
+    return last
+
+    # TODO if options.get('two_digits', False):
+#          when :four_digits ; sprintf("%.4i", number)[-4..-1]
+#          else number
+#        end
+#      end
