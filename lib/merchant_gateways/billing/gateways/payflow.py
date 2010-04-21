@@ -42,12 +42,13 @@ class Payflow(Gateway):
         passed = self.result['Result'] == '0'
         self.message = passed and 'Approved' or 'Declined'
 
-    	return self.build_response( passed, self.message, None, # TODO response[:result] == "0", response[:message], response,
+    	self.response = Payflow.Response( passed, self.message, None, # TODO response[:result] == "0", response[:message], response,
     	    is_test=self.is_test,
     	    authorization='VUJN1A6E11D9', # TODO > response[:pn_ref] || response[:rp_ref],
     	    cvv_result = CVV_CODE[self.result['CvResult']],  #  TODO  .get()
     	    avs_result = self.result['AvsResult']
             )  #  TODO  stash the response in self.response
+        return self.response
 
     def purchase(self, money, credit_card_or_reference, **options):  #  TODO every purchase can work on a cc or ref!
         self.message = self.build_sale_or_authorization_request('purchase', money, credit_card_or_reference, **options)
@@ -167,12 +168,6 @@ xmlns="http://www.paypal.com/XMLPay">
         end'''
 
         return response
-
-    def build_response(self, success, message, response, **options):
-        r = Payflow.Response(success, message, response, **options)
-#        r.avs_result = AVSResult(options['avs_result'])  #  TODO  ain't this what constructors are for??
- #       r.cvv_result = CVVResult(options['cvv_result'])
-        return r
 
     def add_credit_card(self, credit_card):
         'adds a credit card'

@@ -100,5 +100,10 @@ class default_dict(dict):  #  TODO  propagate me
     A subclass of dictionary that returns '' instead of feebly
     attempting to spank the programmer if (shocked gasp) the key is not found
     """
-    def __getitem__(self, key):  #  TODO  validate at a different layer!
-        return self.get(key, '')
+
+    def set_default(self, default):
+        self.default = default
+
+    def __getitem__(self, key):
+        default = getattr(self, 'default', '')  #  the irony IS lost on us...
+        return self.get(key, default)
