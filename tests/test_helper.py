@@ -78,7 +78,7 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
             node = self.assert_xml(sample, path, **kw)  #  TODO  check for position by [2] if requested
             location = len(node.xpath('preceding::*'))
             self.assertTrue(doc_order <= location, 'Node out of order! ' + path)
-            doc_order = location
+            doc_order = location  # TODO  amalgamate all errors - don't just kack on the first one!
 
     def assert_xml_text(self, xml, path, text):
         path += '[ contains(text(), "%s") ]' % text  #  TODO  replace many 'text() =' with this; use XPath substitutions so " and ' cause no trouble
