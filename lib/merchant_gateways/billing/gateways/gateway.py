@@ -1,4 +1,12 @@
 
+# note:
+
+#   request - the project's outbound message to the gateway, in merchant-gateways format
+#   params - TODO the request, translated into a hash ready to send as soap or something
+#   result - the gateway's return message, translated from soap or something to a hash
+#   response - the gateway's result, translated into merchant-gateways format, with values exposed as members
+
+
 class Gateway(object):
     DEBIT_CARDS = ('switch', 'solo')
     money_format = 'dollars'
