@@ -170,8 +170,8 @@ xmlns="http://www.paypal.com/XMLPay">
 
     def build_response(self, success, message, response, **options):
         r = Payflow.Response(success, message, response, **options)
-        r.avs_result = AVSResult(options['avs_result'])  #  TODO  ain't this what constructors are for??
-        r.cvv_result = CVVResult(options['cvv_result'])
+#        r.avs_result = AVSResult(options['avs_result'])  #  TODO  ain't this what constructors are for??
+ #       r.cvv_result = CVVResult(options['cvv_result'])
         return r
 
     def add_credit_card(self, credit_card):

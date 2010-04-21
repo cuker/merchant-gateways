@@ -135,8 +135,8 @@ class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
         return Cybersource.Response( self.success, self.message, self.result,
                                         is_test=self.is_test,
                                         authorization=authorization,
-#                                      :avs_result => { :code => response[:avsCode] },
-                                     cvv_result=CVVResult(code=self.result['cvCode'])
+#                                       :avs_result => { :code => response[:avsCode] },  TODO TDD me
+                                     cvv_result=self.result['cvCode']
                                     )  #  TODO  inherit what Payflow do here
 
     def build_request(self, body, **options):

@@ -204,8 +204,8 @@ class AuthorizeNet(Gateway):
                 is_test=self.is_test,
                 authorization=self.response['transaction_id'],
                 fraud_review=self.is_fraud_review(self.response),
-                avs_result=AVSResult(code=self.response['avs_result_code']),
-                cvv_result=CVVResult(code=self.response['card_code'])
+                avs_result=self.response['avs_result_code'],
+                cvv_result=self.response['card_code']
                 )  #  TODO  also pass the options in
         return r
 
