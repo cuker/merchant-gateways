@@ -61,10 +61,8 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
         return node
 
     def assert_xml_tree(self, sample, block, **kw):  #  TODO  less sucktacular name!
-        from lxml import etree
         from lxml.builder import ElementMaker # TODO document we do lxml only !
-        XML = ElementMaker()
-        doc = block(XML)
+        doc = block(ElementMaker())
         doc_order = -1
 
         for node in doc.xpath('//*'):
