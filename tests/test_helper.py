@@ -66,15 +66,8 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
         doc_order = -1
 
         for node in doc.xpath('//*'):
-            nodes = [a.tag for a in node.xpath('ancestor-or-self::*')]
+            nodes = [self._node_to_predicate(a) for a in node.xpath('ancestor-or-self::*')]
             path = '//' + '/descendant::'.join(nodes)
-
-            for key, value in node.attrib.items():  #  TODO  test these
-                path += '[ contains(@%s, "%s") ]'  # TODO  warn about (then fix) quote escaping bugs
-
-            if node.text:  #  TODO  document only leaf nodes may check for text or attributes
-                path += '[ contains(text(), "%s") ]' % node.text
-
             node = self.assert_xml(sample, path, **kw)  #  TODO  check for position by [2] if requested
             location = len(node.xpath('preceding::*'))
             self.assertTrue(doc_order <= location, 'Node out of order! ' + path)
@@ -84,13 +77,13 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
         path = node.tag
 
         for key, value in node.attrib.items():  #  TODO  test these
-            path += '[ contains(@%s, "%s") ]'  # TODO  warn about (then fix) quote escaping bugs
+            path += '[ contains(@%s, "%s") ]' % key, value # TODO  warn about (then fix) quote escaping bugs
 
         if node.text:  #  TODO  document only leaf nodes may check for text or attributes
             path += '[ contains(text(), "%s") ]' % node.text
 
         return path
-        
+
     def assert_xml_text(self, xml, path, text):
         path += '[ contains(text(), "%s") ]' % text  #  TODO  replace many 'text() =' with this; use XPath substitutions so " and ' cause no trouble
         return self.assert_xml(xml, path)
