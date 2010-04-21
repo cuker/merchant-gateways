@@ -80,6 +80,17 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
             self.assertTrue(doc_order <= location, 'Node out of order! ' + path)
             doc_order = location  # TODO  amalgamate all errors - don't just kack on the first one!
 
+    def _node_to_predicate(self, node):
+        path = node.tag
+
+        for key, value in node.attrib.items():  #  TODO  test these
+            path += '[ contains(@%s, "%s") ]'  # TODO  warn about (then fix) quote escaping bugs
+
+        if node.text:  #  TODO  document only leaf nodes may check for text or attributes
+            path += '[ contains(text(), "%s") ]' % node.text
+
+        return path
+        
     def assert_xml_text(self, xml, path, text):
         path += '[ contains(text(), "%s") ]' % text  #  TODO  replace many 'text() =' with this; use XPath substitutions so " and ' cause no trouble
         return self.assert_xml(xml, path)
