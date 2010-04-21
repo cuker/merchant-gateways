@@ -12,9 +12,7 @@ def xStr(doc):
     return etree.tostring(doc, pretty_print=True)  #  TODO  take out pretty_print to go out wire!
 
 # TODO use this      XMLNS = 'http://www.paypal.com/XMLPay'
-
 # TODO  actually write a real post_webservice
-
 # TODO  advise NB that active_merchant has braintree - of course!
 
 class Payflow(Gateway):

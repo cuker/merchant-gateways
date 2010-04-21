@@ -24,6 +24,8 @@ class CreditCard(object):
         self.verification_value = verification_value  #  TODO tdd this line
         self.errors = dict()
 
+#  TODO the card should raise an error if the type is not understood        
+
 #    #should be in mixin
 #    @classmethod
 #    def valid_number(cls, number):
