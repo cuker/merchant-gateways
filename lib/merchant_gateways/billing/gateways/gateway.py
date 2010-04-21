@@ -95,7 +95,7 @@ class Gateway(object):
         options['shipping_address'] = options.get('shipping_address', {})
         return self.options  #  TODO options, results, message, param, etc ALL ARE ALWAYS MEMBERS
 
-class default_dict(dict):  #  TODO  propagate me
+class default_dict(dict):  #  TODO  move to utils
     """
     A subclass of dictionary that returns '' instead of feebly
     attempting to spank the programmer if (shocked gasp) the key is not found
@@ -103,6 +103,7 @@ class default_dict(dict):  #  TODO  propagate me
 
     def set_default(self, default):
         self.default = default
+        return self  #  for construction like default_dict(**dict).set_default(None)
 
     def __getitem__(self, key):
         default = getattr(self, 'default', '')  #  the irony IS lost on us...

@@ -1,7 +1,7 @@
 
 from merchant_gateways.billing.avs_result import AVSResult
 from merchant_gateways.billing.cvv_result import CVVResult
-from merchant_gateways.billing.gateways.gateway import default_dict 
+from merchant_gateways.billing.gateways.gateway import default_dict
 
 class Response(object):
     def __init__(self, success, message, params={}, **options):
@@ -9,8 +9,7 @@ class Response(object):
         self.message = message
         self.params  = params
 
-        self.options = default_dict(options)
-        self.options.set_default(None)
+        self.options     = default_dict(options).set_default(None)
         self.test          = options.setdefault('test', False)
         self.authorization = self.options['authorization']  #  TODO  just jam them in??
         self.fraud_review  = self.options['fraud_review']
@@ -21,7 +20,7 @@ class Response(object):
         if self.avs_result:  self.avs_result = AVSResult(code=self.avs_result)  #  TODO  document if it was not in the inbound message it's None
         if self.cvv_result:  self.cvv_result = CVVResult(code=self.cvv_result)
 
-    def to_dict(self):
+    def to_dict(self):  #  TODO  give a crap about this
         return {'success': self.success,
                 'message': self.message,
                 'params': self.params,
