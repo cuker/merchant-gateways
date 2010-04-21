@@ -68,8 +68,9 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
         for node in doc.xpath('//*'):
             nodes = [a.tag for a in node.xpath('ancestor-or-self::*')]
             path = '//' + '/descendant::'.join(nodes)
+
             for key, value in node.attrib.items():  #  TODO  test these
-                path += '[ %s = "%s" ]'  # TODO  warn about (then fix) quote escaping bugs
+                path += '[ contains(@%s, "%s") ]'  # TODO  warn about (then fix) quote escaping bugs
 
             if node.text:  #  TODO  document only leaf nodes may check for text or attributes
                 path += '[ contains(text(), "%s") ]' % node.text
