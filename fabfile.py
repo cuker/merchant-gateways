@@ -61,7 +61,10 @@ def test():
     _sh( 'python test.py' )
 
 
-
+def pull():
+    'git pull - for short command lines like "fab pull test"'
+    
+    _sh('git pull')
 
 def _sh(cmd):
     local(cmd, capture=False)
