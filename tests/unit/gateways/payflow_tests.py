@@ -110,9 +110,12 @@ class PayflowTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.CommonTe
 
         self.assert_xml(address, lambda xml:
                 xml.BillTo(
-                       xml.State('ON'),
-                       xml.Country('CA'),
-                       xml.Zip('K1C2N6')
+                       xml.Name('Severus Snape'),
+                       xml.Address(
+                           xml.State('ON'),
+                           xml.Country('CA'),
+                           xml.Zip('K1C2N6')
+                       )
                     )
                 )
 

@@ -68,16 +68,17 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
         doc_order = -1
 
         for node in doc.xpath('//*'):
-            path = '/' + '/descendant::'.join([a.tag for a in node.xpath('ancestor-or-self::*')])
+            nodes = [a.tag for a in node.xpath('ancestor-or-self::*')]
+            path = '//' + '/descendant::'.join(nodes)
             for key, value in node.attrib.items():  #  TODO  test these
                 path += '[ %s = "%s" ]'  # TODO  warn about (then fix) quote escaping bugs
 
-            if node.text:
+            if node.text:  #  TODO  document only leaf nodes may check for text or attributes
                 path += '[ contains(text(), "%s") ]' % node.text
 
-            node = self.assert_xml(sample, path, **kw)
+            node = self.assert_xml(sample, path, **kw)  #  TODO  check for position by [2] if requested
             location = len(node.xpath('preceding::*'))
-            self.assertTrue(doc_order < location, 'Node out of order! ' + path)
+            self.assertTrue(doc_order <= location, 'Node out of order! ' + path)
             doc_order = location
 
     def assert_xml_text(self, xml, path, text):
