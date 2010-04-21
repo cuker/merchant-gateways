@@ -170,15 +170,14 @@ xmlns="http://www.paypal.com/XMLPay">
         return response
 
     def add_credit_card(self, credit_card):
-        'adds a credit card'
-        fields = [
-          XML.CardType(self.credit_card_type(credit_card)),  #  TODO  test all types
-          XML.CardNum(credit_card.number),
-          XML.ExpDate(self.expdate(credit_card)),
-          XML.NameOnCard(credit_card.first_name),
-          XML.CVNum(credit_card.verification_value), # TODO if credit_card.verification_value?
-          XML.ExtData(Name='LASTNAME', Value=credit_card.last_name)
-        ]
+       
+        fields = [  XML.CardType(self.credit_card_type(credit_card)),  #  TODO  test all types
+                    XML.CardNum(credit_card.number),
+                    XML.ExpDate(self.expdate(credit_card)),
+                    XML.NameOnCard(credit_card.first_name),
+                    XML.CVNum(credit_card.verification_value), # TODO if credit_card.verification_value?
+                    XML.ExtData(Name='LASTNAME', Value=credit_card.last_name) ]
+
         if self.requires_start_date_or_issue_number(credit_card):  #  TODO  TDD
             issue = format(credit_card.issue_number, two_digits=True)
             fields.append(XML.ExtData(Name='CardIssue', Value=issue)) # TODO  unless credit_card.start_month.blank? || credit_card.start_year.blank?
