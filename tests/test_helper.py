@@ -50,12 +50,35 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
     def assert_xml(self, xml, xpath, **kw):
         'Check that a given extent of XML or HTML contains a given XPath, and return its first node'
 
+        if hasattr(xpath, '__call__'):
+            return self.assert_xml_tree(xml, xpath, **kw)
+
         tree = self._xml_to_tree(xml, forgiving=kw.get('forgiving', False))
         nodes = tree.xpath(xpath)
         self.assertTrue(len(nodes) > 0, xpath + ' should match ' + self._xml)
         node = nodes[0]
         if kw.get('verbose', False):  self.reveal_xml(node)  #  "here have ye been? What have ye seen?"--Morgoth
         return node
+
+    def assert_xml_tree(self, sample, block):  #  TODO  less sucktacular name!
+        from lxml import etree
+        from lxml.builder import ElementMaker # TODO document we do lxml only !
+        XML = ElementMaker()
+        doc = block(XML)
+        doc_order = -1
+
+        for node in doc.xpath('//*'):
+            path = '/' + '/descendant::'.join([a.tag for a in node.xpath('ancestor-or-self::*')])
+            for key, value in node.attrib.items():  #  TODO  test these
+                path += '[ %s = "%s" ]'  # TODO  warn about (then fix) quote escaping bugs
+
+            if node.text:
+                path += '[ contains(text(), "%s") ]' % node.text
+
+            node = self.assert_xml(sample, path)
+            location = len(node.xpath('preceding::*'))
+            self.assertTrue(doc_order < location, 'Node out of order! ' + path)
+            doc_order = location
 
     def assert_xml_text(self, xml, path, text):
         path += '[ contains(text(), "%s") ]' % text  #  TODO  replace many 'text() =' with this; use XPath substitutions so " and ' cause no trouble

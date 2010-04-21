@@ -1,5 +1,5 @@
 
-from merchant_gateways.billing.gateways.payflow import Payflow, format
+from merchant_gateways.billing.gateways.payflow import Payflow, format, xStr
 from merchant_gateways.billing.credit_card import CreditCard
 from tests.test_helper import *
 from pprint import pprint
@@ -107,6 +107,14 @@ class PayflowTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.CommonTe
                                      <Zip>K1C2N6</Zip>
                                    </Address>
                                  </BillTo>''', address)  #  TODO  cover the email!
+
+        self.assert_xml(address, lambda xml:
+                xml.BillTo(
+                       xml.State('ON'),
+                       xml.Country('CA'),
+                       xml.Zip('K1C2N6')
+                    )
+                )
 
     def test_add_address_ship_to(self):
         address = self.gateway.add_address('ShipTo', name= 'Regulus Black',
