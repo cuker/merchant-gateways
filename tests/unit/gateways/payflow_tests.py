@@ -3,9 +3,6 @@ from merchant_gateways.billing.gateways.payflow import Payflow, format
 from merchant_gateways.billing.credit_card import CreditCard
 from tests.test_helper import *
 from pprint import pprint
-#
-
-from merchant_gateways.billing import response  #  TODO need this?
 
 
 class PayflowTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.CommonTests):
@@ -70,14 +67,9 @@ class PayflowTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.CommonTe
         self.assert_equal( 'Y', avs.street_match )
         self.assert_equal( 'Y', avs.postal_match )
 
-#   TODO  cvv_result here
-#  def test_cvv_result
-#    @gateway.expects(:ssl_post).returns(successful_authorization_response)
-#
-#    response = @gateway.purchase(@amount, @credit_card, @options)
-#    assert_equal 'M', response.cvv_result['code']
-#  end
-#
+    def test_cvv_result(self):
+        self.test_failed_authorization()
+        self.assert_equal('M', self.response.cvv_result.code)
 
     def test_build_headers(self):
         self.assertEqual({'Content-Length': '42',

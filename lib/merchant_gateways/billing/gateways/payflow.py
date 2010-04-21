@@ -1,6 +1,7 @@
 
 from gateway import Gateway, default_dict
 from merchant_gateways.billing.avs_result import AVSResult
+from merchant_gateways.billing.cvv_result import CVVResult
 from pprint import pprint
 from merchant_gateways.billing import response
 from lxml import etree
@@ -46,7 +47,7 @@ class Payflow(Gateway):
     	return self.build_response( passed, self.message, None, # TODO response[:result] == "0", response[:message], response,
     	    is_test=self.is_test,
     	    authorization='VUJN1A6E11D9', # TODO > response[:pn_ref] || response[:rp_ref],
- #   	    :cvv_result => CVV_CODE[response[:cv_result]],
+    	    cvv_result = CVV_CODE[self.result['CvResult']],  #  TODO  .get()
     	    avs_result = self.result['AvsResult']
             )  #  TODO  stash the response in self.response
 
@@ -172,6 +173,7 @@ xmlns="http://www.paypal.com/XMLPay">
     def build_response(self, success, message, response, **options):
         r = Payflow.Response(success, message, response, **options)
         r.avs_result = AVSResult(options['avs_result'])  #  TODO  ain't this what constructors are for??
+        r.cvv_result = CVVResult(options['cvv_result'])
         return r
 
     def add_credit_card(self, credit_card):
@@ -433,6 +435,13 @@ CARD_MAPPING = dict(
         switch='Switch',
         solo='Solo'
       )
+
+CVV_CODE = {
+        'Match'                 : 'M',
+        'No Match'              : 'N',
+        'Service Not Available' : 'U',
+        'Service not Requested' : 'P'
+      }  #  TODO  test all these!
 
 def format(number, **options):  #  TODO  move to credit_card_formatting!
     if number in [None, '']:  return ''
