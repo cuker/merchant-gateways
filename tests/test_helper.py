@@ -60,7 +60,7 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
         if kw.get('verbose', False):  self.reveal_xml(node)  #  "here have ye been? What have ye seen?"--Morgoth
         return node
 
-    def assert_xml_tree(self, sample, block):  #  TODO  less sucktacular name!
+    def assert_xml_tree(self, sample, block, **kw):  #  TODO  less sucktacular name!
         from lxml import etree
         from lxml.builder import ElementMaker # TODO document we do lxml only !
         XML = ElementMaker()
@@ -75,7 +75,7 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
             if node.text:
                 path += '[ contains(text(), "%s") ]' % node.text
 
-            node = self.assert_xml(sample, path)
+            node = self.assert_xml(sample, path, **kw)
             location = len(node.xpath('preceding::*'))
             self.assertTrue(doc_order < location, 'Node out of order! ' + path)
             doc_order = location
