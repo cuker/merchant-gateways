@@ -20,10 +20,83 @@ class PayflowTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.CommonTe
 
         # TODO  assert the response is None if we epic-fail (oh, and trap exceptions)
 
-        args = ('https://pilot-payflowpro.paypal.com', '<?xml version="1.0" encoding="UTF-8"?>\n<XMLPayRequest Timeout="30" version="2.1"\nxmlns="http://www.paypal.com/XMLPay">\n  <RequestData>\n    <Vendor>LOGIN</Vendor>\n    <Partner>PayPal</Partner>\n    <Transactions>\n      <Transaction>\n        <Verbosity>MEDIUM</Verbosity>\n        <Authorization>\n  <PayData>\n    <Invoice>\n      \n      <TotalAmt Currency="USD">1.00</TotalAmt>\n    </Invoice>\n    <Tender>\n      <Card>\n        <CardType>Visa</CardType>\n        <CardNum>4242424242424242</CardNum>\n        <ExpDate>201109</ExpDate>\n        <NameOnCard>Longbob</NameOnCard>\n        <CVNum>123</CVNum>\n        <ExtData Name="LASTNAME" Value="Longsen" />\n      </Card>\n    </Tender>\n  </PayData>\n</Authorization>\n      </Transaction>\n    </Transactions>\n  </RequestData>\n  <RequestAuth>\n    <UserPass>\n      <User>LOGIN</User>\n      <Password>PASSWORD</Password>\n    </UserPass>\n  </RequestAuth>\n</XMLPayRequest>\n', {'Content-Length': '904', 'Content-Type': 'text/xml', 'X-VPS-VIT-Integration-Product': "TODO what's my name", 'X-VPS-Request-ID': 'you neek', 'X-VPS-VIT-Runtime-Version': '4.2', 'X-VPS-Client-Timeout': '30'})
+#        args = ('https://pilot-payflowpro.paypal.com', '<?xml version="1.0" encoding="UTF-8"?>\n<XMLPayRequest Timeout="30" version="2.1"\nxmlns="http://www.paypal.com/XMLPay">\n  <RequestData>\n    <Vendor>LOGIN</Vendor>\n    <Partner>PayPal</Partner>\n    <Transactions>\n      <Transaction>\n        <Verbosity>MEDIUM</Verbosity>\n        <Authorization>\n  <PayData>\n    <Invoice>\n      \n      <TotalAmt Currency="USD">1.00</TotalAmt>\n    </Invoice>\n    <Tender>\n      <Card>\n        <CardType>Visa</CardType>\n        <CardNum>4242424242424242</CardNum>\n        <ExpDate>201109</ExpDate>\n        <NameOnCard>Longbob</NameOnCard>\n        <CVNum>123</CVNum>\n        <ExtData Name="LASTNAME" Value="Longsen" />\n      </Card>\n    </Tender>\n  </PayData>\n</Authorization>\n      </Transaction>\n    </Transactions>\n  </RequestData>\n  <RequestAuth>\n    <UserPass>\n      <User>LOGIN</User>\n      <Password>PASSWORD</Password>\n    </UserPass>\n  </RequestAuth>\n</XMLPayRequest>\n', {'Content-Length': '904', 'Content-Type': 'text/xml', 'X-VPS-VIT-Integration-Product': "TODO what's my name", 'X-VPS-Request-ID': 'you neek', 'X-VPS-VIT-Runtime-Version': '4.2', 'X-VPS-Client-Timeout': '30'})
                        #  TODO  push out & beautify that string  ^
 
-        self.gateway.post_webservice.assert_called_with(*args)  #  TODO  beautify the response
+ #       self.gateway.post_webservice.assert_called_with(*args)  #  TODO  beautify the response
+        args = self.gateway.post_webservice.call_args[0]
+        assert 2 == len(self.gateway.post_webservice.call_args), 'should be 1 but either we call twice or the Mock has an issue'
+        self.assert_equal('https://pilot-payflowpro.paypal.com', args[0])
+
+        xml = args[1]
+        xmlns = 'xmlns="http://www.paypal.com/XMLPay"' # TODO  pass to .xpath() instead of erasing!
+        assert xmlns in xml
+        xml = xml.replace(xmlns, '')
+
+        self.assert_xml(xml, lambda x:
+                x.XMLPayRequest(
+                        x.RequestData(
+                                x.Vendor('LOGIN'),
+                                x.Partner('PayPal'),
+                                x.Transactions(
+                                        x.Transaction(
+                                                x.Verbosity('MEDIUM'),
+                                                x.Authorization()
+                                        )
+                                )
+                        ),
+                        x.PayData(
+                            x.Invoice(
+                                x.TotalAmt('1.00', Currency='USD')
+                            ),
+                        x.Tender(
+                            x.Card(
+                                x.CardType('Visa'),
+                                x.CardNum('4242424242424242'),
+                                x.ExpDate('201109')
+                            )
+                        )
+                        )
+                )
+            )
+
+        '''<?xml version="1.0" encoding="UTF-8"?>
+        <XMLPayRequest Timeout="30" version="2.1"
+        xmlns="http://www.paypal.com/XMLPay">
+          <RequestData>
+            <Vendor>LOGIN</Vendor>
+            <Partner>PayPal</Partner>
+            <Transactions>
+              <Transaction>
+                <Verbosity>MEDIUM</Verbosity>
+                <Authorization>
+          <PayData>
+            <Invoice>
+
+              <TotalAmt Currency="USD">1.00</TotalAmt>
+            </Invoice>
+            <Tender>
+              <Card>
+                <CardType>Visa</CardType>
+                <CardNum>4242424242424242</CardNum>
+                <ExpDate>201109</ExpDate>
+                <NameOnCard>Longbob</NameOnCard>
+                <CVNum>123</CVNum>
+                <ExtData Name="LASTNAME" Value="Longsen" />
+              </Card>
+            </Tender>
+          </PayData>
+        </Authorization>
+              </Transaction>
+            </Transactions>
+          </RequestData>
+          <RequestAuth>
+            <UserPass>
+              <User>LOGIN</User>
+              <Password>PASSWORD</Password>
+            </UserPass>
+          </RequestAuth>
+        </XMLPayRequest>'''
 
         #~ assert response = self.gateway.authorize(self.amount, self.credit_card)
 

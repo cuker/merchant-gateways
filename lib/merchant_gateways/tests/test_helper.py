@@ -38,7 +38,7 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
             parser = etree.HTMLParser(recover=forgiving) #  ERGO uh, strict?
             return etree.HTML(str(xml), parser)
         else:
-            parser = etree.XMLParser(recover=forgiving)
+            parser = etree.XMLParser(recover=forgiving)  #  TODO  NOT forgiving!!!
             return etree.XML(str(xml))
 
     def assert_xml(self, xml, xpath, **kw):
@@ -48,7 +48,7 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
             return self.assert_xml_tree(xml, xpath, **kw)
 
         tree = self._xml_to_tree(xml, forgiving=kw.get('forgiving', False))
-        nodes = tree.xpath(xpath)
+        nodes = tree.xpath(xpath, **kw)
         self.assertTrue(len(nodes) > 0, xpath + ' should match ' + self._xml)
         node = nodes[0]
         if kw.get('verbose', False):  self.reveal_xml(node)  #  "here have ye been? What have ye seen?"--Morgoth
@@ -71,7 +71,7 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
         path = node.tag
 
         for key, value in node.attrib.items():  #  TODO  test these
-            path += '[ contains(@%s, "%s") ]' % key, value # TODO  warn about (then fix) quote escaping bugs
+            path += '[ contains(@%s, "%s") ]' % (key, value) # TODO  warn about (then fix) quote escaping bugs
 
         if node.text:  #  TODO  document only leaf nodes may check for text or attributes
             path += '[ contains(text(), "%s") ]' % node.text
