@@ -13,13 +13,7 @@ class PayflowTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.CommonTe
     def mock_webservice(self, response):
         self.mock_post_webservice(response)
 
-    def assert_successful_authorization(self):
-
-        assert self.response.is_test
-        self.assertEqual('Approved', self.response.message)
-
-        # TODO  assert the response is None if we epic-fail (oh, and trap exceptions)
-
+    def assert_webservice_called(self):
         args = self.gateway.post_webservice.call_args[0]
         assert 2 == len(self.gateway.post_webservice.call_args), 'should be 1 but either we call twice or the Mock has an issue'
         self.assert_equal('https://pilot-payflowpro.paypal.com', args[0])
@@ -64,6 +58,14 @@ class PayflowTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.CommonTe
                     )
                 )
             )
+
+    def assert_successful_authorization(self):
+
+        assert self.response.is_test
+        self.assertEqual('Approved', self.response.message)
+
+        # TODO  assert the response is None if we epic-fail (oh, and trap exceptions)
+
 
         #~ assert response = self.gateway.authorize(self.amount, self.credit_card)
 
