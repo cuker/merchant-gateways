@@ -9,12 +9,6 @@ from decimal import Decimal
 
 class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
 
-    def mock_get_webservice(self, returns):
-        self.gateway.get_webservice = Mock(return_value=returns)
-
-    def mock_post_webservice(self, returns):
-        self.gateway.post_webservice = Mock(return_value=returns)
-
     def assert_success(self):
         #  TODO assert is_test
         self.assertTrue(isinstance(self.response, self.gateway_response_type()))
@@ -138,7 +132,17 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
         diagnostic = diagnostic.strip()
         self.assert_equal( reference, sample, diagnostic )
 
-class MerchantGatewaysTestSuite(MerchantGatewaysUtilitiesTestSuite):
+
+class MerchantGatewaysWebserviceTestSuite(object):
+
+    def mock_get_webservice(self, returns):
+        self.gateway.get_webservice = Mock(return_value=returns)
+
+    def mock_post_webservice(self, returns):
+        self.gateway.post_webservice = Mock(return_value=returns)
+
+
+class MerchantGatewaysTestSuite(MerchantGatewaysUtilitiesTestSuite, MerchantGatewaysWebserviceTestSuite):
 
     def setUp(self):
         self.gateway = self.gateway_type()(is_test=True, login='X', password='Y')
