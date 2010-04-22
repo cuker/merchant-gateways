@@ -142,7 +142,8 @@ class MerchantGatewaysWebserviceTestSuite(object):
         self.gateway.post_webservice = Mock(return_value=returns)
 
 
-class MerchantGatewaysTestSuite(MerchantGatewaysUtilitiesTestSuite, MerchantGatewaysWebserviceTestSuite):
+class MerchantGatewaysTestSuite( MerchantGatewaysUtilitiesTestSuite,
+                                 MerchantGatewaysWebserviceTestSuite ):
 
     def setUp(self):
         self.gateway = self.gateway_type()(is_test=True, login='X', password='Y')
