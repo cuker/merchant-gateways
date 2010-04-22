@@ -1,7 +1,5 @@
 
 
-#  TODO  rename file
-
 class MerchantGatewaysPayflowSuite:
 
     def assert_webservice_called(self, vendor, amount, currency, card_type, cc_number, exp_date, cv_num,
