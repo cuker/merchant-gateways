@@ -1,7 +1,7 @@
 
 from merchant_gateways.billing.gateways.authorize_net import AuthorizeNet  #  test target is _always_ first line!
 from merchant_gateways.billing.credit_card import CreditCard
-from tests.test_helper import *
+from merchant_gateways.tests.test_helper import *
 
 #  TODO  all them options gotta be... OPTIONAL!!
 

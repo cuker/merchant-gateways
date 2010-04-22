@@ -1,4 +1,4 @@
-from tests.test_helper import *
+from merchant_gateways.tests.test_helper import *
 from merchant_gateways.billing.cvv_result import CVVResult, MESSAGES
 
 class CVVResultTest(MerchantGatewaysUtilitiesTestSuite):

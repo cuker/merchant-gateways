@@ -1,7 +1,7 @@
 
 from merchant_gateways.billing.gateways.cybersource import Cybersource
 from merchant_gateways.billing.credit_card import CreditCard
-from tests.test_helper import *
+from merchant_gateways.tests.test_helper import *
 
 #  TODO  get working with many versions of python & django
 

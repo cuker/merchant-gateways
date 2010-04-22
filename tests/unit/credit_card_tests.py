@@ -1,4 +1,4 @@
-from tests.test_helper import *
+from merchant_gateways.tests.test_helper import *
 from merchant_gateways.billing.credit_card import CreditCard
 
 class CreditCardTest(MerchantGatewaysUtilitiesTestSuite):

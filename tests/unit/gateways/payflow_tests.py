@@ -1,7 +1,7 @@
 
 from merchant_gateways.billing.gateways.payflow import Payflow, format, xStr
 from merchant_gateways.billing.credit_card import CreditCard
-from tests.test_helper import *
+from merchant_gateways.tests.test_helper import *
 from pprint import pprint
 
 

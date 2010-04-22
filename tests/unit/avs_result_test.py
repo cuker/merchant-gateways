@@ -1,4 +1,4 @@
-from tests.test_helper import *
+from merchant_gateways.tests.test_helper import *
 from merchant_gateways.billing.avs_result import AVSResult, MESSAGES
 
 class AVSResultTest(MerchantGatewaysUtilitiesTestSuite):
