@@ -4,9 +4,10 @@
 
 class MerchantGatewaysPayflowSuite:
 
-    def assert_webservice_called(self, vendor, amount, currency, card_type, cc_number, exp_date, cv_num,
+    def assert_webservice_called(self, mock, vendor, amount, currency, card_type, cc_number, exp_date, cv_num,
                                        first_name, last_name, username, password):
-        args = self.gateway.post_webservice.call_args[0]
+        #args = self.gateway.post_webservice.call_args[0]
+        args = mock.call_args[0]
         assert 2 == len(self.gateway.post_webservice.call_args), 'should be 1 but either we call twice or the Mock has an issue'
         self.assert_equal('https://pilot-payflowpro.paypal.com', args[0])
 
