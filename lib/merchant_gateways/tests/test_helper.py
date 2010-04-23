@@ -60,12 +60,16 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
         doc_order = -1
 
         for node in doc.xpath('//*'):
-            nodes = [self._node_to_predicate(a) for a in node.xpath('ancestor-or-self::*')]
-            path = '//' + '/descendant::'.join(nodes)
-            node = self.assert_xml(sample, path, **kw)  #  TODO  check for position by [2] if requested
-            location = len(node.xpath('preceding::*'))
-            self.assertTrue(doc_order <= location, 'Node out of order! ' + path)
-            doc_order = location  # TODO  amalgamate all errors - don't just kack on the first one!
+            doc_order = self._assert_xml_node(doc_order, kw, node, sample)
+              # TODO  amalgamate all errors - don't just kack on the first one!
+
+    def _assert_xml_node(self, doc_order, kw, node, sample):
+        nodes = [self._node_to_predicate(a) for a in node.xpath('ancestor-or-self::*')]
+        path = '//' + '/descendant::'.join(nodes)
+        node = self.assert_xml(sample, path, **kw)
+        location = len(node.xpath('preceding::*'))
+        self.assertTrue(doc_order <= location, 'Node out of order! ' + path)
+        return location
 
     def _node_to_predicate(self, node):
         path = node.tag
