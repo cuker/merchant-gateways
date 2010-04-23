@@ -165,9 +165,6 @@ class AuthorizeNet(Gateway):
 
         self.commit('CREDIT', money, post)
 
-    def post_webservice(self, url, params):   #  CONSIDER  get a better Mock library and this goes away! (otherwise, put it in the base class)
-        return post(url, {})
-
     def commit(self, action, money, parameters):
         if not action == 'VOID':
             parameters['amount'] = self.amount(money)
