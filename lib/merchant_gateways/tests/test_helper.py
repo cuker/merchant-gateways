@@ -26,21 +26,6 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
         except except_cls, e:
             return e
 
-    def _xml_to_tree(self, xml, forgiving=False):
-        from lxml import etree
-        self._xml = xml
-
-        if not isinstance(xml, basestring):
-            self._xml = str(xml)  #  CONSIDER  tostring
-            return xml
-
-        if '<html' in xml[:200]:
-            parser = etree.HTMLParser(recover=forgiving) #  ERGO uh, strict?
-            return etree.HTML(str(xml), parser)
-        else:
-            parser = etree.XMLParser(recover=forgiving)  #  TODO  NOT forgiving!!!
-            return etree.XML(str(xml))
-
     def assert_xml(self, xml, xpath, **kw):
         'Check that a given extent of XML or HTML contains a given XPath, and return its first node'
 
@@ -56,7 +41,10 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
 
     def assert_xml_tree(self, sample, block, **kw):  #  TODO  less sucktacular name!
         from lxml.builder import ElementMaker # TODO document we do lxml only !
-        doc = block(ElementMaker())
+        doc = block(ElementMaker())   #  TODO  or just pass in an element maker
+        path = self._convert_nodes_to_nested_path(doc)
+        self.assert_xml(sample, path, **kw)  #  this checks nesting
+          #  CONSIDER  now detect which parts failed!!!
         doc_order = -1
 
         for node in doc.xpath('//*'):
@@ -71,16 +59,38 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
         self.assertTrue(doc_order <= location, 'Node out of order! ' + path)
         return location
 
+    def _convert_nodes_to_nested_path(self, node):
+        path = 'descendant-or-self::' + self._node_to_predicate(node)
+        nodes = node.xpath('*')
+        paths = [ '[ ' + self._convert_nodes_to_nested_path(n) + ' ]' for n in nodes ]
+        path += ''.join(paths)
+        return path
+
     def _node_to_predicate(self, node):
         path = node.tag
 
-        for key, value in node.attrib.items():  #  TODO  test these
+        for key, value in node.attrib.items():
             path += '[ contains(@%s, "%s") ]' % (key, value) # TODO  warn about (then fix) quote escaping bugs
 
         if node.text:  #  TODO  document only leaf nodes may check for text or attributes
             path += '[ contains(text(), "%s") ]' % node.text
 
         return path
+
+    def _xml_to_tree(self, xml, forgiving=False):
+        from lxml import etree
+        self._xml = xml
+
+        if not isinstance(xml, basestring):
+            self._xml = str(xml)  #  CONSIDER  tostring
+            return xml
+
+        if '<html' in xml[:200]:
+            parser = etree.HTMLParser(recover=forgiving) #  ERGO uh, strict?
+            return etree.HTML(str(xml), parser)
+        else:
+            parser = etree.XMLParser(recover=forgiving)  #  TODO  NOT forgiving!!!
+            return etree.XML(str(xml))
 
     def assert_xml_text(self, xml, path, text):
         path += '[ contains(text(), "%s") ]' % text  #  TODO  replace many 'text() =' with this; use XPath substitutions so " and ' cause no trouble
