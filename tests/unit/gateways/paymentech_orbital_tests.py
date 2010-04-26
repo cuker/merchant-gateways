@@ -3,11 +3,6 @@ from merchant_gateways.billing.gateways.paymentech_orbital import PaymentechOrbi
 from merchant_gateways.billing.credit_card import CreditCard
 from merchant_gateways.tests.test_helper import *
 
-#  TODO  get working with many versions of python & django
-
-#  ERGO  all Decimal objects should optionally be Currency objects - Decimal + ISO country code
-
-#  TODO logging!
 
 class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                              MerchantGatewaysTestSuite.CommonTests):
@@ -48,16 +43,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         assert self.response.authorization == '1;2004338415330008402434;Afvvj7KfIgU12gooCFE2/DanQIApt+G1OgTSA+R9PTnyhFTb0KRjgFY+ynyIFNdoKKAghwgx'
 
     def assert_successful_purchase(self):
-
         '''TODO self.assert_equal( 'Successful transaction', self.response.message )'''
-
-        '''self.gateway.expects(:ssl_post).returns(successful_purchase_response)
-
-
-    assert_success response
-    assert_equal "#{self.options[:order_id]};#{response.params['requestID']};#{response.params['requestToken']}", response.authorization
-    assert response.test?
-  end      '''
 
     def test_build_request(self):
         reference = '''<?xml version="1.0" encoding="UTF-8"?>
@@ -245,8 +231,6 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                                              address2="Apt 1", zip="K1C2N6", company="Widgets Inc", city="Ottawa",
                                              state="ON"))
 
-   # TODO line_items=[{:sku="WA323232323232323", quantity=2, description="Giant Walrus", code="default", declared_value=100}, {:sku="FAKE1232132113123", quantity=2, description="Marble Snowcone", declared_value=100}]}
-
         reference = '''<billTo>
                               <firstName>Longbob</firstName>
                               <lastName>Longsen</lastName>
@@ -276,166 +260,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         sample = self.gateway.build_purchase_request(amount, credit_card, **options)
         # TODO self.assert_xml_match(reference, sample)
 
-#<billTo>
-#  <firstName>Longbob</firstName>
-#  <lastName>Longsen</lastName>
-#  <street1>1234 My Street</street1>
-#  <street2>Apt 1</street2>
-#  <city>Ottawa</city>
-#  <state>ON</state>
-#  <postalCode>K1C2N6</postalCode>
-#  <country>Canada</country>
-#  <email>someguy1232@fakeemail.net</email>
-#</billTo>
-#<purchaseTotals>
-#  <currency>USD</currency>
-#  <grandTotalAmount>1.00</grandTotalAmount>
-#</purchaseTotals>
-#<card>
-#  <accountNumber>4111111111111111</accountNumber>
-#  <expirationMonth>09</expirationMonth>
-#  <expirationYear>2011</expirationYear>
-#  <cvNumber>123</cvNumber>
-#  <cardType>001</cardType>
-#</card>
-#<ccAuthService run="true" />
-#<ccCaptureService run="true" />
-#<businessRules></businessRules>
-#."money"
-#100
-#"creditcard"
-##<ActiveMerchant::Billing::CreditCard:0xb72d5908 @verification_value="123", @number="4111111111111111", @year=2011, @type="visa", @month=9, @last_name="Longsen", @first_name="Longbob">
-#"options"
-#{:email=>"someguy1232@fakeemail.net", :order_id=>"1000", :shipping_address=>{}, :currency=>"USD", :billing_address=>{:country=>"Canada", :address1=>"1234 My Street", :phone=>"(555)555-5555", :address2=>"Apt 1", :zip=>"K1C2N6", :company=>"Widgets Inc", :city=>"Ottawa", :state=>"ON"}, :line_items=>[{:sku=>"WA323232323232323", :quantity=>2, :description=>"Giant Walrus", :code=>"default", :declared_value=>100}, {:sku=>"FAKE1232132113123", :quantity=>2, :description=>"Marble Snowcone", :declared_value=>100}]}
-#"output"
-#."money"
-#100
-#"creditcard"
-##<ActiveMerchant::Billing::CreditCard:0xb728203c @verification_value="123", @number="4111111111111111", @year=2011, @type="visa", @month=9, @last_name="Longsen", @first_name="Longbob">
-#"options"
-#{:email=>"someguy1232@fakeemail.net", :order_id=>"1000", :shipping_address=>{}, :currency=>"USD", :billing_address=>{:country=>"Canada", :address1=>"1234 My Street", :phone=>"(555)555-5555", :address2=>"Apt 1", :zip=>"K1C2N6", :company=>"Widgets Inc", :city=>"Ottawa", :state=>"ON"}, :line_items=>[{:sku=>"WA323232323232323", :quantity=>2, :description=>"Giant Walrus", :code=>"default", :declared_value=>100}, {:sku=>"FAKE1232132113123", :quantity=>2, :description=>"Marble Snowcone", :declared_value=>100}]}
-#"output"
-#."money"
-#100
-#"creditcard"
-##<ActiveMerchant::Billing::CreditCard:0xb7256680 @verification_value="123", @number="4111111111111111", @year=2011, @type="visa", @month=9, @last_name="Longsen", @first_name="Longbob">
-#"options"
-#{:email=>"someguy1232@fakeemail.net", :order_id=>"1000", :shipping_address=>{}, :currency=>"USD", :billing_address=>{:country=>"Canada", :address1=>"1234 My Street", :phone=>"(555)555-5555", :address2=>"Apt 1", :zip=>"K1C2N6", :company=>"Widgets Inc", :city=>"Ottawa", :state=>"ON"}, :line_items=>[{:sku=>"WA323232323232323", :quantity=>2, :description=>"Giant Walrus", :code=>"default", :declared_value=>100}, {:sku=>"FAKE1232132113123", :quantity=>2, :description=>"Marble Snowcone", :declared_value=>100}]}
-#"output"
-#.."money"
-#100
-#"creditcard"
-##<ActiveMerchant::Billing::CreditCard:0xb71c7e08 @verification_value="123", @number="4111111111111111", @year=2011, @type="visa", @month=9, @last_name="Longsen", @first_name="Longbob">
-#"options"
-#{:email=>"someguy1232@fakeemail.net", :order_id=>"1000", :shipping_address=>{}, :currency=>"USD", :billing_address=>{:country=>"Canada", :address1=>"1234 My Street", :phone=>"(555)555-5555", :address2=>"Apt 1", :zip=>"K1C2N6", :company=>"Widgets Inc", :city=>"Ottawa", :state=>"ON"}, :line_items=>[{:sku=>"WA323232323232323", :quantity=>2, :description=>"Giant Walrus", :code=>"default", :declared_value=>100}, {:sku=>"FAKE1232132113123", :quantity=>2, :description=>"Marble Snowcone", :declared_value=>100}]}
-#"output"
-#....................................<billTo>
-#  <firstName>Longbob</firstName>
-#  <lastName>Longsen</lastName>
-#  <street1>1234 My Street</street1>
-#  <street2>Apt 1</street2>
-#  <city>Ottawa</city>
-#  <state>ON</state>
-#  <postalCode>K1C2N6</postalCode>
-#  <country>Canada</country>
-#  <email>someguy1232@fakeemail.net</email>
-#</billTo>
-#<purchaseTotals>
-#  <currency>USD</currency>
-#  <grandTotalAmount>1.00</grandTotalAmount>
-#</purchaseTotals>
-#<card>
-#  <accountNumber>4111111111111111</accountNumber>
-#  <expirationMonth>09</expirationMonth>
-#  <expirationYear>2011</expirationYear>
-#  <cvNumber>123</cvNumber>
-#  <cardType>001</cardType>
-#</card>
-#<ccAuthService run="true" />
-#<ccCaptureService run="true" />
-#<businessRules></businessRules>
-#<billTo>
-#  <firstName>Longbob</firstName>
-#  <lastName>Longsen</lastName>
-#  <street1>1234 My Street</street1>
-#  <street2>Apt 1</street2>
-#  <city>Ottawa</city>
-#  <state>ON</state>
-#  <postalCode>K1C2N6</postalCode>
-#  <country>Canada</country>
-#  <email>someguy1232@fakeemail.net</email>
-#</billTo>
-#<purchaseTotals>
-#  <currency>USD</currency>
-#  <grandTotalAmount>1.00</grandTotalAmount>
-#</purchaseTotals>
-#<card>
-#  <accountNumber>4111111111111111</accountNumber>
-#  <expirationMonth>09</expirationMonth>
-#  <expirationYear>2011</expirationYear>
-#  <cvNumber>123</cvNumber>
-#  <cardType>001</cardType>
-#</card>
-#<ccAuthService run="true" />
-#<ccCaptureService run="true" />
-#<businessRules></businessRules>
-#<billTo>
-#  <firstName>Longbob</firstName>
-#  <lastName>Longsen</lastName>
-#  <street1>1234 My Street</street1>
-#  <street2>Apt 1</street2>
-#  <city>Ottawa</city>
-#  <state>ON</state>
-#  <postalCode>K1C2N6</postalCode>
-#  <country>Canada</country>
-#  <email>someguy1232@fakeemail.net</email>
-#</billTo>
-#<purchaseTotals>
-#  <currency>USD</currency>
-#  <grandTotalAmount>1.00</grandTotalAmount>
-#</purchaseTotals>
-#<card>
-#  <accountNumber>4111111111111111</accountNumber>
-#  <expirationMonth>09</expirationMonth>
-#  <expirationYear>2011</expirationYear>
-#  <cvNumber>123</cvNumber>
-#  <cardType>001</cardType>
-#</card>
-#<ccAuthService run="true" />
-#<ccCaptureService run="true" />
-#<businessRules></businessRules>
-#<billTo>
-#  <firstName>Longbob</firstName>
-#  <lastName>Longsen</lastName>
-#  <street1>1234 My Street</street1>
-#  <street2>Apt 1</street2>
-#  <city>Ottawa</city>
-#  <state>ON</state>
-#  <postalCode>K1C2N6</postalCode>
-#  <country>Canada</country>
-#  <email>someguy1232@fakeemail.net</email>
-#</billTo>
-#<purchaseTotals>
-#  <currency>USD</currency>
-#  <grandTotalAmount>1.00</grandTotalAmount>
-#</purchaseTotals>
-#<card>
-#  <accountNumber>4111111111111111</accountNumber>
-#  <expirationMonth>09</expirationMonth>
-#  <expirationYear>2011</expirationYear>
-#  <cvNumber>123</cvNumber>
-#  <cardType>001</cardType>
-#</card>
-#<ccAuthService run="true" />
-#<ccCaptureService run="true" />
-#<businessRules></businessRules>
-#................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
-#Finished in 3.810799 seconds.
-#
-#785 tests, 2427 assertions, 0 failures, 0 errors
-
-
-    def successful_authorization_response(self): #  TODO  get a real SOAP lib!
+    def successful_authorization_response(self):
         return '''<?xml version="1.0" encoding="utf-8"?>
                   <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
                     <soap:Header>
@@ -535,140 +360,5 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                       </c:replyMessage>
                     </soap:Body>
                   </soap:Envelope>'''
-
-
-'''
-class CyberSourceTest < Test::Unit::TestCase
-  def setup
-    Base.gateway_mode = :test
-
-    self.gateway = CyberSourceGateway.new(
-      :login => 'l',
-      :password => 'p'
-    )
-
-    self.amount = 100
-    self.credit_card = credit_card('4111111111111111', :type => 'visa')
-    self.declined_card = credit_card('801111111111111', :type => 'visa')
-
-    self.options = { :billing_address => {
-                  :address1 => '1234 My Street',
-                  :address2 => 'Apt 1',
-                  :company => 'Widgets Inc',
-                  :city => 'Ottawa',
-                  :state => 'ON',
-                  :zip => 'K1C2N6',
-                  :country => 'Canada',
-                  :phone => '(555)555-5555'
-               },
-
-               :email => 'someguy1232self.fakeemail.net',
-               :order_id => '1000',
-               :line_items => [
-                   {
-                      :declared_value => self.amount,
-                      :quantity => 2,
-                      :code => 'default',
-                      :description => 'Giant Walrus',
-                      :sku => 'WA323232323232323'
-                   },
-                   {
-                      :declared_value => self.amount,
-                      :quantity => 2,
-                      :description => 'Marble Snowcone',
-                      :sku => 'FAKE1232132113123'
-                   }
-                 ],
-          :currency => 'USD'
-    }
-  end
-
-  def test_unsuccessful_authorization
-    self.gateway.expects(:ssl_post).returns(unsuccessful_authorization_response)
-
-    assert response = self.gateway.purchase(self.amount, self.credit_card, self.options)
-    assert_instance_of Response, response
-    assert_failure response
-  end
-
-
-  def test_successful_tax_request
-    self.gateway.stubs(:ssl_post).returns(successful_tax_response)
-    assert response = self.gateway.calculate_tax(self.credit_card, self.options)
-    assert_equal Response, response.class
-    assert response.success?
-    assert response.test?
-  end
-
-  def test_successful_capture_request
-    self.gateway.stubs(:ssl_post).returns(successful_authorization_response, successful_capture_response)
-    assert response = self.gateway.authorize(self.amount, self.credit_card, self.options)
-    assert response.success?
-    assert response.test?
-    assert response_capture = self.gateway.capture(self.amount, response.authorization)
-    assert response_capture.success?
-    assert response_capture.test?
-  end
-
-  def test_successful_purchase_request
-    self.gateway.stubs(:ssl_post).returns(successful_capture_response)
-    assert response = self.gateway.purchase(self.amount, self.credit_card, self.options)
-    assert response.success?
-    assert response.test?
-  end
-
-  def test_requires_error_on_purchase_without_order_id
-    assert_raise(ArgumentError){ self.gateway.purchase(self.amount, self.credit_card, self.options.delete_if{|key, val| key == :order_id}) }
-  end
-
-  def test_requires_error_on_authorization_without_order_id
-    assert_raise(ArgumentError){ self.gateway.purchase(self.amount, self.credit_card, self.options.delete_if{|key, val| key == :order_id}) }
-  end
-
-  def test_requires_error_on_tax_calculation_without_line_items
-    assert_raise(ArgumentError){ self.gateway.calculate_tax(self.credit_card, self.options.delete_if{|key, val| key == :line_items})}
-  end
-
-  def test_default_currency
-    assert_equal 'USD', CyberSourceGateway.default_currency
-  end
-
-  def test_successful_credit_request
-    self.gateway.stubs(:ssl_post).returns(successful_capture_response, successful_credit_response)
-    assert response = self.gateway.purchase(self.amount, self.credit_card, self.options)
-    assert response.success?
-    assert response.test?
-    assert response_capture = self.gateway.credit(self.amount, response.authorization)
-    assert response_capture.success?
-    assert response_capture.test?
-  end
-
-  private
-
-  def successful_tax_response
-    <<-XML
-<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-<soap:Header>
-<wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"><wsu:Timestamp xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="Timestamp-21248497"><wsu:Created>2007-07-11T18:27:56.314Z</wsu:Created></wsu:Timestamp></wsse:Security></soap:Header><soap:Body><c:replyMessage xmlns:c="urn:schemas-cybersource-com:transaction-data-1.26"><c:merchantReferenceCode>TEST11111111111</c:merchantReferenceCode><c:requestID>1841784762620176127166</c:requestID><c:decision>ACCEPT</c:decision><c:reasonCode>100</c:reasonCode><c:requestToken>AMYJY9fl62i+vx2OEQYAx9zv/9UBZAAA5h5D</c:requestToken><c:taxReply><c:reasonCode>100</c:reasonCode><c:grandTotalAmount>1.00</c:grandTotalAmount><c:totalCityTaxAmount>0</c:totalCityTaxAmount><c:city>Madison</c:city><c:totalCountyTaxAmount>0</c:totalCountyTaxAmount><c:totalDistrictTaxAmount>0</c:totalDistrictTaxAmount><c:totalStateTaxAmount>0</c:totalStateTaxAmount><c:state>WI</c:state><c:totalTaxAmount>0</c:totalTaxAmount><c:postalCode>53717</c:postalCode><c:item id="0"><c:totalTaxAmount>0</c:totalTaxAmount></c:item></c:taxReply></c:replyMessage></soap:Body></soap:Envelope>
-    XML
-  end
-
-
-  def successful_capture_response
-    <<-XML
-<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"> <soap:Header> <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"><wsu:Timestamp xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="Timestamp-6000655"><wsu:Created>2007-07-17T17:15:32.642Z</wsu:Created></wsu:Timestamp></wsse:Security></soap:Header><soap:Body><c:replyMessage xmlns:c="urn:schemas-cybersource-com:transaction-data-1.26"><c:merchantReferenceCode>test1111111111111111</c:merchantReferenceCode><c:requestID>1846925324700976124593</c:requestID><c:decision>ACCEPT</c:decision><c:reasonCode>100</c:reasonCode><c:requestToken>AP4JZB883WKS/34BEZAzMTE1OTI5MVQzWE0wQjEzBTUt3wbOAQUy3D7oDgMMmvQAnQgl</c:requestToken><c:purchaseTotals><c:currency>GBP</c:currency></c:purchaseTotals><c:ccCaptureReply><c:reasonCode>100</c:reasonCode><c:requestDateTime>2007-07-17T17:15:32Z</c:requestDateTime><c:amount>1.00</c:amount><c:reconciliationID>31159291T3XM2B13</c:reconciliationID></c:ccCaptureReply></c:replyMessage></soap:Body></soap:Envelope>
-    XML
-  end
-
-  def successful_credit_response
-    <<-XML
-<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-<soap:Header>
-<wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"><wsu:Timestamp xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="Timestamp-5589339"><wsu:Created>2008-01-21T16:00:38.927Z</wsu:Created></wsu:Timestamp></wsse:Security></soap:Header><soap:Body><c:replyMessage xmlns:c="urn:schemas-cybersource-com:transaction-data-1.32"><c:merchantReferenceCode>TEST11111111111</c:merchantReferenceCode><c:requestID>2009312387810008401927</c:requestID><c:decision>ACCEPT</c:decision><c:reasonCode>100</c:reasonCode><c:requestToken>Af/vj7OzPmut/eogHFCrBiwYsWTJy1r127CpCn0KdOgyTZnzKwVYCmzPmVgr9ID5H1WGTSTKuj0i30IE4+zsz2d/QNzwBwAACCPA</c:requestToken><c:purchaseTotals><c:currency>USD</c:currency></c:purchaseTotals><c:ccCreditReply><c:reasonCode>100</c:reasonCode><c:requestDateTime>2008-01-21T16:00:38Z</c:requestDateTime><c:amount>1.00</c:amount><c:reconciliationID>010112295WW70TBOPSSP2</c:reconciliationID></c:ccCreditReply></c:replyMessage></soap:Body></soap:Envelope>
-    XML
-  end
-
-end
-'''
 
 # ERGO  put us into the test report system and see what we look like!
