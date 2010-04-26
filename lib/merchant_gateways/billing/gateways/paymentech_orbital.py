@@ -41,32 +41,57 @@ class PaymentechOrbital(Gateway):
         grandTotalAmount = str(money)
         fields.update(options['billing_address'])
         fields.update(options)
+        x = XML
 
         return xStr(
             XML.Request(
-                XML.billTo(
-                        XML.firstName(credit_card.first_name),
-                        XML.lastName(credit_card.last_name),
-                        XML.street1(fields['address1']),
-                        XML.street2(fields['address2']),
-                        XML.city(fields['city']),
-                        XML.state(fields['state']),
-                        XML.postalCode(fields['zip']),
-                        XML.country(fields['country']),
-                        XML.email(fields['email'])
-                        ),
-                XML.purchaseTotals(
-                        XML.currency('USD'),
-                        XML.grandTotalAmount(grandTotalAmount)
-                    ),
-                XML.card(
-                      XML.accountNumber(credit_card.number),
-                      XML.expirationMonth(str(credit_card.month)),
-                      XML.expirationYear(str(credit_card.year)),
-                      XML.cvNumber('123'),  # TODO
-                      XML.cardType('001')  #  TODO
-                    )
-         ))
+                XML.NewOrder(
+
+                    x.OrbitalConnectionUsername('user'),
+                    x.OrbitalConnectionPassword('mytestpass'),
+                    x.IndustryType('EC'),
+                    x.MessageType('A'),
+                    x.BIN('1'),
+                    x.MerchantID('1'),
+                    x.TerminalID('1'),
+                    x.CardBrand(''),
+                    x.AccountNum(''),
+                    x.Exp('1012'),
+                    x.CurrencyCode('840'),
+                    x.CurrencyExponent('2'),
+                    x.CardSecValInd('1'),
+                    x.CardSecVal(''),
+                    x.AVSzip(''),
+                    x.AVSaddress1(''),
+                    x.AVScity(''),
+                    x.AVSstate(''),
+                    x.AVSphoneNum(''),
+                    x.AVSname(''),
+                    x.AVScountryCode(''),
+                    x.CustomerProfileFromOrderInd('A'),
+                    x.CustomerProfileOrderOverrideInd('NO'),
+                    x.OrderID(''),
+                    x.Amount('0')
+
+#                        XML.firstName(credit_card.first_name),
+#                        XML.lastName(credit_card.last_name),
+#                        XML.street1(fields['address1']),
+#                        XML.street2(fields['address2']),
+#                        XML.city(fields['city']),
+#                        XML.state(fields['state']),
+#                        XML.postalCode(fields['zip']),
+#                        XML.country(fields['country']),
+#                        XML.email(fields['email']),
+#                        XML.currency('USD'),
+#                        XML.grandTotalAmount(grandTotalAmount),
+#
+#                      XML.accountNumber(credit_card.number),
+#                      XML.expirationMonth(str(credit_card.month)),
+#                      XML.expirationYear(str(credit_card.year)),
+#                      XML.cvNumber('123'),  # TODO
+#                      XML.cardType('001')  #  TODO
+
+         )))
 
 # TODO  question fields in Cybersource        (template_p % fields) )
 
