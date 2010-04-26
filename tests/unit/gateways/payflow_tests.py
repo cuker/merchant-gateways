@@ -25,7 +25,6 @@ class PayflowTests( MerchantGatewaysTestSuite,
         # TODO  assert the response is None if we epic-fail (oh, and trap exceptions)
 
         self.assert_webservice_called( # vendor, amount, currency card_type, cc_number, exp_date, cv_num,
-                                       # first_name, last_name, username, password):
                         self.gateway.post_webservice,
                                        'LOGIN',
                         '100.00',
@@ -34,10 +33,10 @@ class PayflowTests( MerchantGatewaysTestSuite,
                         '4242424242424242',
                         '201109',
                         '123',
-                        'Longbob',
-                        "Longsen",
-                        'LOGIN',
-                        'PASSWORD')
+                        first_name='Hermione',
+                        last_name='Granger',
+                        username='LOGIN',
+                        password='PASSWORD')
 
         #~ assert response = self.gateway.authorize(self.amount, self.credit_card)
 
