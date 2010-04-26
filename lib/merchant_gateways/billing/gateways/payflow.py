@@ -89,13 +89,17 @@ xmlns="http://www.paypal.com/XMLPay">
         return template % { 'request_body': request_body }
 
     def build_credit_card_request(self, action, amount, credit_card, **options):
-        template = '''<%(transaction_type)s>
-  <PayData>
-    <Invoice>
-      %(billing_address)s
-      <TotalAmt Currency="USD">%(amount).2f</TotalAmt>
-    </Invoice>
-    '''        + xStr(
+        transaction_type = TRANSACTIONS[action]
+
+#        template = #'''<%(transaction_type)s>
+        template = \
+     xStr(
+            XML(transaction_type,
+            XML.PayData(
+        XML.Invoice(
+            self.add_address('BillTo', **options.get('address', {})),
+            XML.TotalAmt('%.2f' % amount, Currency="USD")
+    ),
         XML.Tender(
           XML.Card(
             XML.CardType('Visa'),
@@ -104,26 +108,22 @@ xmlns="http://www.paypal.com/XMLPay">
             XML.NameOnCard('Longbob'),
             XML.CVNum('123'),
             XML.ExtData(Name="LASTNAME", Value="Longsen" )
-        ))) + '''
-    
-  </PayData>
-</%(transaction_type)s>'''  # Warning - you can't reformat this because a hyperactive test will fail CONSIDER a fix!
+        )))))
+            #+ '''
+#</%(transaction_type)s>'''  # Warning - you can't reformat this because a hyperactive test will fail CONSIDER a fix!
 
-        transaction_type = TRANSACTIONS[action]
         #pprint(self.options)
 
-        return template % dict( billing_address=self.add_address('BillTo', **options.get('address', {})),
-                                transaction_type=transaction_type,
+        return template # % dict( transaction_type=transaction_type,
                                 # amount=self.options['amount'] ) # TODO all options in options - no exceptions
-                                amount=amount)
+                         #       amount=amount)
         # return template % { 'billing_address': self.add_address('BillTo', options.get('address', None)) }
 
     def add_address(self, _where_to, **address):
         if not address:  return ''
         address = default_dict(address)
 
-        return xStr(
-                XML(_where_to,
+        return XML(_where_to,
                       XML.Name(address['name']),
                       XML.Phone('(555)555-5555'),
                       XML.Address(
@@ -134,7 +134,6 @@ xmlns="http://www.paypal.com/XMLPay">
                               XML.Zip(address['zip'])
                       )
                 )
-        )
 
     class Response(response.Response):
         def avs_result(self):

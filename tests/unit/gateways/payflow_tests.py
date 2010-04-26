@@ -108,6 +108,7 @@ class PayflowTests( MerchantGatewaysTestSuite,
                                            country='CA',
                                            zip='K1C2N6'
                                             )
+        address = xStr(address)
         self.assert_xml_text(address, '/BillTo/Name', 'Severus Snape')
 
         self.assert_match_xml('''<BillTo>
@@ -142,6 +143,7 @@ class PayflowTests( MerchantGatewaysTestSuite,
                                            country='CA',
                                            zip='K1C2N6'
                                             )
+        address = xStr(address)
         self.assert_xml_text(address, '/ShipTo/Name', 'Regulus Black')
 
         self.assert_match_xml('''<ShipTo>
