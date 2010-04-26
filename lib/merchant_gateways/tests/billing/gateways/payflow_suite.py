@@ -72,7 +72,7 @@ class MerchantGatewaysPayflowSuite:
                             ),
                         x.Tender(
                             x.Card(
-                                x.CardType('Visa'),
+                                x.CardType(card_type),
                                 x.CardNum(cc_number),
                                 x.ExpDate('201109'),
                                 x.NameOnCard(first_name),

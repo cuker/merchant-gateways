@@ -24,7 +24,7 @@ class CreditCard(object):
         self.verification_value = verification_value  #  TODO tdd this line
         self.errors = dict()
 
-#  TODO the card should raise an error if the type is not understood        
+#  TODO the card should raise an error if the type is not understood
 
 #    #should be in mixin
 #    @classmethod
@@ -245,6 +245,13 @@ class CreditCard(object):
 #             valid_test_mode_card_number?(number) #:nodoc:
 #             valid_checksum?(number) '''
 #
+
+    def type_name(self):
+        types = dict(v='Visa',
+                     visa='Visa',
+                     m='MasterCard'  #  TODO  alpha order!
+        )
+        return types[self.card_type]  #  TODO  handle rogue types correctly, etc.!
 
 CARD_COMPANIES = {
     'visa': '^4\d{12}(\d{3})?$',

@@ -102,7 +102,7 @@ xmlns="http://www.paypal.com/XMLPay">
                       ),
                       XML.Tender(
                           XML.Card(
-                              XML.CardType('Visa'),
+                              XML.CardType(credit_card.type_name()),
                               XML.CardNum(credit_card.number),
                               XML.ExpDate('201109'),
                               XML.NameOnCard(credit_card.first_name),
