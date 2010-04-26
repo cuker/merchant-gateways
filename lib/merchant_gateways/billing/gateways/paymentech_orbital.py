@@ -32,7 +32,7 @@ class PaymentechOrbital(Gateway):
         template_p = '''
                     <ccAuthService run="true"/>
                     <businessRules>
-                    </businessRules>'''
+                    </businessRules>'''  #  TODO  use or lose this in Cybersource!
 
         fields = default_dict( first_name=credit_card.first_name,
                        last_name=credit_card.last_name,
@@ -42,7 +42,9 @@ class PaymentechOrbital(Gateway):
         fields.update(options['billing_address'])
         fields.update(options)
 
-        return ( xStr(XML.billTo(
+        return xStr(
+            XML.Request(
+                XML.billTo(
                         XML.firstName(credit_card.first_name),
                         XML.lastName(credit_card.last_name),
                         XML.street1(fields['address1']),
@@ -52,19 +54,21 @@ class PaymentechOrbital(Gateway):
                         XML.postalCode(fields['zip']),
                         XML.country(fields['country']),
                         XML.email(fields['email'])
-                        )) +
-                xStr(XML.purchaseTotals(
+                        ),
+                XML.purchaseTotals(
                         XML.currency('USD'),
                         XML.grandTotalAmount(grandTotalAmount)
-                    )) +
-                xStr(XML.card(
+                    ),
+                XML.card(
                       XML.accountNumber(credit_card.number),
                       XML.expirationMonth(str(credit_card.month)),
                       XML.expirationYear(str(credit_card.year)),
                       XML.cvNumber('123'),  # TODO
                       XML.cardType('001')  #  TODO
-                    )) +
-        (template_p % fields) )
+                    )
+         ))
+
+# TODO  question fields in Cybersource        (template_p % fields) )
 
     def parse(self, soap):
         result = {}

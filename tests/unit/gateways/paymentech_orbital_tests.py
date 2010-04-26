@@ -168,7 +168,9 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                     <ccAuthService run="true"/>
                     <businessRules>
                     </businessRules>'''
-        
+
+# TODO enforce <?xml version="1.0" encoding="UTF-8"?> tags??
+
         expect_TODO = '''<?xml version="1.0" encoding="UTF-8"?>
 <Request>
   <NewOrder>
@@ -199,9 +201,12 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
     <Amount>0</Amount>
   </NewOrder>
 </Request>'''
-        # why exp_year 2090? Extendicreditus!
 
-        self.assert_match_xml(expect, message)  #  TODO  now parse it back and assert_match_hash it!
+        print repr(message)
+
+        self.assert_xml(message, lambda x:
+                             x.Request()
+                   )
 
     def test_build_auth_request_without_street2(self):
         self.money = Decimal('2.00')
