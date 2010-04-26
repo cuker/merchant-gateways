@@ -8,7 +8,7 @@ from lxml.builder import ElementMaker # TODO document we do lxml only !
 XML = ElementMaker()
 
 
-class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
+class PaymentechOrbital(Gateway):  # TODO avs? cvv? or equivalent?
 
     def authorize(self, money, creditcard, **options):  #  TODO  order_id ain't optional!
         '''
@@ -132,7 +132,7 @@ class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
         authorization = [str(self.options['order_id']), self.result['requestID'], self.result['requestToken']]
         authorization = ';'.join(authorization)
 
-        return Cybersource.Response( self.success, self.message, self.result,
+        return self.__class__.Response( self.success, self.message, self.result,
                                         is_test=self.is_test,
                                         authorization=authorization,
 #                                       :avs_result => { :code => response[:avsCode] },  TODO TDD me

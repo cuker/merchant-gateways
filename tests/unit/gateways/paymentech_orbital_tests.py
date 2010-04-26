@@ -1,5 +1,5 @@
 
-from merchant_gateways.billing.gateways.cybersource import Cybersource
+from merchant_gateways.billing.gateways.paymentech_orbital import PaymentechOrbital
 from merchant_gateways.billing.credit_card import CreditCard
 from merchant_gateways.tests.test_helper import *
 
@@ -9,11 +9,11 @@ from merchant_gateways.tests.test_helper import *
 
 #  TODO logging!
 
-class CybersourceTests(MerchantGatewaysTestSuite,
-                       MerchantGatewaysTestSuite.CommonTests):
+class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
+                             MerchantGatewaysTestSuite.CommonTests):
 
     def gateway_type(self):
-        return Cybersource
+        return PaymentechOrbital
 
     def mock_webservice(self, response):
         self.options['billing_address'] = {}  #  TODO  put something in there, throw an error if it ain't there
@@ -215,12 +215,6 @@ class CybersourceTests(MerchantGatewaysTestSuite,
         #  TODO  default not to USD
 
         self.assert_('<street2></street2>' in message)  #  TODO  assert_contains
-
-#    def test_avs_result(self):  #  TODO  move Cybersource to an "AvsStyle" module, and move this test to its abstract testor
-#        self.gateway.expects(:ssl_post).returns(successful_purchase_response)
-#
-#        response = self.gateway.purchase(self.amount, self.credit_card, self.options)
-#        assert_equal 'Y', response.avs_result['code']
 
     def test_cvv_result(self):
         self.test_successful_authorization()
