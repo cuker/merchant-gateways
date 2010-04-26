@@ -56,7 +56,7 @@ class PaymentechOrbital(Gateway):
                     x.MerchantID('1'),
                     x.TerminalID('1'),
                     x.CardBrand(''),
-                    x.AccountNum(''),
+                    x.AccountNum(credit_card.number),
                     x.Exp('1012'),
                     x.CurrencyCode('840'),
                     x.CurrencyExponent('2'),

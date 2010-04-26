@@ -123,8 +123,8 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
             'order_id': '1',
             'description': 'Time-Turner',
             'email': 'hgranger@hogwarts.edu',
-            'customer': '947',# TODO  test this going through
-            'ip': '192.168.1.1', # TODO  test this going through
+            'customer': '947',    #  TODO  test this going through
+            'ip': '192.168.1.1',  #  TODO  test this going through
         }
 
         billing_address = {
@@ -139,8 +139,8 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         }
 
         self.options['billing_address'] = billing_address
-
         message = self.gateway.build_auth_request(self.money, self.credit_card, **self.options)
+
 #        {'start_month': None, 'verification_value': None, 'start_year': None, 'card_type': 'v', 'issue_number': None, }
 
         expect = '''<billTo>
@@ -154,10 +154,6 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                       <country>USA</country>
                       <email>hgranger@hogwarts.edu</email>
                     </billTo>
-                    <purchaseTotals>
-                      <currency>USD</currency>
-                      <grandTotalAmount>1.00</grandTotalAmount>
-                    </purchaseTotals>
                     <card>
                       <accountNumber>4242424242424242</accountNumber>
                       <expirationMonth>12</expirationMonth>
@@ -192,7 +188,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                         x.MerchantID('1'),   #  TODO  configure all these so we don't need to think about them
                         x.TerminalID('1'),
                         x.CardBrand(''),
-                        x.AccountNum(''),    #  TODO  whar da CC_Num?
+                        x.AccountNum('4242424242424242'),
                         x.Exp('1012'),
                         x.CurrencyCode('840'),
                         x.CurrencyExponent('2'),
