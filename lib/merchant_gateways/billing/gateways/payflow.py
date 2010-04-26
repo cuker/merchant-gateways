@@ -106,7 +106,7 @@ xmlns="http://www.paypal.com/XMLPay">
                               XML.CardNum(credit_card.number),
                               XML.ExpDate('201109'),
                               XML.NameOnCard(credit_card.first_name),
-                              XML.CVNum('123'),
+                              XML.CVNum(credit_card.verification_value),
                               XML.ExtData(Name="LASTNAME", Value=credit_card.last_name )
                           ))))
         return xStr(request)

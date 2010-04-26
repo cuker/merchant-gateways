@@ -170,6 +170,7 @@ class MerchantGatewaysTestSuite( MerchantGatewaysUtilitiesTestSuite,
         self.credit_card = CreditCard( number='4242424242424242',
                                        month='12',  year='2090',
                                        card_type='V',
+                                       verification_value='456',
                                        first_name='Hermione', last_name='Granger' )
 
         self.subscription_id = '100748'  #  TODO  use or lose this
