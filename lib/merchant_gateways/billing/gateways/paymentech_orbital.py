@@ -38,7 +38,8 @@ class PaymentechOrbital(Gateway):
                        last_name=credit_card.last_name,
                         country='USA',  #  TODO vet this default
                         )
-        grandTotalAmount = str(money)
+        print repr(money)
+        grandTotalAmount = '%.2f' % money  #  TODO  format AMOUNT like this better, everywhere
         fields.update(options['billing_address'])
         fields.update(options)
         x = XML
@@ -71,7 +72,7 @@ class PaymentechOrbital(Gateway):
                     x.CustomerProfileFromOrderInd('A'),
                     x.CustomerProfileOrderOverrideInd('NO'),
                     x.OrderID(''),
-                    x.Amount('0')
+                    x.Amount(grandTotalAmount)
 
 #                        XML.firstName(credit_card.first_name),
 #                        XML.lastName(credit_card.last_name),
@@ -116,7 +117,7 @@ class PaymentechOrbital(Gateway):
                  'currency',             'requestToken',
                  'cvCode',
                  'cvCodeRaw',
-                 'decision' )
+                 'decision' )  #  TODO  adjust this for paymentech_orbital
 
     class Response(response.Response):
         pass

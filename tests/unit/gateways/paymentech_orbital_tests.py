@@ -117,7 +117,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
     #  TODO  always credit_card never creditcard
 
     def test_build_auth_request(self):
-        self.money = Decimal('1.00')
+        self.money = Decimal('100.00')
 
         self.options = {
             'order_id': '1',
@@ -177,6 +177,8 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
   </NewOrder>
 </Request>'''
 
+        #  ERGO  configure the sample correctly at error time
+
         print repr(message)
 
         self.assert_xml(message, lambda x:
@@ -185,12 +187,12 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                         x.OrbitalConnectionUsername('user'),
                         x.OrbitalConnectionPassword('mytestpass'),
                         x.IndustryType('EC'),
-                        x.MessageType('A'),
+                        x.MessageType('A'),  #  TODO  where's the danged cardholder name?
                         x.BIN('1'),
-                        x.MerchantID('1'),
+                        x.MerchantID('1'),   #  TODO  configure all these so we don't need to think about them
                         x.TerminalID('1'),
                         x.CardBrand(''),
-                        x.AccountNum(''),
+                        x.AccountNum(''),    #  TODO  whar da CC_Num?
                         x.Exp('1012'),
                         x.CurrencyCode('840'),
                         x.CurrencyExponent('2'),
@@ -206,8 +208,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                         x.CustomerProfileFromOrderInd('A'),
                         x.CustomerProfileOrderOverrideInd('NO'),
                         x.OrderID(''),
-                        x.Amount('0')
-
+                        x.Amount('100.00')
                                  )
                              )
                    )
