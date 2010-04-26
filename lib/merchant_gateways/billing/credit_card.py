@@ -247,10 +247,10 @@ class CreditCard(object):
 #
 
     def type_name(self):
-        types = dict(v='Visa',
-                     visa='Visa',
-                     m='MasterCard'  #  TODO  alpha order!
-        )
+        types = dict(m='MasterCard',
+                     v='Visa',
+                     visa='Visa'
+                    )
         return types[self.card_type]  #  TODO  handle rogue types correctly, etc.!
 
 CARD_COMPANIES = {
