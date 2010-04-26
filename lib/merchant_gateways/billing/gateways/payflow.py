@@ -90,34 +90,25 @@ xmlns="http://www.paypal.com/XMLPay">
 
     def build_credit_card_request(self, action, amount, credit_card, **options):
         transaction_type = TRANSACTIONS[action]
+          # amount=self.options['amount'] ) # TODO all options in options - no exceptions
 
-#        template = #'''<%(transaction_type)s>
-        template = \
-     xStr(
+        request = xStr(
             XML(transaction_type,
-            XML.PayData(
-        XML.Invoice(
-            self.add_address('BillTo', **options.get('address', {})),
-            XML.TotalAmt('%.2f' % amount, Currency="USD")
-    ),
-        XML.Tender(
-          XML.Card(
-            XML.CardType('Visa'),
-            XML.CardNum(credit_card.number),
-            XML.ExpDate('201109'),
-            XML.NameOnCard('Longbob'),
-            XML.CVNum('123'),
-            XML.ExtData(Name="LASTNAME", Value="Longsen" )
-        )))))
-            #+ '''
-#</%(transaction_type)s>'''  # Warning - you can't reformat this because a hyperactive test will fail CONSIDER a fix!
-
-        #pprint(self.options)
-
-        return template # % dict( transaction_type=transaction_type,
-                                # amount=self.options['amount'] ) # TODO all options in options - no exceptions
-                         #       amount=amount)
-        # return template % { 'billing_address': self.add_address('BillTo', options.get('address', None)) }
+                XML.PayData(
+                    XML.Invoice(
+                        self.add_address('BillTo', **options.get('address', {})),
+                        XML.TotalAmt('%.2f' % amount, Currency="USD")
+                    ),
+                    XML.Tender(
+                        XML.Card(
+                            XML.CardType('Visa'),
+                            XML.CardNum(credit_card.number),
+                            XML.ExpDate('201109'),
+                            XML.NameOnCard('Longbob'),
+                            XML.CVNum('123'),
+                            XML.ExtData(Name="LASTNAME", Value="Longsen" )
+                        )))))
+        return request
 
     def add_address(self, _where_to, **address):
         if not address:  return ''
