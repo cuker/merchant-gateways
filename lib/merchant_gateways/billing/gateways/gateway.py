@@ -38,7 +38,7 @@ class Gateway(object):
             return None
         return len(val.strip()) == 0
 
-    def amount(self, money):
+    def amount(self, money):  #  TODO  use or lose this stuff
         if money is None:
             return None
         try:
@@ -106,7 +106,7 @@ class Gateway(object):
     def post_webservice(self, url, params):   #  CONSIDER  get a better Mock library and this goes away! (otherwise, put it in the base class)
         return post(url, {})
 
-        
+
 class default_dict(dict):  #  TODO  move to utils
     """
     A subclass of dictionary that returns '' instead of feebly

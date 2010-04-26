@@ -68,7 +68,7 @@ class MerchantGatewaysPayflowSuite:
                         ),
                         x.PayData(
                             x.Invoice(
-                                x.TotalAmt('1.00', Currency='USD')
+                                x.TotalAmt(amount, Currency='USD')
                             ),
                         x.Tender(
                             x.Card(

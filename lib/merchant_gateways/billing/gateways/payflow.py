@@ -20,7 +20,7 @@ class Payflow(Gateway):
     TEST_URL = 'https://pilot-payflowpro.paypal.com'
     LIVE_URL = 'https://payflowpro.paypal.com'
 
-    def authorize(self, money, credit_card_or_reference, **options):
+    def authorize(self, money, credit_card_or_reference, **options):  #  TODO  rename money to amount, everywhere
         self.request = self.build_sale_or_authorization_request('authorization', money, credit_card_or_reference, **options)
         return self.commit(self.request)
 
@@ -88,12 +88,12 @@ xmlns="http://www.paypal.com/XMLPay">
 '''  #  TODO  vary all this data
         return template % { 'request_body': request_body }
 
-    def build_credit_card_request(self, action, money, credit_card, **options):
+    def build_credit_card_request(self, action, amount, credit_card, **options):
         template = '''<%(transaction_type)s>
   <PayData>
     <Invoice>
       %(billing_address)s
-      <TotalAmt Currency="USD">1.00</TotalAmt>
+      <TotalAmt Currency="USD">%(amount).2f</TotalAmt>
     </Invoice>
     <Tender>
       <Card>
@@ -109,9 +109,12 @@ xmlns="http://www.paypal.com/XMLPay">
 </%(transaction_type)s>'''  # Warning - you can't reformat this because a hyperactive test will fail CONSIDER a fix!
 
         transaction_type = TRANSACTIONS[action]
+        #pprint(self.options)
 
         return template % dict( billing_address=self.add_address('BillTo', **options.get('address', {})),
-                                transaction_type=transaction_type )
+                                transaction_type=transaction_type,
+                                # amount=self.options['amount'] ) # TODO all options in options - no exceptions
+                                amount=amount )
         # return template % { 'billing_address': self.add_address('BillTo', options.get('address', None)) }
 
     def add_address(self, _where_to, **address):
@@ -170,7 +173,7 @@ xmlns="http://www.paypal.com/XMLPay">
         return response
 
     def add_credit_card(self, credit_card):
-       
+
         fields = [  XML.CardType(self.credit_card_type(credit_card)),  #  TODO  test all types
                     XML.CardNum(credit_card.number),
                     XML.ExpDate(self.expdate(credit_card)),
