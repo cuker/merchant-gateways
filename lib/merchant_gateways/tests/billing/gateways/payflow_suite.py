@@ -73,7 +73,7 @@ class MerchantGatewaysPayflowSuite:
                         x.Tender(
                             x.Card(
                                 x.CardType('Visa'),
-                                x.CardNum('4242424242424242'),
+                                x.CardNum(cc_number),
                                 x.ExpDate('201109'),
                                 x.NameOnCard('Longbob'),
                                 x.CVNum('123'),
