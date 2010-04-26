@@ -95,15 +95,17 @@ xmlns="http://www.paypal.com/XMLPay">
       %(billing_address)s
       <TotalAmt Currency="USD">%(amount).2f</TotalAmt>
     </Invoice>
-    <Tender>'''        + xStr(XML.Card(
+    '''        + xStr(
+        XML.Tender(
+          XML.Card(
             XML.CardType('Visa'),
             XML.CardNum(credit_card.number),
             XML.ExpDate('201109'),
             XML.NameOnCard('Longbob'),
             XML.CVNum('123'),
             XML.ExtData(Name="LASTNAME", Value="Longsen" )
-        )) + '''
-    </Tender>
+        ))) + '''
+    
   </PayData>
 </%(transaction_type)s>'''  # Warning - you can't reformat this because a hyperactive test will fail CONSIDER a fix!
 
