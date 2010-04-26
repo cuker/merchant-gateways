@@ -6,6 +6,8 @@
 #   result - the gateway's return message, translated from soap or something to a hash
 #   response - the gateway's result, translated into merchant-gateways format, with values exposed as members
 
+#  CONSIDER  exception handling, logging, conversation recording, signals for exceptions, success, & fail
+
 
 class Gateway(object):
     DEBIT_CARDS = ('switch', 'solo')
