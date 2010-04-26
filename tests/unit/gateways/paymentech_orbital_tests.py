@@ -168,7 +168,37 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                     <ccAuthService run="true"/>
                     <businessRules>
                     </businessRules>'''
-
+        
+        expect_TODO = '''<?xml version="1.0" encoding="UTF-8"?>
+<Request>
+  <NewOrder>
+    <OrbitalConnectionUsername>user</OrbitalConnectionUsername>
+    <OrbitalConnectionPassword>mytestpass</OrbitalConnectionPassword>
+    <IndustryType>EC</IndustryType>
+    <MessageType>A</MessageType>
+    <BIN>1</BIN>
+    <MerchantID>1</MerchantID>
+    <TerminalID>1</TerminalID>
+    <CardBrand></CardBrand>
+    <AccountNum></AccountNum>
+    <Exp>1012</Exp>
+    <CurrencyCode>840</CurrencyCode>
+    <CurrencyExponent>2</CurrencyExponent>
+    <CardSecValInd>1</CardSecValInd>
+    <CardSecVal></CardSecVal>
+    <AVSzip></AVSzip>
+    <AVSaddress1></AVSaddress1>
+    <AVScity></AVScity>
+    <AVSstate></AVSstate>
+    <AVSphoneNum></AVSphoneNum>
+    <AVSname></AVSname>
+    <AVScountryCode></AVScountryCode>
+    <CustomerProfileFromOrderInd>A</CustomerProfileFromOrderInd>
+    <CustomerProfileOrderOverrideInd>NO</CustomerProfileOrderOverrideInd>
+    <OrderID></OrderID>
+    <Amount>0</Amount>
+  </NewOrder>
+</Request>'''
         # why exp_year 2090? Extendicreditus!
 
         self.assert_match_xml(expect, message)  #  TODO  now parse it back and assert_match_hash it!
