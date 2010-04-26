@@ -92,12 +92,13 @@ xmlns="http://www.paypal.com/XMLPay">
         transaction_type = TRANSACTIONS[action]
           # amount=self.options['amount'] ) # TODO all options in options - no exceptions
         formatted_amount = '%.2f' % amount
+        bill_to_address = options.get('address', {})  #  TODO  billing_address etc???
 
         request = xStr(
             XML(transaction_type,
                 XML.PayData(
                     XML.Invoice(
-                        self.add_address('BillTo', **options.get('address', {})),
+                        self.add_address('BillTo', **bill_to_address),
                         XML.TotalAmt(formatted_amount, Currency="USD")
                     ),
                     XML.Tender(
