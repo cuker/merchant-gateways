@@ -94,23 +94,22 @@ xmlns="http://www.paypal.com/XMLPay">
         formatted_amount = '%.2f' % amount
         bill_to_address = options.get('address', {})  #  TODO  billing_address etc???
 
-        request = xStr(
-            XML(transaction_type,
-                XML.PayData(
-                    XML.Invoice(
-                        self.add_address('BillTo', **bill_to_address),
-                        XML.TotalAmt(formatted_amount, Currency="USD")
-                    ),
-                    XML.Tender(
-                        XML.Card(
-                            XML.CardType('Visa'),
-                            XML.CardNum(credit_card.number),
-                            XML.ExpDate('201109'),
-                            XML.NameOnCard('Longbob'),
-                            XML.CVNum('123'),
-                            XML.ExtData(Name="LASTNAME", Value="Longsen" )
-                        )))))
-        return request
+        request = XML(transaction_type,
+                    XML.PayData(
+                      XML.Invoice(
+                          self.add_address('BillTo', **bill_to_address),
+                          XML.TotalAmt(formatted_amount, Currency="USD")
+                      ),
+                      XML.Tender(
+                          XML.Card(
+                              XML.CardType('Visa'),
+                              XML.CardNum(credit_card.number),
+                              XML.ExpDate('201109'),
+                              XML.NameOnCard('Longbob'),
+                              XML.CVNum('123'),
+                              XML.ExtData(Name="LASTNAME", Value="Longsen" )
+                          ))))
+        return xStr(request)
 
     def add_address(self, _where_to, **address):
         if not address:  return ''
