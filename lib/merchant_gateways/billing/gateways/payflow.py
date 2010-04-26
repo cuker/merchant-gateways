@@ -91,13 +91,14 @@ xmlns="http://www.paypal.com/XMLPay">
     def build_credit_card_request(self, action, amount, credit_card, **options):
         transaction_type = TRANSACTIONS[action]
           # amount=self.options['amount'] ) # TODO all options in options - no exceptions
+        formatted_amount = '%.2f' % amount
 
         request = xStr(
             XML(transaction_type,
                 XML.PayData(
                     XML.Invoice(
                         self.add_address('BillTo', **options.get('address', {})),
-                        XML.TotalAmt('%.2f' % amount, Currency="USD")
+                        XML.TotalAmt(formatted_amount, Currency="USD")
                     ),
                     XML.Tender(
                         XML.Card(
