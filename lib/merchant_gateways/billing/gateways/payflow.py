@@ -95,15 +95,14 @@ xmlns="http://www.paypal.com/XMLPay">
       %(billing_address)s
       <TotalAmt Currency="USD">%(amount).2f</TotalAmt>
     </Invoice>
-    <Tender>
-      <Card>
-        <CardType>Visa</CardType>
-        <CardNum>4242424242424242</CardNum>
-        <ExpDate>201109</ExpDate>
-        <NameOnCard>Longbob</NameOnCard>
-        <CVNum>123</CVNum>
-        <ExtData Name="LASTNAME" Value="Longsen" />
-      </Card>
+    <Tender>'''        + xStr(XML.Card(
+            XML.CardType('Visa'),
+            XML.CardNum(credit_card.number),
+            XML.ExpDate('201109'),
+            XML.NameOnCard('Longbob'),
+            XML.CVNum('123'),
+            XML.ExtData(Name="LASTNAME", Value="Longsen" )
+        )) + '''
     </Tender>
   </PayData>
 </%(transaction_type)s>'''  # Warning - you can't reformat this because a hyperactive test will fail CONSIDER a fix!
@@ -114,7 +113,7 @@ xmlns="http://www.paypal.com/XMLPay">
         return template % dict( billing_address=self.add_address('BillTo', **options.get('address', {})),
                                 transaction_type=transaction_type,
                                 # amount=self.options['amount'] ) # TODO all options in options - no exceptions
-                                amount=amount )
+                                amount=amount)
         # return template % { 'billing_address': self.add_address('BillTo', options.get('address', None)) }
 
     def add_address(self, _where_to, **address):
