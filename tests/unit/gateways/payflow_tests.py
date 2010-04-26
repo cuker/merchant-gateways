@@ -208,40 +208,6 @@ class PayflowTests( MerchantGatewaysTestSuite,
 
         #  CONSIDER  hallow as a feature if the address is a empty {}, it disappears anyway
 
-    def successful_authorization_response(self):
-        return '''<ResponseData>
-                    <Result>0</Result>
-                    <Message>Approved</Message>
-                    <Partner>verisign</Partner>
-                    <HostCode>000</HostCode>
-                    <ResponseText>AP</ResponseText>
-                    <PnRef>VUJN1A6E11D9</PnRef>
-                    <IavsResult>N</IavsResult>
-                    <ZipMatch>Match</ZipMatch>
-                    <AuthCode>094016</AuthCode>
-                    <Vendor>ActiveMerchant</Vendor>
-                    <AvsResult>Y</AvsResult>
-                    <StreetMatch>Match</StreetMatch>
-                    <CvResult>Match</CvResult>
-                </ResponseData>'''
-
-    def failed_authorization_response(self):
-        return '''<ResponseData>
-                    <Result>12</Result>
-                    <Message>Declined</Message>
-                    <Partner>verisign</Partner>
-                    <HostCode>000</HostCode>
-                    <ResponseText>AP</ResponseText>
-                    <PnRef>VUJN1A6E11D9</PnRef>
-                    <IavsResult>N</IavsResult>
-                    <ZipMatch>Match</ZipMatch>
-                    <AuthCode>094016</AuthCode>
-                    <Vendor>ActiveMerchant</Vendor>
-                    <AvsResult>Y</AvsResult>
-                    <StreetMatch>Match</StreetMatch>
-                    <CvResult>Match</CvResult>
-                </ResponseData>'''
-
     def test_add_credit_card(self):
         cc = CreditCard(verification_value="123", number="4242424242424242", year=2011, card_type="visa",
                                 month=9, last_name="Longsen", first_name="Longbob")
