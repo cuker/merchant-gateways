@@ -34,8 +34,8 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                       'AccountNum': None,
                       'ApprovalStatus': None,
                       'AuthCode': None,
-                      'CAVVRespCode': None,  #  TODO  diff between CAVV and CVV2??
-                      'CVV2RespCode': None,
+                      'CAVVRespCode': None,  #  CONSIDER  diff between CAVV and CVV2??
+                      'CVV2RespCode': None,  #  TODO  cvv and avs systems?
                       'CardBrand': None,
                       'CustomerName': None,
                       'CustomerProfileMessage': 'Profile: Unable to Perform Profile Transaction. The Associated Transaction Failed. ',
@@ -62,6 +62,8 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         self.assert_equal('Error validating card/account number range', self.response.message)
 
     def assert_successful_purchase(self):
+        self.assert_equal('4A785F5106CCDC41A936BFF628BF73036FEC5401', self.response.params['TxRefNum'])
+
         '''TODO self.assert_equal( 'Successful transaction', self.response.message )'''
 
     def test_build_request(self):
@@ -293,6 +295,11 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
 
     #  ERGO  script that coverts XML to its ElementMaker notation
 
+    def successful_purchase_response(self):  #  TODO  get a real one!
+        return self.successful_authorization_response()
+
+    #def
+
     def successful_authorization_response(self):
         return '''<?xml version="1.0" encoding="UTF-8"?>
 <Response>
@@ -362,44 +369,5 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
   <SwitchSoloIssueNum></SwitchSoloIssueNum>
 </QuickResp>
 </Response>'''
-
-        #  ERGO  complain that 'private' in a test case is irrational...
-
-    def successful_purchase_response(self):  #  TODO  de-cybersource this
-        return '''<?xml version="1.0" encoding="utf-8"?>
-                  <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-                    <soap:Header>
-                      <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
-                        <wsu:Timestamp xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
-                        wsu:Id="Timestamp-2636690">
-                          <wsu:Created>2008-01-15T21:42:03.343Z</wsu:Created>
-                        </wsu:Timestamp>
-                      </wsse:Security>
-                    </soap:Header>
-                    <soap:Body>
-                      <c:replyMessage xmlns:c="urn:schemas-cybersource-com:transaction-data-1.26">
-                        <c:merchantReferenceCode>b0a6cf9aa07f1a8495f89c364bbd6a9a</c:merchantReferenceCode>
-                        <c:requestID>2004333231260008401927</c:requestID>
-                        <c:decision>ACCEPT</c:decision>
-                        <c:reasonCode>100</c:reasonCode>
-                        <c:requestToken>Afvvj7Ke2Fmsbq0wHFE2sM6R4GAptYZ0jwPSA+R9PhkyhFTb0KRjoE4+ynthZrG6tMBwjAtT</c:requestToken>
-                        <c:purchaseTotals>
-                          <c:currency>USD</c:currency>
-                        </c:purchaseTotals>
-                        <c:ccAuthReply>
-                          <c:reasonCode>100</c:reasonCode>
-                          <c:amount>1.00</c:amount>
-                          <c:authorizationCode>123456</c:authorizationCode>
-                          <c:avsCode>Y</c:avsCode>
-                          <c:avsCodeRaw>Y</c:avsCodeRaw>
-                          <c:cvCode>M</c:cvCode>
-                          <c:cvCodeRaw>M</c:cvCodeRaw>
-                          <c:authorizedDateTime>2008-01-15T21:42:03Z</c:authorizedDateTime>
-                          <c:processorResponse>00</c:processorResponse>
-                          <c:authFactorCode>U</c:authFactorCode>
-                        </c:ccAuthReply>
-                      </c:replyMessage>
-                    </soap:Body>
-                  </soap:Envelope>'''
 
 # ERGO  put us into the test report system and see what we look like!

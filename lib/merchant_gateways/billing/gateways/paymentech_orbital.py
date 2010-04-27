@@ -26,14 +26,16 @@ class PaymentechOrbital(Gateway):
 
         self.options.update(options)
 
-        message = self.build_auth_request(money, creditcard, **self.options)
+        message = self.build_auth_request(money, creditcard, **self.options)  #  TODO  _authorization_request, everywhere!!
         return self.commit(message, **self.options)
 
-    def purchase(self, money, creditcard, **options):
+    def purchase(self, amount, credit_card, **options):
         '''Purchase is an auth followed by a capture
            You must supply an order_id in the options hash'''
 
         self.options = self.setup_address_hash(**self.options)
+        message = self.build_purchase_request(amount, credit_card, **self.options)
+        return self.commit(message, **self.options)
 
     def build_auth_request(self, money, credit_card, **options):
 
@@ -124,7 +126,7 @@ class PaymentechOrbital(Gateway):
     def commit(self, request, **options):
         url = self.is_test and TEST_URL or LIVE_URL
         request = self.build_request(request, **options)
-        self.result = self.parse(self.post_webservice(url, request, **options))
+        self.result = self.parse(self.post_webservice(url, request))  #  CONSIDER  no version of post_webservice needs options
         self.success = self.result['ApprovalStatus'] == '1'
         self.message = self.result['StatusMsg']
         authorization = self.result['TxRefNum']
