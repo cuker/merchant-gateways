@@ -37,18 +37,19 @@ class PaymentechOrbital(Gateway):
 
     def build_auth_request(self, money, credit_card, **options):
 
-        fields = default_dict()
+        fields = default_dict(**self.options)
 
 #                            country='USA',  #  TODO vet this default
- 
-        grandTotalAmount = '%.2f' % money  #  TODO  format AMOUNT like this better, everywhere
+
+        grandTotalAmount = '%.2f' % money  #  CONSIDER  format AMOUNT like this better, everywhere
         fields.update(options['billing_address'])  #  TODO  what about address?
         fields.update(options)
+
         x = XML
 
         new_order = x.NewOrder(
-                        x.OrbitalConnectionUsername('user'),  #  TODO  from configs
-                        x.OrbitalConnectionPassword('mytestpass'),  #  TODO  ibid
+                        x.OrbitalConnectionUsername(fields['login']),  #  TODO  from configs
+                        x.OrbitalConnectionPassword(fields['password']),  #  TODO  ibid
                         x.IndustryType('EC'),
                         x.MessageType('A'),
                         x.BIN('1'),

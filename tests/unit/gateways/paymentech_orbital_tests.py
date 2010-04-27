@@ -11,6 +11,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         return PaymentechOrbital
 
     def mock_webservice(self, response):
+
         self.options['billing_address'] = {}  #  TODO  put something in there, throw an error if it ain't there
         self.mock_post_webservice(response)
 
@@ -156,11 +157,14 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         }
 
         self.options['billing_address'] = billing_address
+        self.options['login'] = 'Triwizard'  #  TODO  is the one true standard interface "login" or "username"
+        self.options['password'] = 'Tournament'
+
         message = self.gateway.build_auth_request(self.money, self.credit_card, **self.options)
 
 #        {'start_month': None, 'verification_value': None, 'start_year': None, 'card_type': 'v', 'issue_number': None, }
 
-        expect = '''<billTo>
+        expect = '''<billTo>  TODO  use or lose this
                       <firstName>Hermione</firstName>
                       <lastName>Granger</lastName>
                       <street1>444 Main St.</street1>
@@ -184,8 +188,8 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         self.assert_xml(message, lambda x:
                              x.Request(
                                  x.NewOrder(
-                        x.OrbitalConnectionUsername('user'),
-                        x.OrbitalConnectionPassword('mytestpass'),
+                        x.OrbitalConnectionUsername('Triwizard'),
+                        x.OrbitalConnectionPassword('Tournament'),
                         x.IndustryType('EC'),
                         x.MessageType('A'),
                         x.BIN('1'),
