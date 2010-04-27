@@ -145,7 +145,8 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         g = self.gateway
         self.assert_equal({}, g.setup_address_hash()['billing_address'])
         addy = dict(yo=42)
-        self.assert_equal(addy, g.setup_address_hash(billing_address=addy)['billing_address'])
+        billing_address = g.setup_address_hash(billing_address=addy)['billing_address']
+        self.assert_equal(addy, billing_address)
         self.assert_equal(addy, g.setup_address_hash(address=addy)['billing_address'])
         self.assert_equal({}, g.setup_address_hash()['shipping_address'])
         self.assert_equal(addy, g.setup_address_hash(shipping_address=addy)['shipping_address'])
