@@ -87,8 +87,6 @@ class PaymentechOrbital(Gateway):
 # TODO  question fields in Cybersource        (template_p % fields) )
 
     def parse(self, soap):
-
-
         result = {}
         keys  = self.soap_keys()
         doc  = etree.XML(soap)
@@ -124,16 +122,16 @@ class PaymentechOrbital(Gateway):
 
         self.result = self.parse(self.post_webservice(url, request, **options))
 
-        self.success = self.result['decision'] == "ACCEPT"
+        self.success = self.result['ApprovalStatus'] == '1'
         self.message = 'TODO'
-        authorization = [str(self.options['order_id']), self.result['requestID'], self.result['requestToken']]
-        authorization = ';'.join(authorization)
+        authorization = 'TODO' # [str(self.options['order_id']), self.result['requestID'], self.result['requestToken']]
+#        authorization = ';'.join(authorization)
 
         return self.__class__.Response( self.success, self.message, self.result,
                                         is_test=self.is_test,
                                         authorization=authorization,
 #                                       :avs_result => { :code => response[:avsCode] },
-                                        cvv_result=self.result['cvCode']
+                                # TODO        cvv_result=self.result['cvCode']
                                     )
 
     def build_request(self, body, **options):
