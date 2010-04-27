@@ -36,10 +36,6 @@ class PaymentechOrbital(Gateway):
         self.options = self.setup_address_hash(**self.options)
 
     def build_auth_request(self, money, credit_card, **options):
-        template_p = '''
-                    <ccAuthService run="true"/>
-                    <businessRules>
-                    </businessRules>'''  #  TODO  use or lose this in Cybersource!
 
         fields = default_dict( first_name=credit_card.first_name,
                        last_name=credit_card.last_name,

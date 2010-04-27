@@ -37,7 +37,7 @@ class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
         template_p = '''
                     <ccAuthService run="true"/>
                     <businessRules>
-                    </businessRules>'''
+                    </businessRules>'''  #  TODO  use or lose this
 
         fields = default_dict( first_name=credit_card.first_name,
                        last_name=credit_card.last_name,
