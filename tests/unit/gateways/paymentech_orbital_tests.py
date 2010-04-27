@@ -1,5 +1,6 @@
 
 from merchant_gateways.billing.gateways.paymentech_orbital import PaymentechOrbital
+from merchant_gateways.billing.gateways.gateway import xStr
 from merchant_gateways.billing.credit_card import CreditCard
 from merchant_gateways.tests.test_helper import *
 from pprint import pprint
@@ -249,59 +250,42 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
 
         # self.assert_('<street2></street2>' in message)  #  TODO  assert_contains
 
-    def test_(self):
-        amount = 100   #  TODO  de-cybersource this
-
-        credit_card = CreditCard( verification_value="123",
-                                  number="4111111111111111",
-                                  year=2011,
-                                  card_type="visa",
-                                  month=9,
-                                  last_name="Longsen", first_name="Longbob")  #  TODO  'harry potter'
-
-        options = dict( email="someguy1232@fakeemail.net", order_id="1000", shipping_address={}, currency="USD",
-                        billing_address=dict(country="Canada", address1="1234 My Street", phone="(555)555-5555",
-                                             address2="Apt 1", zip="K1C2N6", company="Widgets Inc", city="Ottawa",
-                                             state="ON"))   #  TODO  de-cybersource this
-
-        reference = '''<billTo>
-                              <firstName>Longbob</firstName>
-                              <lastName>Longsen</lastName>
-                              <street1>1234 My Street</street1>
-                              <street2>Apt 1</street2>
-                              <city>Ottawa</city>
-                              <state>ON</state>
-                              <postalCode>K1C2N6</postalCode>
-                              <country>Canada</country>
-                              <email>someguy1232@fakeemail.net</email>
-                            </billTo>
-                            <purchaseTotals>
-                              <currency>USD</currency>
-                              <grandTotalAmount>1.00</grandTotalAmount>
-                            </purchaseTotals>
-                            <card>
-                              <accountNumber>4111111111111111</accountNumber>
-                              <expirationMonth>09</expirationMonth>
-                              <expirationYear>2011</expirationYear>
-                              <cvNumber>123</cvNumber>
-                              <cardType>001</cardType>
-                            </card>
-                            <ccAuthService run="true" />
-                            <ccCaptureService run="true" />
-                            <businessRules></businessRules>'''    #  TODO  de-cybersource this
-
-        sample = self.gateway.build_purchase_request(amount, credit_card, **options)
-        # TODO self.assert_xml_match(reference, sample)
-
-    #  ERGO  script that coverts XML to its ElementMaker notation
-
     def successful_purchase_response(self):  #  TODO  get a real one!
         return self.successful_authorization_response()
 
-    #def
-
     def successful_authorization_response(self):
-        return '''<?xml version="1.0" encoding="UTF-8"?>
+        from lxml.builder import ElementMaker
+        XML = ElementMaker()
+        return xStr(XML.Response('\n',
+  XML.NewOrderResp('\n  ',
+    XML.IndustryType(),
+    XML.MessageType('AC'),
+    XML.MerchantID('000000'),
+    XML.TerminalID('000'),
+    XML.CardBrand('MC'),
+    XML.AccountNum('5454545454545454'),
+    XML.OrderID('1'),
+    XML.TxRefNum('4A785F5106CCDC41A936BFF628BF73036FEC5401'),
+    XML.TxRefIdx('1'),
+    XML.ProcStatus('0'),
+    XML.ApprovalStatus('1'),
+    XML.RespCode('00'),
+    XML.AVSRespCode('B '),
+    XML.CVV2RespCode('M'),
+    XML.AuthCode('tst554'),
+    XML.RecurringAdviceCd(),
+    XML.CAVVRespCode(),
+    XML.StatusMsg('Approved'),
+    XML.RespMsg(),
+    XML.HostRespCode('100'),
+    XML.HostAVSRespCode('I3'),
+    XML.HostCVV2RespCode('M'),
+    XML.CustomerRefNum('2145108'),
+    XML.CustomerName('JOE SMITH'),
+    XML.ProfileProcStatus('0'),
+    XML.CustomerProfileMessage('Profile Created'),
+    XML.RespTime('121825'))))
+        thang = '''<?xml version="1.0" encoding="UTF-8"?>
 <Response>
 <NewOrderResp>
   <IndustryType/>
@@ -334,6 +318,8 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
 </NewOrderResp>
 </Response>
 '''
+        print self.convert_to_element_maker(thang)
+        return thang
 
     def failed_authorization_response(self):
         return '''<?xml version="1.0" encoding="UTF-8"?>
