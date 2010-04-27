@@ -65,7 +65,7 @@ class PaymentechOrbital(Gateway):
                         x.Exp(exp_code),
                         x.CurrencyCode('840'),   #  CONSIDER  non-US currency
                         x.CurrencyExponent('2'),
-                        x.CardSecValInd('1'),
+                        x.CardSecValInd('1'),  #  CONSIDER  visa & discover only - nullify for others
                         x.CardSecVal(credit_card.verification_value),
                         x.AVSzip(fields['zip']),
                         x.AVSaddress1(fields['address1']),  #  TODO  pull an AVSresponse?
@@ -74,7 +74,7 @@ class PaymentechOrbital(Gateway):
                         x.AVSstate(fields['state']),
                         x.AVSphoneNum(fields['phone']),
                         x.AVSname(credit_card.first_name + ' ' + credit_card.last_name),
-                        x.AVScountryCode(''), #  TODO
+                        x.AVScountryCode('840'), #  CONSIDER  other countries
                         x.CustomerProfileFromOrderInd('A'),
                         x.CustomerProfileOrderOverrideInd('NO'),
                         x.OrderID(''),

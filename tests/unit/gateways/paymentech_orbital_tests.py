@@ -15,9 +15,6 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         self.options['billing_address'] = {}  #  TODO  put something in there, throw an error if it ain't there
         self.mock_post_webservice(response)
 
-    def test_failed_authorization(self):
-        'TODO'
-
     def assert_successful_authorization(self):
         #  TODO  de-cybersource all this
         order_id = str(self.options['order_id'])  #  TODO  put something in options
@@ -28,6 +25,9 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         self.assert_equal('Approved', self.gateway.message)
         assert self.response.success
 
+    def test_failed_authorization(self):
+        'TODO'
+        
     def assert_failed_authorization(self):
         #  TODO  de-cybersource all this
         self.assert_none(self.response.params['authorizationCode'])
@@ -53,6 +53,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         '''TODO self.assert_equal( 'Successful transaction', self.response.message )'''
 
     def test_build_request(self):
+        #  TODO  de-cybersource me
         reference = '''<?xml version="1.0" encoding="UTF-8"?>
             <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
               <s:Header>
@@ -194,7 +195,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                         x.AVSstate(billing_address['state']),
                         x.AVSphoneNum(billing_address['phone']),
                         x.AVSname(self.credit_card.first_name + ' ' + self.credit_card.last_name), #  TODO is this really the first & last names??
-                        x.AVScountryCode(''),   #  TODO
+                        x.AVScountryCode('840'),
                         x.CustomerProfileFromOrderInd('A'),
                         x.CustomerProfileOrderOverrideInd('NO'),
                         x.OrderID(''),
@@ -278,9 +279,9 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         sample = self.gateway.build_purchase_request(amount, credit_card, **options)
         # TODO self.assert_xml_match(reference, sample)
 
+    #  ERGO  script that coverts XML to its ElementMaker notation
+
     def successful_authorization_response(self):
-
-
         return '''<?xml version="1.0" encoding="UTF-8"?>
 <Response>
 <NewOrderResp>
