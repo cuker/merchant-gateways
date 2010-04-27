@@ -37,10 +37,10 @@ class PaymentechOrbital(Gateway):
 
     def build_auth_request(self, money, credit_card, **options):
 
-        fields = default_dict( first_name=credit_card.first_name,
-                       last_name=credit_card.last_name,
-                        country='USA',  #  TODO vet this default
-                        )
+        fields = default_dict()
+
+#                            country='USA',  #  TODO vet this default
+ 
         grandTotalAmount = '%.2f' % money  #  TODO  format AMOUNT like this better, everywhere
         fields.update(options['billing_address'])  #  TODO  what about address?
         fields.update(options)
