@@ -24,6 +24,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
 #        requestToken = 'AP4JY+Or4xRonEAOERAyMzQzOTEzMEM0MFZaNUZCBgDH3fgJ8AEGAMfd+AnwAwzRpAAA7RT/'
 #        authorization = ';'.join([order_id, requestID, requestToken])
 #        self.assert_equal(authorization, self.response.authorization) # TODO  why not from <c:authorizationCode>004542</c:authorizationCode> ?
+        self.assert_equal('Approved', self.gateway.message)
         assert self.response.success
 
     def assert_failed_authorization(self):
@@ -86,7 +87,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
             CardBrand='MC',
             CAVVRespCode=None,
             CustomerName='JOE SMITH',
-            CustomerProfileMessage='Profile Created',
+            CustomerProfileMessage='Profile Created',  #  TODO  use this?
             CustomerRefNum='2145108',
             CVV2RespCode='M',
             HostAVSRespCode='I3',

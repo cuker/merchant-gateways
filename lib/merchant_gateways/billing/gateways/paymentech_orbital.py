@@ -123,7 +123,7 @@ class PaymentechOrbital(Gateway):
         self.result = self.parse(self.post_webservice(url, request, **options))
 
         self.success = self.result['ApprovalStatus'] == '1'
-        self.message = 'TODO'
+        self.message = self.result['StatusMsg']
         authorization = 'TODO' # [str(self.options['order_id']), self.result['requestID'], self.result['requestToken']]
 #        authorization = ';'.join(authorization)
 
