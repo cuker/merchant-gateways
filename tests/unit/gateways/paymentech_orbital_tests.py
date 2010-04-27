@@ -154,28 +154,18 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                       <country>USA</country>
                       <email>hgranger@hogwarts.edu</email>
                     </billTo>
-                    <card>
-                      <accountNumber>4242424242424242</accountNumber>
                       <expirationMonth>12</expirationMonth>
                       <expirationYear>2090</expirationYear>
                       <cvNumber>123</cvNumber>
                       <cardType>001</cardType>
-                    </card>
-                    <ccAuthService run="true"/>
-                    <businessRules>
-                    </businessRules>'''
+
+                    <ccAuthService run="true"/>'''
 
 # TODO enforce <?xml version="1.0" encoding="UTF-8"?> tags??
 
-        expect_TODO = '''<?xml version="1.0" encoding="UTF-8"?>
-<Request>
-  <NewOrder>
-  </NewOrder>
-</Request>'''
-
         #  ERGO  configure the sample correctly at error time
 
-        print repr(message)
+#        print repr(message)
 
         self.assert_xml(message, lambda x:
                              x.Request(
@@ -198,8 +188,8 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                         x.AVSaddress1(''),
                         x.AVScity(''),
                         x.AVSstate(''),
-                        x.AVSphoneNum(''),
-                        x.AVSname(''),
+                        x.AVSphoneNum(billing_address['phone']),
+                        x.AVSname(self.credit_card.first_name + ' ' + self.credit_card.last_name), #  TODO is this really the first & last names??
                         x.AVScountryCode(''),
                         x.CustomerProfileFromOrderInd('A'),
                         x.CustomerProfileOrderOverrideInd('NO'),
@@ -208,6 +198,8 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                                  )
                              )
                    )
+
+        # TODO default_dict should expose all members as read-only data values
 
     def test_build_auth_request_without_street2(self):
         self.money = Decimal('2.00')
