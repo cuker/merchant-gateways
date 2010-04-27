@@ -167,6 +167,9 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         # TODO enforce <?xml version="1.0" encoding="UTF-8"?> tags??
         #  ERGO  configure the sample correctly at error time
 
+        assert   12 == self.credit_card.month
+        assert 2090 == self.credit_card.year
+
         self.assert_xml(message, lambda x:
                              x.Request(
                                  x.NewOrder(
@@ -179,7 +182,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                         x.TerminalID('1'),
                         x.CardBrand(''),
                         x.AccountNum('4242424242424242'),
-                        x.Exp('1012'),  #  TODO  format expdate short
+                        x.Exp('1290'),
                         x.CurrencyCode('840'),
                         x.CurrencyExponent('2'),
                         x.CardSecValInd('1'),

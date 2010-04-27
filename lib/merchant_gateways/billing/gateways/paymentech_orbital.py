@@ -45,20 +45,25 @@ class PaymentechOrbital(Gateway):
         fields.update(options['billing_address'])  #  TODO  what about address?
         fields.update(options)
 
+        exp_code = ( '%02i' % credit_card.month) + str(credit_card.year)[-2:] #  TODO  credit_card_format
         x = XML
 
         new_order = x.NewOrder(
                         x.OrbitalConnectionUsername(fields['login']),  #  TODO  from configs
                         x.OrbitalConnectionPassword(fields['password']),  #  TODO  ibid
-                        x.IndustryType('EC'),
-                        x.MessageType('A'),
+                        x.IndustryType('EC'),  #  'EC'ommerce - a web buy
+                        x.MessageType('A'),  #  auth fwt!
+                            # TODO  hallow A – Authorization request AC – Authorization and Mark for Capture FC – Force-Capture request R – Refund request
                         x.BIN('1'),
                         x.MerchantID('1'),
                         x.TerminalID('1'),
                         x.CardBrand(''),
+
+# TODO SW – Switch / Solo ED – European Direct Debit EC – Electronic Check BL – Bill Me Later DP – PINLess Debit [Generic Value Used in Requests]
+
                         x.AccountNum(credit_card.number),
-                        x.Exp('1012'),  #  TODO  credit_card_format
-                        x.CurrencyCode('840'),
+                        x.Exp(exp_code),
+                        x.CurrencyCode('840'),   #  CONSIDER  non-US currency
                         x.CurrencyExponent('2'),
                         x.CardSecValInd('1'),
                         x.CardSecVal(credit_card.verification_value),
