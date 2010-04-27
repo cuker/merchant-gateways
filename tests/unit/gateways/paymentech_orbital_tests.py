@@ -161,11 +161,8 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
 
                     <ccAuthService run="true"/>'''
 
-# TODO enforce <?xml version="1.0" encoding="UTF-8"?> tags??
-
+        # TODO enforce <?xml version="1.0" encoding="UTF-8"?> tags??
         #  ERGO  configure the sample correctly at error time
-
-#        print repr(message)
 
         self.assert_xml(message, lambda x:
                              x.Request(
@@ -173,13 +170,13 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                         x.OrbitalConnectionUsername('user'),
                         x.OrbitalConnectionPassword('mytestpass'),
                         x.IndustryType('EC'),
-                        x.MessageType('A'),  #  TODO  where's the danged cardholder name?
+                        x.MessageType('A'),
                         x.BIN('1'),
                         x.MerchantID('1'),   #  TODO  configure all these so we don't need to think about them
                         x.TerminalID('1'),
                         x.CardBrand(''),
                         x.AccountNum('4242424242424242'),
-                        x.Exp('1012'),
+                        x.Exp('1012'),  #  TODO  format expdate short
                         x.CurrencyCode('840'),
                         x.CurrencyExponent('2'),
                         x.CardSecValInd('1'),
@@ -191,7 +188,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                         x.AVSstate(billing_address['state']),
                         x.AVSphoneNum(billing_address['phone']),
                         x.AVSname(self.credit_card.first_name + ' ' + self.credit_card.last_name), #  TODO is this really the first & last names??
-                        x.AVScountryCode(''),
+                        x.AVScountryCode(''),   #  TODO
                         x.CustomerProfileFromOrderInd('A'),
                         x.CustomerProfileOrderOverrideInd('NO'),
                         x.OrderID(''),
