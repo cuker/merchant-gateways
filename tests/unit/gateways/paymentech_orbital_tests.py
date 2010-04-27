@@ -25,12 +25,9 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         self.assert_equal('Approved', self.gateway.message)
         assert self.response.success
 
-    def test_failed_authorization(self):
-        'TODO'
-
     def assert_failed_authorization(self):
-        #  TODO  de-cybersource all this
-        self.assert_none(self.response.params['authorizationCode'])
+        self.assert_none(self.response.params['TxRefNum'])
+        return         #  TODO  de-cybersource all this
         self.assert_none(self.response.fraud_review)
 
         reference = { 'authorizationCode': None, 'avsCodeRaw': None, 'currency': None,
