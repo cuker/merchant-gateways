@@ -115,7 +115,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         soap = self.successful_authorization_response()
         sample = self.gateway.parse(soap)
         reference = self.parsed_authentication_response()
-        self.assert_match_hash(reference, sample)  #  TODO  invent an assert_diff that can spot differences
+        self.assert_match_hash(reference, sample)
 
     def test_parse_purchase_response(self):
         soap = self.successful_purchase_response()
