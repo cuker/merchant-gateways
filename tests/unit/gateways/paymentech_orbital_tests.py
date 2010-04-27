@@ -164,24 +164,6 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
 
 #        {'start_month': None, 'verification_value': None, 'start_year': None, 'card_type': 'v', 'issue_number': None, }
 
-        expect = '''<billTo>  TODO  use or lose this
-                      <firstName>Hermione</firstName>
-                      <lastName>Granger</lastName>
-                      <street1>444 Main St.</street1>
-                      <street2>Apt 2</street2>
-                      <city>Dallas</city>
-                      <state>TX</state>
-                      <postalCode>77777</postalCode>
-                      <country>USA</country>
-                      <email>hgranger@hogwarts.edu</email>
-                    </billTo>
-                      <expirationMonth>12</expirationMonth>
-                      <expirationYear>2090</expirationYear>
-                      <cvNumber>123</cvNumber>
-                      <cardType>001</cardType>
-
-                    <ccAuthService run="true"/>'''
-
         # TODO enforce <?xml version="1.0" encoding="UTF-8"?> tags??
         #  ERGO  configure the sample correctly at error time
 
