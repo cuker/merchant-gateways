@@ -34,7 +34,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                       'AccountNum': None,
                       'ApprovalStatus': None,
                       'AuthCode': None,
-                      'CAVVRespCode': None,
+                      'CAVVRespCode': None,  #  TODO  diff between CAVV and CVV2??
                       'CVV2RespCode': None,
                       'CardBrand': None,
                       'CustomerName': None,
