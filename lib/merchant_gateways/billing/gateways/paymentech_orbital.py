@@ -12,6 +12,9 @@ XML = ElementMaker()
 # http://doc.rhinonet.com/paymentech/Orbital%20Gateway%20Interface%20Specification%202.6.0.pdf
 # http://idotmind.com/chase-paymentech-orbital-gateway-phreebooks-payment-module-gotchas/
 
+TEST_URL = 'https://orbitalvar1.paymentech.net/authorize'
+LIVE_URL = 'https://orbital1.paymentech.net/authorize'
+
 class PaymentechOrbital(Gateway):
 
     def authorize(self, money, creditcard, **options):
@@ -180,7 +183,7 @@ class PaymentechOrbital(Gateway):
 #        add_business_rules_data(xml)
 #        xml.target!
 
-CREDIT_CARD_CODES = dict( v='001',
+CREDIT_CARD_CODES = dict( v='001',  #  TODO  convert to Orbital
                           m='002', # TODO  verify
                           a='003',  # TODO  verify
                           d='004' )  # TODO  verify
@@ -189,8 +192,6 @@ CREDIT_CARD_CODES = dict( v='001',
   #      :american_express => '003',
    #     :discover => '004'
 
-TEST_URL = 'https://ics2wstest.ic3.com/commerce/1.x/transactionProcessor'
-LIVE_URL = 'https://ics2ws.ic3.com/commerce/1.x/transactionProcessor'
 
 def xStr(doc):
     return etree.tostring(doc, pretty_print=True)  #  TODO  take out pretty_print to go out wire!
