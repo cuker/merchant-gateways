@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 from gateway import Gateway, default_dict
 from merchant_gateways.billing import response
@@ -7,6 +8,9 @@ from lxml import etree
 from lxml.builder import ElementMaker
 XML = ElementMaker()
 
+#  TODO  bow before http://www.userhelpguides.com/dotnetcharge/paymentechorbital.php
+# http://doc.rhinonet.com/paymentech/Orbital%20Gateway%20Interface%20Specification%202.6.0.pdf
+# http://idotmind.com/chase-paymentech-orbital-gateway-phreebooks-payment-module-gotchas/
 
 class PaymentechOrbital(Gateway):
 
@@ -83,27 +87,33 @@ class PaymentechOrbital(Gateway):
 # TODO  question fields in Cybersource        (template_p % fields) )
 
     def parse(self, soap):
+
+
         result = {}
         keys  = self.soap_keys()
         doc  = etree.XML(soap)
-        namespace = dict(c='urn:schemas-cybersource-com:transaction-data-1.26')  #  ERGO  teach assert_xml to also do this
 
         for key in keys:
-            nodes = doc.xpath('//c:'+key, namespaces=namespace)
+            nodes = doc.xpath('//' + key)
             result[key] = len(nodes) and nodes[0].text or None
 
         return result
 
-    def soap_keys(self):
-        return ( 'amount',               'merchantReferenceCode',
-                 'authorizationCode',    'processorResponse',
-                 'authorizedDateTime',   'reasonCode',
-                 'avsCode',              'reconciliationID',
-                 'avsCodeRaw',           'requestID',
-                 'currency',             'requestToken',
-                 'cvCode',
-                 'cvCodeRaw',
-                 'decision' )  #  TODO  adjust this for paymentech_orbital
+    def soap_keys(self):  #   TODO  better name coz it's not always about the SOAP
+        return ( 'AccountNum',                'MerchantID',
+                 'ApprovalStatus',            'MessageType',
+                 'AuthCode',                  'OrderID',
+                 'AVSRespCode',               'ProcStatus',
+                 'CardBrand',                 'ProfileProcStatus',
+                 'CAVVRespCode',              'RecurringAdviceCd',
+                 'CustomerName',              'RespCode',
+                 'CustomerProfileMessage',    'RespMsg',
+                 'CustomerRefNum',            'RespTime',
+                 'CVV2RespCode',              'StatusMsg',
+                 'HostAVSRespCode',           'TerminalID',
+                 'HostCVV2RespCode',          'TxRefIdx',
+                 'HostRespCode',              'TxRefNum',
+                 'IndustryType', )  #  TODO  adjust this for paymentech_orbital
 
     class Response(response.Response):
         pass

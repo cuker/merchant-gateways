@@ -14,7 +14,14 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         self.options['billing_address'] = {}  #  TODO  put something in there, throw an error if it ain't there
         self.mock_post_webservice(response)
 
+    def test_successful_authorization(self):
+        'TODO'
+
+    def test_failed_authorization(self):
+        'TODO'
+
     def assert_successful_authorization(self):
+        #  TODO  de-cybersource all this
         order_id = str(self.options['order_id'])  #  TODO  put something in options
         requestID = '1842651133440156177166'
         requestToken = 'AP4JY+Or4xRonEAOERAyMzQzOTEzMEM0MFZaNUZCBgDH3fgJ8AEGAMfd+AnwAwzRpAAA7RT/'
@@ -23,6 +30,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         assert self.response.success
 
     def assert_failed_authorization(self):
+        #  TODO  de-cybersource all this
         self.assert_none(self.response.params['authorizationCode'])
         self.assert_none(self.response.fraud_review)
 
@@ -74,28 +82,39 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
 
     def parsed_authentication_response(self):
         return dict(
-                amount="1.00",
-                authorizationCode="004542",
-                authorizedDateTime="2007-07-12T18:31:53Z",
-                avsCode="A",
-                avsCodeRaw="I7",
-                currency="USD",
-                cvCode=None,
-                cvCodeRaw=None,
-                decision="ACCEPT",
-                merchantReferenceCode="TEST11111111111",
-                processorResponse="100",
-                reasonCode="100",
-                reconciliationID="23439130C40VZ2FB",
-                requestID="1842651133440156177166",
-                requestToken="AP4JY+Or4xRonEAOERAyMzQzOTEzMEM0MFZaNUZCBgDH3fgJ8AEGAMfd+AnwAwzRpAAA7RT/"
+            AccountNum='5454545454545454',
+            ApprovalStatus='1',
+            AuthCode='tst554',
+            AVSRespCode='B ',
+            CardBrand='MC',
+            CAVVRespCode=None,
+            CustomerName='JOE SMITH',
+            CustomerProfileMessage='Profile Created',
+            CustomerRefNum='2145108',
+            CVV2RespCode='M',
+            HostAVSRespCode='I3',
+            HostCVV2RespCode='M',
+            HostRespCode='100',
+            IndustryType=None,
+            MerchantID='000000',
+            MessageType='AC',
+            OrderID='1',
+            ProcStatus='0',
+            ProfileProcStatus='0',
+            RecurringAdviceCd=None,
+            RespCode='00',
+            RespMsg=None,
+            RespTime='121825',
+            StatusMsg='Approved',
+            TerminalID='000',
+            TxRefIdx='1',
+            TxRefNum='4A785F5106CCDC41A936BFF628BF73036FEC5401',
         )
 
     def test_parse(self):
         soap = self.successful_authorization_response()
         sample = self.gateway.parse(soap)
         reference = self.parsed_authentication_response()
-
         self.assert_match_hash(reference, sample)  #  TODO  invent an assert_diff that can spot differences
 
     def test_parse_purchase_response(self):
@@ -228,22 +247,8 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
 
         # self.assert_('<street2></street2>' in message)  #  TODO  assert_contains
 
-    def test_cvv_result(self):
-        self.test_successful_authorization()
-        return # TODO
-        cvv = self.response.cvv_result
-        self.assert_equal( None, cvv.code )
-        self.assert_equal( None, cvv.message )
-
-    def test_cvv_result_purchase(self):  #  TODO  better names, and why auth has no cvv result? not requested??
-        self.test_successful_purchase()
-        return # TODO
-        cvv = self.response.cvv_result
-        self.assert_equal( 'M', cvv.code )
-        self.assert_equal( 'Match', cvv.message )
-
     def test_(self):
-        amount = 100
+        amount = 100   #  TODO  de-cybersource this
 
         credit_card = CreditCard( verification_value="123",
                                   number="4111111111111111",
@@ -255,7 +260,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         options = dict( email="someguy1232@fakeemail.net", order_id="1000", shipping_address={}, currency="USD",
                         billing_address=dict(country="Canada", address1="1234 My Street", phone="(555)555-5555",
                                              address2="Apt 1", zip="K1C2N6", company="Widgets Inc", city="Ottawa",
-                                             state="ON"))
+                                             state="ON"))   #  TODO  de-cybersource this
 
         reference = '''<billTo>
                               <firstName>Longbob</firstName>
@@ -281,76 +286,86 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                             </card>
                             <ccAuthService run="true" />
                             <ccCaptureService run="true" />
-                            <businessRules></businessRules>'''
+                            <businessRules></businessRules>'''    #  TODO  de-cybersource this
 
         sample = self.gateway.build_purchase_request(amount, credit_card, **options)
         # TODO self.assert_xml_match(reference, sample)
 
     def successful_authorization_response(self):
-        return '''<?xml version="1.0" encoding="utf-8"?>
-                  <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-                    <soap:Header>
-                      <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
-                        <wsu:Timestamp xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
-                        wsu:Id="Timestamp-32551101">
-                          <wsu:Created>2007-07-12T18:31:53.838Z</wsu:Created>
-                        </wsu:Timestamp>
-                      </wsse:Security>
-                    </soap:Header>
-                    <soap:Body>
-                      <c:replyMessage xmlns:c="urn:schemas-cybersource-com:transaction-data-1.26">
-                        <c:merchantReferenceCode>TEST11111111111</c:merchantReferenceCode>
-                        <c:requestID>1842651133440156177166</c:requestID>
-                        <c:decision>ACCEPT</c:decision>
-                        <c:reasonCode>100</c:reasonCode>
-                        <c:requestToken>AP4JY+Or4xRonEAOERAyMzQzOTEzMEM0MFZaNUZCBgDH3fgJ8AEGAMfd+AnwAwzRpAAA7RT/</c:requestToken>
-                        <c:purchaseTotals>
-                          <c:currency>USD</c:currency>
-                        </c:purchaseTotals>
-                        <c:ccAuthReply>
-                          <c:reasonCode>100</c:reasonCode>
-                          <c:amount>1.00</c:amount>
-                          <c:authorizationCode>004542</c:authorizationCode>
-                          <c:avsCode>A</c:avsCode>
-                          <c:avsCodeRaw>I7</c:avsCodeRaw>
-                          <c:authorizedDateTime>2007-07-12T18:31:53Z</c:authorizedDateTime>
-                          <c:processorResponse>100</c:processorResponse>
-                          <c:reconciliationID>23439130C40VZ2FB</c:reconciliationID>
-                        </c:ccAuthReply>
-                      </c:replyMessage>
-                    </soap:Body>
-                  </soap:Envelope>
-                  '''
+
+
+        return '''<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+<NewOrderResp>
+  <IndustryType/>
+  <MessageType>AC</MessageType>
+  <MerchantID>000000</MerchantID>
+  <TerminalID>000</TerminalID>
+  <CardBrand>MC</CardBrand>
+  <AccountNum>5454545454545454</AccountNum>
+  <OrderID>1</OrderID>
+  <TxRefNum>4A785F5106CCDC41A936BFF628BF73036FEC5401</TxRefNum>
+  <TxRefIdx>1</TxRefIdx>
+  <ProcStatus>0</ProcStatus>
+  <ApprovalStatus>1</ApprovalStatus>
+  <RespCode>00</RespCode>
+  <AVSRespCode>B </AVSRespCode>
+  <CVV2RespCode>M</CVV2RespCode>
+  <AuthCode>tst554</AuthCode>
+  <RecurringAdviceCd/>
+  <CAVVRespCode/>
+  <StatusMsg>Approved</StatusMsg>
+  <RespMsg/>
+  <HostRespCode>100</HostRespCode>
+  <HostAVSRespCode>I3</HostAVSRespCode>
+  <HostCVV2RespCode>M</HostCVV2RespCode>
+  <CustomerRefNum>2145108</CustomerRefNum>
+  <CustomerName>JOE SMITH</CustomerName>
+  <ProfileProcStatus>0</ProfileProcStatus>
+  <CustomerProfileMessage>Profile Created</CustomerProfileMessage>
+  <RespTime>121825</RespTime>
+</NewOrderResp>
+</Response>
+'''
 
     def failed_authorization_response(self):
-        return '''<?xml version="1.0" encoding="utf-8"?>
-                  <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-                    <soap:Header>
-                      <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
-                        <wsu:Timestamp xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
-                        wsu:Id="Timestamp-28121162">
-                          <wsu:Created>2008-01-15T21:50:41.580Z</wsu:Created>
-                        </wsu:Timestamp>
-                      </wsse:Security>
-                    </soap:Header>
-                    <soap:Body>
-                      <c:replyMessage xmlns:c="urn:schemas-cybersource-com:transaction-data-1.26">
-                        <c:merchantReferenceCode>a1efca956703a2a5037178a8a28f7357</c:merchantReferenceCode>
-                        <c:requestID>2004338415330008402434</c:requestID>
-                        <c:decision>REJECT</c:decision>
-                        <c:reasonCode>231</c:reasonCode>
-                        <c:requestToken>Afvvj7KfIgU12gooCFE2/DanQIApt+G1OgTSA+R9PTnyhFTb0KRjgFY+ynyIFNdoKKAghwgx</c:requestToken>
-                        <c:ccAuthReply>
-                          <c:reasonCode>231</c:reasonCode>
-                        </c:ccAuthReply>
-                      </c:replyMessage>
-                    </soap:Body>
-                  </soap:Envelope>
-                  '''
+        return '''<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+<QuickResp>
+  <ProcStatus>841</ProcStatus>
+  <StatusMsg>Error validating card/account number range</StatusMsg>
+  <CustomerBin></CustomerBin>
+  <CustomerMerchantID></CustomerMerchantID>
+  <CustomerName></CustomerName>
+  <CustomerRefNum></CustomerRefNum>
+  <CustomerProfileAction></CustomerProfileAction>
+  <ProfileProcStatus>9576</ProfileProcStatus>
+  <CustomerProfileMessage>Profile: Unable to Perform Profile Transaction. The Associated Transaction Failed. </CustomerProfileMessage>
+  <CustomerAddress1></CustomerAddress1>
+  <CustomerAddress2></CustomerAddress2>
+  <CustomerCity></CustomerCity>
+  <CustomerState></CustomerState>
+  <CustomerZIP></CustomerZIP>
+  <CustomerEmail></CustomerEmail>
+  <CustomerPhone></CustomerPhone>
+  <CustomerProfileOrderOverrideInd></CustomerProfileOrderOverrideInd>
+  <OrderDefaultDescription></OrderDefaultDescription>
+  <OrderDefaultAmount></OrderDefaultAmount>
+  <CustomerAccountType></CustomerAccountType>
+  <CCAccountNum></CCAccountNum>
+  <CCExpireDate></CCExpireDate>
+  <ECPAccountDDA></ECPAccountDDA>
+  <ECPAccountType></ECPAccountType>
+  <ECPAccountRT></ECPAccountRT>
+  <ECPBankPmtDlv></ECPBankPmtDlv>
+  <SwitchSoloStartDate></SwitchSoloStartDate>
+  <SwitchSoloIssueNum></SwitchSoloIssueNum>
+</QuickResp>
+</Response>'''
 
         #  ERGO  complain that 'private' in a test case is irrational...
 
-    def successful_purchase_response(self):
+    def successful_purchase_response(self):  #  TODO  de-cybersource this
         return '''<?xml version="1.0" encoding="utf-8"?>
                   <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
                     <soap:Header>
