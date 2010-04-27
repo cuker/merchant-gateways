@@ -124,13 +124,10 @@ class PaymentechOrbital(Gateway):
     def commit(self, request, **options):
         url = self.is_test and TEST_URL or LIVE_URL
         request = self.build_request(request, **options)
-
         self.result = self.parse(self.post_webservice(url, request, **options))
-
         self.success = self.result['ApprovalStatus'] == '1'
         self.message = self.result['StatusMsg']
-        authorization = 'TODO' # [str(self.options['order_id']), self.result['requestID'], self.result['requestToken']]
-#        authorization = ';'.join(authorization)
+        authorization = self.result['TxRefNum']
 
         return self.__class__.Response( self.success, self.message, self.result,
                                         is_test=self.is_test,
