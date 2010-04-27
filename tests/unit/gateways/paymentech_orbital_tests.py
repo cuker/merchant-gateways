@@ -217,8 +217,8 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                         x.CustomerProfileOrderOverrideInd('NO'),
                         x.OrderID(''),
                         x.Amount('100.00')
-                                 )
-                             )
+                           )
+                       )
                    )
 
         # TODO default_dict should expose all members as read-only data values
