@@ -4,6 +4,8 @@ from merchant_gateways.billing.gateways.gateway import xStr
 from merchant_gateways.billing.credit_card import CreditCard
 from merchant_gateways.tests.test_helper import *
 from pprint import pprint
+from lxml.builder import ElementMaker
+XML = ElementMaker()
 
 class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                              MerchantGatewaysTestSuite.CommonTests):
@@ -254,106 +256,67 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         return self.successful_authorization_response()
 
     def successful_authorization_response(self):
-        from lxml.builder import ElementMaker
-        XML = ElementMaker()
-        return xStr(XML.Response('\n',
-  XML.NewOrderResp('\n  ',
-    XML.IndustryType(),
-    XML.MessageType('AC'),
-    XML.MerchantID('000000'),
-    XML.TerminalID('000'),
-    XML.CardBrand('MC'),
-    XML.AccountNum('5454545454545454'),
-    XML.OrderID('1'),
-    XML.TxRefNum('4A785F5106CCDC41A936BFF628BF73036FEC5401'),
-    XML.TxRefIdx('1'),
-    XML.ProcStatus('0'),
-    XML.ApprovalStatus('1'),
-    XML.RespCode('00'),
-    XML.AVSRespCode('B '),
-    XML.CVV2RespCode('M'),
-    XML.AuthCode('tst554'),
-    XML.RecurringAdviceCd(),
-    XML.CAVVRespCode(),
-    XML.StatusMsg('Approved'),
-    XML.RespMsg(),
-    XML.HostRespCode('100'),
-    XML.HostAVSRespCode('I3'),
-    XML.HostCVV2RespCode('M'),
-    XML.CustomerRefNum('2145108'),
-    XML.CustomerName('JOE SMITH'),
-    XML.ProfileProcStatus('0'),
-    XML.CustomerProfileMessage('Profile Created'),
-    XML.RespTime('121825'))))
-        thang = '''<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-<NewOrderResp>
-  <IndustryType/>
-  <MessageType>AC</MessageType>
-  <MerchantID>000000</MerchantID>
-  <TerminalID>000</TerminalID>
-  <CardBrand>MC</CardBrand>
-  <AccountNum>5454545454545454</AccountNum>
-  <OrderID>1</OrderID>
-  <TxRefNum>4A785F5106CCDC41A936BFF628BF73036FEC5401</TxRefNum>
-  <TxRefIdx>1</TxRefIdx>
-  <ProcStatus>0</ProcStatus>
-  <ApprovalStatus>1</ApprovalStatus>
-  <RespCode>00</RespCode>
-  <AVSRespCode>B </AVSRespCode>
-  <CVV2RespCode>M</CVV2RespCode>
-  <AuthCode>tst554</AuthCode>
-  <RecurringAdviceCd/>
-  <CAVVRespCode/>
-  <StatusMsg>Approved</StatusMsg>
-  <RespMsg/>
-  <HostRespCode>100</HostRespCode>
-  <HostAVSRespCode>I3</HostAVSRespCode>
-  <HostCVV2RespCode>M</HostCVV2RespCode>
-  <CustomerRefNum>2145108</CustomerRefNum>
-  <CustomerName>JOE SMITH</CustomerName>
-  <ProfileProcStatus>0</ProfileProcStatus>
-  <CustomerProfileMessage>Profile Created</CustomerProfileMessage>
-  <RespTime>121825</RespTime>
-</NewOrderResp>
-</Response>
-'''
-        print self.convert_to_element_maker(thang)
-        return thang
+        return xStr(XML.Response(
+                      XML.NewOrderResp(
+                        XML.IndustryType(),
+                        XML.MessageType('AC'),
+                        XML.MerchantID('000000'),
+                        XML.TerminalID('000'),
+                        XML.CardBrand('MC'),
+                        XML.AccountNum('5454545454545454'),
+                        XML.OrderID('1'),
+                        XML.TxRefNum('4A785F5106CCDC41A936BFF628BF73036FEC5401'),
+                        XML.TxRefIdx('1'),
+                        XML.ProcStatus('0'),
+                        XML.ApprovalStatus('1'),
+                        XML.RespCode('00'),
+                        XML.AVSRespCode('B '),
+                        XML.CVV2RespCode('M'),
+                        XML.AuthCode('tst554'),
+                        XML.RecurringAdviceCd(),
+                        XML.CAVVRespCode(),
+                        XML.StatusMsg('Approved'),
+                        XML.RespMsg(),
+                        XML.HostRespCode('100'),
+                        XML.HostAVSRespCode('I3'),
+                        XML.HostCVV2RespCode('M'),
+                        XML.CustomerRefNum('2145108'),
+                        XML.CustomerName('JOE SMITH'),
+                        XML.ProfileProcStatus('0'),
+                        XML.CustomerProfileMessage('Profile Created'),
+                        XML.RespTime('121825'))))
 
     def failed_authorization_response(self):
-        return '''<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-<QuickResp>
-  <ProcStatus>841</ProcStatus>
-  <StatusMsg>Error validating card/account number range</StatusMsg>
-  <CustomerBin></CustomerBin>
-  <CustomerMerchantID></CustomerMerchantID>
-  <CustomerName></CustomerName>
-  <CustomerRefNum></CustomerRefNum>
-  <CustomerProfileAction></CustomerProfileAction>
-  <ProfileProcStatus>9576</ProfileProcStatus>
-  <CustomerProfileMessage>Profile: Unable to Perform Profile Transaction. The Associated Transaction Failed. </CustomerProfileMessage>
-  <CustomerAddress1></CustomerAddress1>
-  <CustomerAddress2></CustomerAddress2>
-  <CustomerCity></CustomerCity>
-  <CustomerState></CustomerState>
-  <CustomerZIP></CustomerZIP>
-  <CustomerEmail></CustomerEmail>
-  <CustomerPhone></CustomerPhone>
-  <CustomerProfileOrderOverrideInd></CustomerProfileOrderOverrideInd>
-  <OrderDefaultDescription></OrderDefaultDescription>
-  <OrderDefaultAmount></OrderDefaultAmount>
-  <CustomerAccountType></CustomerAccountType>
-  <CCAccountNum></CCAccountNum>
-  <CCExpireDate></CCExpireDate>
-  <ECPAccountDDA></ECPAccountDDA>
-  <ECPAccountType></ECPAccountType>
-  <ECPAccountRT></ECPAccountRT>
-  <ECPBankPmtDlv></ECPBankPmtDlv>
-  <SwitchSoloStartDate></SwitchSoloStartDate>
-  <SwitchSoloIssueNum></SwitchSoloIssueNum>
-</QuickResp>
-</Response>'''
+        return xStr(XML.Response(
+                      XML.QuickResp(
+                        XML.ProcStatus('841'),
+                        XML.StatusMsg('Error validating card/account number range'),
+                        XML.CustomerBin(),
+                        XML.CustomerMerchantID(),
+                        XML.CustomerName(),
+                        XML.CustomerRefNum(),
+                        XML.CustomerProfileAction(),
+                        XML.ProfileProcStatus('9576'),
+                        XML.CustomerProfileMessage('Profile: Unable to Perform Profile Transaction. The Associated Transaction Failed. '),
+                        XML.CustomerAddress1(),
+                        XML.CustomerAddress2(),
+                        XML.CustomerCity(),
+                        XML.CustomerState(),
+                        XML.CustomerZIP(),
+                        XML.CustomerEmail(),
+                        XML.CustomerPhone(),
+                        XML.CustomerProfileOrderOverrideInd(),
+                        XML.OrderDefaultDescription(),
+                        XML.OrderDefaultAmount(),
+                        XML.CustomerAccountType(),
+                        XML.CCAccountNum(),
+                        XML.CCExpireDate(),
+                        XML.ECPAccountDDA(),
+                        XML.ECPAccountType(),
+                        XML.ECPAccountRT(),
+                        XML.ECPBankPmtDlv(),
+                        XML.SwitchSoloStartDate(),
+                        XML.SwitchSoloIssueNum())))
+
 
 # ERGO  put us into the test report system and see what we look like!
