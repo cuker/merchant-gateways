@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from gateway import Gateway, default_dict
+from gateway import Gateway, default_dict, xStr
 from merchant_gateways.billing import response
 from merchant_gateways.billing.avs_result import AVSResult
 from merchant_gateways.billing.cvv_result import CVVResult
@@ -51,8 +51,8 @@ class PaymentechOrbital(Gateway):
         x = XML
 
         new_order = x.NewOrder(
-                        x.OrbitalConnectionUsername('user'),
-                        x.OrbitalConnectionPassword('mytestpass'),
+                        x.OrbitalConnectionUsername('user'),  #  TODO  from configs
+                        x.OrbitalConnectionPassword('mytestpass'),  #  TODO  ibid
                         x.IndustryType('EC'),
                         x.MessageType('A'),
                         x.BIN('1'),
@@ -192,6 +192,3 @@ CREDIT_CARD_CODES = dict( v='001',  #  TODO  convert to Orbital
   #      :american_express => '003',
    #     :discover => '004'
 
-
-def xStr(doc):
-    return etree.tostring(doc, pretty_print=True)  #  TODO  take out pretty_print to go out wire!

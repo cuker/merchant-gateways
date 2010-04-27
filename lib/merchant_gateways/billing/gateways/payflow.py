@@ -4,12 +4,10 @@ from merchant_gateways.billing.avs_result import AVSResult
 from merchant_gateways.billing.cvv_result import CVVResult
 from pprint import pprint
 from merchant_gateways.billing import response
+from merchant_gateways.billing.gateways.gateway import xStr
 from lxml import etree
 from lxml.builder import ElementMaker # TODO document we do lxml only !
 XML = ElementMaker()
-
-def xStr(doc):
-    return etree.tostring(doc, pretty_print=True)  #  TODO  take out pretty_print to go out wire!
 
 # TODO use this      XMLNS = 'http://www.paypal.com/XMLPay'
 # TODO  actually write a real post_webservice

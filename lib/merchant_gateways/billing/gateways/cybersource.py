@@ -1,5 +1,6 @@
 
 from gateway import Gateway, default_dict
+from merchant_gateways.billing.gateways.gateway import xStr
 from merchant_gateways.billing import response
 from merchant_gateways.billing.avs_result import AVSResult
 from merchant_gateways.billing.cvv_result import CVVResult
@@ -554,5 +555,3 @@ CREDIT_CARD_CODES = dict( v='001',
 TEST_URL = 'https://ics2wstest.ic3.com/commerce/1.x/transactionProcessor'
 LIVE_URL = 'https://ics2ws.ic3.com/commerce/1.x/transactionProcessor'
 
-def xStr(doc):
-    return etree.tostring(doc, pretty_print=True)  #  TODO  take out pretty_print to go out wire!

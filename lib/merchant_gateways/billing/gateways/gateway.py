@@ -122,3 +122,9 @@ class default_dict(dict):  #  TODO  move to utils
     def __getitem__(self, key):
         default = getattr(self, 'default', '')  #  the irony IS lost on us...
         return self.get(key, default)
+
+        
+def xStr(doc):
+    from lxml import etree
+    return etree.tostring(doc, pretty_print=True)  #  TODO  take out pretty_print to go out wire!
+
