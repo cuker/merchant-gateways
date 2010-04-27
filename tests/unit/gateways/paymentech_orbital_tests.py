@@ -2,7 +2,7 @@
 from merchant_gateways.billing.gateways.paymentech_orbital import PaymentechOrbital
 from merchant_gateways.billing.credit_card import CreditCard
 from merchant_gateways.tests.test_helper import *
-
+from pprint import pprint
 
 class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                              MerchantGatewaysTestSuite.CommonTests):
@@ -27,24 +27,39 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
 
     def assert_failed_authorization(self):
         self.assert_none(self.response.params['TxRefNum'])
-        return         #  TODO  de-cybersource all this
+         #  TODO  assert the message
         self.assert_none(self.response.fraud_review)
 
-        reference = { 'authorizationCode': None, 'avsCodeRaw': None, 'currency': None,
-                      'merchantReferenceCode': 'a1efca956703a2a5037178a8a28f7357',
-                      'authorizedDateTime': None, 'reconciliationID': None,
-                      'amount': None,  #  TODO  is this valid?
-                      'cvCode': None, 'cvCodeRaw': None,
-                      'requestID': '2004338415330008402434',
-                      'processorResponse': None, 'reasonCode': '231', 'avsCode': None,
-                      'decision': 'REJECT',
-                      'requestToken': 'Afvvj7KfIgU12gooCFE2/DanQIApt+G1OgTSA+R9PTnyhFTb0KRjgFY+ynyIFNdoKKAghwgx'}
+        reference = {'AVSRespCode': None,
+             'AccountNum': None,
+             'ApprovalStatus': None,
+             'AuthCode': None,
+             'CAVVRespCode': None,
+             'CVV2RespCode': None,
+             'CardBrand': None,
+             'CustomerName': None,
+             'CustomerProfileMessage': 'Profile: Unable to Perform Profile Transaction. The Associated Transaction Failed. ',
+             'CustomerRefNum': None,
+             'HostAVSRespCode': None,
+             'HostCVV2RespCode': None,
+             'HostRespCode': None,
+             'IndustryType': None,
+             'MerchantID': None,
+             'MessageType': None,
+             'OrderID': None,
+             'ProcStatus': '841',
+             'ProfileProcStatus': '9576',
+             'RecurringAdviceCd': None,
+             'RespCode': None,
+             'RespMsg': None,
+             'RespTime': None,
+             'StatusMsg': 'Error validating card/account number range',
+             'TerminalID': None,
+             'TxRefIdx': None,
+             'TxRefNum': None}
 
         self.assert_match_hash(self.response.params, reference)
-
-        # TODO retire for is_test: 'test': False,
-        # 'message': 'TODO',
-        assert self.response.authorization == '1;2004338415330008402434;Afvvj7KfIgU12gooCFE2/DanQIApt+G1OgTSA+R9PTnyhFTb0KRjgFY+ynyIFNdoKKAghwgx'
+        self.assert_equal('Error validating card/account number range', self.response.message)
 
     def assert_successful_purchase(self):
         '''TODO self.assert_equal( 'Successful transaction', self.response.message )'''
