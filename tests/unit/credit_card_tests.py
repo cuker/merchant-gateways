@@ -74,8 +74,7 @@ class CreditCardTest(MerchantGatewaysUtilitiesTestSuite):
     def test_should_be_able_to_liberate_a_bogus_card(self):
         c = self.credit_card('', card_type='bogus')
         self.deny_valid(c)
-        return  #  TODO
-        c.type = 'visa'
+        c.card_type = 'visa'
         self.assert_valid(c)
 
     '''

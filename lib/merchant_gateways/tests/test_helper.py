@@ -127,7 +127,7 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
 
     def assert_match_hash(self, reference, sample, diagnostic=''):
         if reference == sample:  return
-        print dir(reference)
+        #print dir(reference)
         reference = reference.copy()
         sample = sample.copy()
         from pprint import pformat
@@ -225,7 +225,7 @@ class MerchantGatewaysTestSuite( MerchantGatewaysUtilitiesTestSuite,
         def test_successful_purchase(self):
             self.mock_webservice(self.successful_purchase_response())
             self.response = self.gateway.purchase(self.amount, self.credit_card, **self.options)
-            print self.response
+           # print self.response
             self.assert_successful_purchase()
 
 nil = None # C-;
