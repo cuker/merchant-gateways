@@ -15,7 +15,7 @@ class CreditCard(object):
         self.number = re.sub('[^\d]', '', str(number))
         self.month = int(month)
         self.year = int(year)    #  CONSIDER  throw the correct error if the year is not a number
-        self.card_type = card_type.lower()  #  TODO tdd that lower()
+        self.card_type = card_type
         self.first_name = first_name
         self.last_name = last_name
 #        self.start_month = start_month
@@ -253,7 +253,7 @@ class CreditCard(object):
                      visa='Visa',
                      solo='Solo'
                     )
-        return types.get(self.card_type, None)  #  TODO  handle rogue types correctly, etc.!
+        return types.get(self.card_type.lower(), None)  #  TODO  handle rogue types correctly, etc.!
 
 CARD_COMPANIES = {
     'visa': '^4\d{12}(\d{3})?$',
