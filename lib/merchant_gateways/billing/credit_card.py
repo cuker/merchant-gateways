@@ -225,6 +225,7 @@ class CreditCard(object):
         required = 'this field is required' #  TODO  translate me; use real Django validators
         if 0 == len(self.first_name):  self.errors['first_name'] = required
         if 0 == len(self.last_name) :  self.errors['last_name']  = required
+        if not self.type_name():  self.errors['card_type'] = required
         return self.errors.values() == []
 #
 #        '''def valid_number(cls, number): TODO  pass self.number by default
@@ -249,9 +250,10 @@ class CreditCard(object):
     def type_name(self):
         types = dict(m='MasterCard',
                      v='Visa',
-                     visa='Visa'
+                     visa='Visa',
+                     solo='Solo'
                     )
-        return types[self.card_type]  #  TODO  handle rogue types correctly, etc.!
+        return types.get(self.card_type, None)  #  TODO  handle rogue types correctly, etc.!
 
 CARD_COMPANIES = {
     'visa': '^4\d{12}(\d{3})?$',
