@@ -1,6 +1,8 @@
 import re
 from datetime import datetime
 
+#  CONSIDER the card should raise an error if the type is not understood
+
 class CreditCard(object):
     require_verification_value = True
 
@@ -23,8 +25,6 @@ class CreditCard(object):
         self.issue_number = issue_number
         self.verification_value = verification_value  #  TODO tdd this line
         self.errors = dict()
-
-#  TODO the card should raise an error if the type is not understood
 
 #    #should be in mixin
 #    @classmethod
