@@ -21,10 +21,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
     def assert_successful_authorization(self):
         #  TODO  de-cybersource all this
         order_id = str(self.options['order_id'])  #  TODO  put something in options
-#        requestID = '1842651133440156177166'
-#        requestToken = 'AP4JY+Or4xRonEAOERAyMzQzOTEzMEM0MFZaNUZCBgDH3fgJ8AEGAMfd+AnwAwzRpAAA7RT/'
-#        authorization = ';'.join([order_id, requestID, requestToken])
-        self.assert_equal('4A785F5106CCDC41A936BFF628BF73036FEC5401', self.response.authorization) # TODO  why not from <c:authorizationCode>004542</c:authorizationCode> ?
+        self.assert_equal('4A785F5106CCDC41A936BFF628BF73036FEC5401', self.response.authorization)
         self.assert_equal('Approved', self.gateway.message)
         assert self.response.success
 

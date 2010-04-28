@@ -63,6 +63,8 @@ class CreditCardTest(MerchantGatewaysUtilitiesTestSuite):
         self.assert_valid(self.solo)
         self.assert_equal({}, self.solo.errors)  #  TODO  match Django errorizers
 
+
+
     def test_cards_with_empty_names_should_not_be_valid(self):
         self.visa.first_name = ''
         self.visa.last_name  = ''
@@ -70,6 +72,15 @@ class CreditCardTest(MerchantGatewaysUtilitiesTestSuite):
         self.deny_valid(self.visa)
         reference = dict(first_name='this field is required', last_name='this field is required')  #  CONSIDER  match this to Django model-land
         self.assert_match_hash(reference, self.visa.errors)
+
+    def test_should_be_able_to_liberate_a_bogus_card(self):
+        return # TODO
+        c = self.credit_card('', card_type='bogus')
+
+        self.assert_not_valid(c)
+        print c.type
+        c.type = 'visa'
+        self.assert_valid(c)
 
     '''
 
@@ -81,13 +92,6 @@ class CreditCardTest(MerchantGatewaysUtilitiesTestSuite):
     assert self.visa.errors.on("first_name")
   end
 
-  def test_should_be_able_to_liberate_a_bogus_card
-    c = credit_card('', :type='bogus')
-    assert_valid c
-
-    c.type = 'visa'
-    assert_not_valid c
-  end
 
   def test_should_be_able_to_identify_invalid_card_numbers
     self.visa.number = nil
