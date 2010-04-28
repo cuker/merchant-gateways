@@ -21,7 +21,7 @@ class PaymentechOrbital(Gateway):
         '''
         Request an authorization for an amount from CyberSource
 
-        You must supply an :order_id in the options hash
+        You must supply an :order_id in the options hash  TODO  complain if it ain't there
         '''
 
         self.options.update(options)
@@ -125,6 +125,7 @@ class PaymentechOrbital(Gateway):
 
     def commit(self, request, **options):
         url = self.is_test and TEST_URL or LIVE_URL
+        self.request = request  #  TODO  standardize this
         request = self.build_request(request, **options)
         self.result = self.parse(self.post_webservice(url, request))  #  CONSIDER  no version of post_webservice needs options
         self.success = self.result['ApprovalStatus'] == '1'
