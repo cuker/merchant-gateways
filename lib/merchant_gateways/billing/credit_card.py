@@ -23,7 +23,7 @@ class CreditCard(object):
 #        self.start_month = start_month
 #        self.start_year = start_year
         self.issue_number = issue_number
-        self.verification_value = verification_value  #  TODO tdd this line
+        self.verification_value = verification_value
         self.errors = dict()
 
 #    #should be in mixin
