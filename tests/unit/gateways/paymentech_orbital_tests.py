@@ -157,29 +157,31 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
 
     #  TODO  always credit_card never creditcard
 
+    def assemble_billing_address(self):
+        self.options = {
+        'order_id': '1',
+        'description': 'Time-Turner',
+        'email': 'hgranger@hogwarts.edu',
+        'customer': '947', #  TODO  test this going through
+        'ip': '192.168.1.1', #  TODO  test this going through
+        }
+        billing_address = {
+        'address1': '444 Main St.',
+        'address2': 'Apt 2',
+        'company': 'ACME Software', #  TODO  where's the love for the company?
+        'phone': '222-222-2222', #  TODO  where the phone number goes?
+        'zip': '77777',
+        'city': 'Dallas',
+        'country': 'USA',
+        'state': 'TX'
+        }
+        self.options['billing_address'] = billing_address
+        return billing_address
+
     def test_build_auth_request(self):
         self.money = Money('100.00', 'USD')
 
-        self.options = {
-            'order_id': '1',
-            'description': 'Time-Turner',
-            'email': 'hgranger@hogwarts.edu',
-            'customer': '947',    #  TODO  test this going through
-            'ip': '192.168.1.1',  #  TODO  test this going through
-        }
-
-        billing_address = {
-            'address1': '444 Main St.',
-            'address2': 'Apt 2',
-            'company': 'ACME Software',  #  TODO  where's the love for the company?
-            'phone': '222-222-2222',      #  TODO  where the phone number goes?
-            'zip': '77777',
-            'city': 'Dallas',
-            'country': 'USA',
-            'state': 'TX'
-        }
-
-        self.options['billing_address'] = billing_address
+        billing_address = self.assemble_billing_address()
         self.options['login'] = 'Triwizard'  #  TODO  is the one true standard interface "login" or "username"
         self.options['password'] = 'Tournament'
 
@@ -227,6 +229,25 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                    )
 
         # TODO default_dict should expose all members as read-only data values
+
+    def test_build_auth_request_with_alternative_money(self):
+        Nuevo_Sol = 'PEN'
+        Nuevo_Sol_numeric = '604'
+        self.money = Money('200.00', Nuevo_Sol)
+        billing_address = self.assemble_billing_address()
+        message = self.gateway.build_auth_request(self.money, self.credit_card, **self.options)
+
+        self.assert_xml(message, lambda x:
+                             x.Request(
+                                 x.NewOrder(
+                        x.CurrencyCode(Nuevo_Sol_numeric),
+                        x.CurrencyExponent('2'),  #  TODO  vary this
+                        x.Amount('200.00')
+                           )
+                       )
+                   )
+
+        #  TODO  Payflow & AuthorizeNet probably are not on board with currency yet
 
     def test_build_auth_request_without_street2(self):
         self.money = Money('2.00', 'USD')

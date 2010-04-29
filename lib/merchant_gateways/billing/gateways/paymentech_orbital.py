@@ -56,6 +56,9 @@ class PaymentechOrbital(Gateway):
         exp_code = ( '%02i' % credit_card.month) + str(credit_card.year)[-2:] #  TODO  credit_card_format
         x = XML
 
+        from money.Money import CURRENCY
+        numeric = CURRENCY[str(money.currency)].numeric  #  TODO  this should be an accessor
+
         new_order = x.NewOrder(
                         x.OrbitalConnectionUsername(fields['login']),  #  TODO  from configs
                         x.OrbitalConnectionPassword(fields['password']),  #  TODO  ibid
@@ -71,7 +74,7 @@ class PaymentechOrbital(Gateway):
 
                         x.AccountNum(credit_card.number),
                         x.Exp(exp_code),
-                        x.CurrencyCode('840'),   #  CONSIDER  non-US currency
+                        x.CurrencyCode(numeric),
                         x.CurrencyExponent('2'),
                         x.CardSecValInd('1'),  #  CONSIDER  visa & discover only - nullify for others
                         x.CardSecVal(credit_card.verification_value),
