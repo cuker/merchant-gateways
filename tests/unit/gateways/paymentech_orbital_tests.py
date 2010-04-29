@@ -23,6 +23,14 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         order_id = str(self.options['order_id'])  #  TODO  put something in options
         self.assert_equal('4A785F5106CCDC41A936BFF628BF73036FEC5401', self.response.authorization)
         self.assert_equal('Approved', self.gateway.message)
+        # CONSIDER stash it there self.gateway.response
+        #print self.response.result   #  TODO  and make it the RAW result!!
+        self.assert_equal('B ', self.response.result['AVSRespCode'])  #  CONSIDER why 'B '?
+        avs = self.response.avs_result
+        self.assert_equal( 'B', avs.code )
+        self.assert_equal( 'Y', avs.street_match )  #  TODO  why none? What wrong with B?
+        self.assert_equal( None, avs.postal_match )
+
         assert self.response.success
         # print self.gateway.post_webservice.call_args
 

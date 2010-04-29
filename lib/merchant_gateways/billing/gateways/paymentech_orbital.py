@@ -88,7 +88,7 @@ class PaymentechOrbital(Gateway):
                         x.AVScountryCode('840'), #  CONSIDER  other countries
                         x.CustomerProfileFromOrderInd('A'),
                         x.CustomerProfileOrderOverrideInd('NO'),
-                        x.OrderID(''),  #  TODO  
+                        x.OrderID(''),  #  TODO
                         x.Amount(grandTotalAmount)
                         )
         return xStr(XML.Request(new_order))
@@ -131,20 +131,23 @@ class PaymentechOrbital(Gateway):
         pass
 
     def commit(self, request, **options):
-        url = self.is_test and TEST_URL or LIVE_URL
-        self.request = request  #  TODO  standardize this
-        request = self.build_request(request, **options)
-        self.result = self.parse(self.post_webservice(url, request))  #  CONSIDER  no version of post_webservice needs options
-        self.success = self.result['ApprovalStatus'] == '1'
-        self.message = self.result['StatusMsg']
+        url           = self.is_test and TEST_URL or LIVE_URL
+        self.request  = request  #  TODO  standardize this
+        request       = self.build_request(request, **options)
+        self.result   = self.parse(self.post_webservice(url, request))  #  CONSIDER  no version of post_webservice needs options
+        self.success  = self.result['ApprovalStatus'] == '1'
+        self.message  = self.result['StatusMsg']
         authorization = self.result['TxRefNum']
+        avs_resp_code = self.result.get('AVSRespCode', '') or ''
 
-        return self.__class__.Response( self.success, self.message, self.result,
-                                        is_test=self.is_test,
-                                        authorization=authorization,
-#                                       :avs_result => { :code => response[:avsCode] },
-                                # TODO        cvv_result=self.result['cvCode']
+        r = self.__class__.Response( self.success, self.message, self.result,
+                                     is_test=self.is_test,
+                                     authorization=authorization,
+                                     avs_result=avs_resp_code.strip()
+                                     # TODO        cvv_result=self.result['cvCode']
                                     )
+        r.result = self.result  #  TODO  use params for something else
+        return r
 
     def build_request(self, body, **options):
         template = '''<?xml version="1.0" encoding="UTF-8"?>

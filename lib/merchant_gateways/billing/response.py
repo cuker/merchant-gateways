@@ -8,6 +8,7 @@ class Response(object):
         self.success = success
         self.message = message
         self.params  = params
+        #  TODO  add result!
 
         self.options     = default_dict(options).set_default(None)
         self.test          = options.setdefault('test', False)
