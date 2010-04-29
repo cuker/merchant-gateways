@@ -168,8 +168,8 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         billing_address = {
         'address1': '444 Main St.',
         'address2': 'Apt 2',
-        'company': 'ACME Software', #  TODO  where's the love for the company?
-        'phone': '222-222-2222', #  TODO  where the phone number goes?
+        'company': 'ACME Software', #  CONSIDER  Orbital seems to have no slot for the company
+        'phone': '222-222-2222',
         'zip': '77777',
         'city': 'Dallas',
         'country': 'USA',
@@ -181,15 +181,15 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
     def assemble_another_address_too(self):
         self.options = {
         'order_id': '1',
-        'description': 'Time-Turner', # TODO  take as much of this out as possible
+        'description': 'Time-Turner',
         'email': 'hgranger@hogwarts.edu',
         'customer': '947',
         'ip': '192.168.1.1',
         }
         billing_address = {
         'address1': '444 Main St.',
-        'company': 'ACME Software', #  TODO  where's the love for the company?
-        'phone': '222-222-2222', #  TODO  where the phone number goes?
+        'company': 'ACME Software',
+        'phone': '222-222-2222',
         'zip': '77777',
         'city': 'Dallas',
         'country': 'USA',
