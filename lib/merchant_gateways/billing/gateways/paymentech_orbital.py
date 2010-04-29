@@ -111,7 +111,7 @@ class PaymentechOrbital(Gateway):
 
         return result
 
-    def soap_keys(self):  #   TODO  better name coz it's not always about the SOAP
+    def soap_keys(self):  #   CONSIDER  better name coz it's not always about the SOAP
         return ( 'AccountNum',                'MerchantID',
                  'ApprovalStatus',            'MessageType',
                  'AuthCode',                  'OrderID',
@@ -125,7 +125,7 @@ class PaymentechOrbital(Gateway):
                  'HostAVSRespCode',           'TerminalID',
                  'HostCVV2RespCode',          'TxRefIdx',
                  'HostRespCode',              'TxRefNum',
-                 'IndustryType', )  #  TODO  adjust this for paymentech_orbital
+                 'IndustryType', )
 
     class Response(response.Response):
         pass
