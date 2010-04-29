@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 from merchant_gateways.billing.gateways.paymentech_orbital import PaymentechOrbital
 from merchant_gateways.billing.gateways.gateway import xStr
@@ -189,8 +190,9 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         #q.write(reference_too)
         #return
         #print self.convert_xml_to_element_maker(reference_too)
+        self.money = Money('1.00', 'USD')
 
-        sample = self.gateway.build_request('Aparecium')  #  TODO  as usual, options! and respect the body!
+        sample = self.gateway.build_authorization_request(self.money, self.credit_card)  #  TODO  as usual, options! and respect the body!
 
         self.assert_xml(sample, lambda XML:
                 XML.Request(
@@ -346,7 +348,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         self.options['login'] = 'Triwizard'  #  TODO  is the one true standard interface "login" or "username"
         self.options['password'] = 'Tournament'
 
-        message = self.gateway.build_authorization_request(self.money, self.credit_card, **self.options)
+        message = self.gateway.build_authorization_request_TODO(self.money, self.credit_card, **self.options)
 
 #        {'start_month': None, 'verification_value': None, 'start_year': None, 'card_type': 'v', 'issue_number': None, }
 
@@ -391,7 +393,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
 
         # TODO default_dict should expose all members as read-only data values
 
-    def test_build_auth_request_with_alternative_money(self):
+    def test_build_authorization_request_with_alternative_money(self):
         Nuevo_Sol = 'PEN'
         Nuevo_Sol_numeric = '604'
         self.money = Money('200.00', Nuevo_Sol)
@@ -400,15 +402,26 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
 
         self.assert_xml(message, lambda x:
                              x.Request(
-                                 x.NewOrder(
-                        x.CurrencyCode(Nuevo_Sol_numeric),
-                        x.CurrencyExponent('2'),  #  TODO  vary this
-                        x.Amount('200.00')
-                           )
-                       )
-                   )
+                                 x.AC(
+                                    XML.CommonData(
+                                      XML.CommonMandatory(
+                                        XML.Currency(CurrencyCode=Nuevo_Sol_numeric,
+                                                     CurrencyExponent='2'  #  TODO  vary this
+                                        )
+                                        )
+                                      )
+                                    )
+                                 )
+                             )
 
-    def test_build_auth_request_without_street2(self):
+#  TODO  Transaction Amount:
+# Keys:
+# Implied decimal including those currencies that are a zero exponent. For example, both $100.00 (an exponent of ‘2’) and 100 Yen (an exponent of ‘0’) should be sent as <Amount>10000</Amount>.
+# See table for min/max amount for each currency type.
+
+# holy f--- do we gotta do all that??
+
+    def test_build_authorization_request_without_street2(self):
         self.money = Money('2.00', 'USD')
 
         self.assemble_another_address_too()

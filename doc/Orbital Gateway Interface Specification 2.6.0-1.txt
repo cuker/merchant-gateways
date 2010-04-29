@@ -1,0 +1,5679 @@
+Orbital Gateway Interface Specification
+V 2.6.0
+
+Change Log
+Date
+07/18/01 10/09/01
+
+Action
+Rewrite Addition
+
+Description of Change
+Complete rewrite of the specification. Added the reference documents for the Request / Response DTD’s. This reference lists the correct DTD version # [12] required for all functionality. Correctly define <CardType> as being filled with Null for ECP and Switch – Solo Refunds. Add AVS Data for ECP Refunds Correct definition XML Tags ‘Version’ and ‘MessageType’ from being child elements of the tag <Batch> to being an attributes of <Batch>. The Currencies minimum’s correctly adjusted to reflect a minimum of 1 unit for all available currency types. Correct capitalization of varying AVS elements. Correctly identify the field type of the <OrderID> Xml Tag as Alphanumeric [AN] as opposed to Numeric [A]. Added Values for MOTO Transactions Updated the response code values Updated Valid Currency Codes Added Verified by Visa and MasterCard SecureCode Information Card Verification number and AVS Descriptions Interface Definition Section 2 to better explain MIME Header and Authentication and interface options. Added definition for supporting Blank Expiration dates to Salem [BIN 000001] Added support for Canadian ECP Removed the “/” character from the listing of valid characters allowed in the OrderID, ECOrderNum and MailOrderNum Tags. Updated all version numbers and DTD reverences to reflect newest version numbers. The document has been updated to reflect that the Orbital Gateway no longer requires the AccountNum tag to be filled in on a Mark for Capture transaction for Credit Card and SwitchSolo transactions. But the tag itself is still required from a DTD perspective. Updated the response tags to reflect the correct spelling for the AVS Response Tags. Added the Interface Version Tag for tracking the coding version #. Improves Paymentech’s ability to provide production support Added Corrective Action to ProcStatus Response Codes Greater than “0”. Added new ones and deleted ones no longer returned.
+
+10/09/01 10/09/01 10/09/01
+
+Correction Addition Correction
+
+10/09/01 10/09/01 10/09/01 06/30/03 06/30/03 06/30/03 06/30/03 06/30/03 03/30/03 08/15/03 08/15/03 12/09/03 12/09/03 12/10/03
+
+Correction Correction Correction Addition Updated Updated Addition Updated Updated Updated Updated Updated Updated Updated
+
+12/10/03 12/10/03
+
+Corrected Updated
+
+12/10/03
+
+Updated
+
+September 2004
+
+Orbital Gateway Interface Specification
+
+Page 2
+
+Date
+12/11/03 12/11/03
+
+Action
+Updated Corrected
+
+Description of Change
+Added explanation of the new optional MIME-Header request item [Interface-Version:], which will help in production support. Corrected the documentation to reflect POSConditionCode should be ‘08’ instead of ‘00’ for the Mail Order industry segment. Newest DTD version Simpler Mark for Capture Requirements based on newest DTD Simpler Void Requirements based on newest DTD Corrected Appendix Header names for AVS and CVV response tags. Deleted the ‘&’ character as a valid character to be used in the Order ID and ECOrderNum fields. Additional Support for Amex Purchasing Card Data [Ship to Address Information and Addenda Records]. Added New FlexCache Response Messages. OrderID and ECOrderNum field changed from 16 characters to 22 characters. Newest DTD version - PTI26 CardSecVal Data Type corrected. The Xml Tag was listed as an Alphanumeric data type when it is really a numeric data type. Recurring Indicator for Canadian Merchants – Authorizations and Refunds Added support for Purchasing Card II and Amex Purchasing Card Data to the Refund Transaction Added support for AVS Country Code. Added support for Soft Descriptors – Salem Only [Not yet supported through the VT] Deleted ProStatus 843 – “PWS_ERR_VALIDATION_EXP_DATE_TOO_OLD”. The Orbital Gateway will no longer reject transactions that are submitted with Expiration Dates prior the request date. Corrected the Australian Currency Code value from ‘36’ to ‘036’. Updated Mandatory/Optional Column to reflect Conditionally required fields. Added new ProcStatus Code of 881. Moving forward, invalid TxRefNum’s will not generate a ProcStatus value of 3 anymore, instead it will be an 881. Changed AVS Usage for Mail Order and Recurring Transaction Types to AVS Extended Parent Tag from AVS Base. This enables sending of all AVS Data for these Industries. New Gateway URL’s for both the Certification and Production environments. This includes adding a secondary URL for failover support.
+
+03/03/04 03/03/04 03/03/04 04/05/04 04/06/04 04/06/04 07/26/04 07/26/04 10/28/04 10/28/04 10/28/04 10/28/04 10/28/04 10/28/04 10/28/04
+
+Updated Updated Updated Corrected Updated Addition Addition Updated Updated Corrected Addition Addition Addition Addition Deleted
+
+10/28/04 10/28/04 10/28/04
+
+Corrected Updated Updated
+
+10/28/04
+
+Updated
+
+10/28/04
+
+Updated
+
+September 2004
+
+Orbital Gateway Interface Specification
+
+Page 3
+
+Table of Contents
+Introduction 8
+Paymentech Orbital Gateway Transaction Processing Model .................8 Message Types.................................................................................................9 Cardholder Authentication (Card Not Present) .......................................10 Address Verification.........................................................................10 Card Verification Numbers .............................................................10 Verified by Visa/MasterCard SecureCode Programs .................11 Soft Descriptors .............................................................................................12 Introduction .......................................................................................12 Soft Descriptor Support....................................................................12 SALEM SUPPORT ............................................................................13 TAMPA SUPPORT ...........................................................................14
+
+Processing Interface Description
+
+16
+
+Introduction ...................................................................................................16 Communication Protocol .............................................................................16 Posting to a URL ...............................................................................16 Security ...........................................................................................................17 Secure Sockets Layer Implementation Required..........................17 Authentication...................................................................................17 XML DTD .......................................................................................................18 MIME Header ................................................................................................18 MIME Header Field Definition .......................................................19 Retry Logic .....................................................................................................21
+
+XML Templates
+
+22
+
+Introduction ...................................................................................................22 Sample XML Auth Request with MIME Header:.........................22 Sample XML Auth Response with MIME Header.......................23
+
+September 2004
+
+Orbital Gateway Interface Specification
+
+Page 4
+
+Legends...............................................................................................23 Authorization and Authorization-Capture Request Elements ..............25 Authorization and Authorization-Capture Response Elements............41 Prior Authorization Request Elements ......................................................44 Prior Authorization Response Element .....................................................44 Mark for Capture (of a previous authorization) Request Elements ......45 Mark for Capture Response Elements .......................................................50 Void (full and partial) Request Elements ..................................................51 Void (full and partial) Response Elements................................................53 Refund Request Elements ............................................................................54 Refund Response Elements .........................................................................66 Quick Response Elements............................................................................67
+
+“End of Day” Messages
+
+68
+
+Submit all Marked for Capture Transactions For Clearing (Batch Request) Elements.........................................................................................68 Batch Response Elements.............................................................................70
+
+Appendix A
+
+71
+
+RespCode Tag Values...................................................................................71 AVSRespCode Tag Values...........................................................................77 CVV2RespCode Tag Values ........................................................................77 CAVVRespCode Tag Values .......................................................................78 HTTP Responses ...........................................................................................79 ProcStatus Tag Values ..................................................................................79 TzCode (Time Zone) Tag Values ................................................................84 CurrencyCode and CurrencyExponent Tag Values ................................85 DownGradeReason Tag Values ..................................................................85 AuthNetwkId Tag Values............................................................................86 AuthSrc Tag Values ......................................................................................86
+
+Appendix B
+
+87
+Full Listing of XML Label Descriptions.....................................................87
+
+September 2004
+
+Orbital Gateway Interface Specification
+
+Page 5
+
+Appendix C
+
+104
+
+General Card Validation ............................................................................104 MOD 10 Check Digit ......................................................................104 Card Prefix Check ...........................................................................107 Card Length Check .........................................................................107
+
+September 2004
+
+Orbital Gateway Interface Specification
+
+Page 6
+
+Version Document Name
+
+: 02.6.0 : Orbital Gateway Interface Specification V2.6.0 Request_PTI26.dtd Response_PTI26.dtd
+
+Reference Documents :
+
+© This publication is for information purposes only and its content does not represent a contract in any form. Furthermore, this publication shall not be deemed to be a warranty of any kind, either express or implied. Paymentech expressly disclaims, and you expressly waive, any and all warranties, including without limitation those of merchantability and fitness for a particular purpose. Paymentech reserves the right to alter product specifications without notice. No part of this publication may be reproduced or transmitted in any form or by any means, electronic or mechanical, including photocopy, recording, or any information storage or retrieval system, without Paymentech's permission.
+
+September 2004
+
+Orbital Gateway Interface Specification
+
+Page 7
+
+Introduction
+Paymentech’s Orbital Gateway is a proprietary XML Internet Processing System. This system works with both of Paymentech’s Host Processing Platforms. Each Platform has unique processing features, and since Orbital supports both, not all features are available to all merchants. The Gateway processes to both Platforms using identical transaction information as presented in this specification, with the exception of any features that may only be available one of the two Platforms. Throughout this document there will be reference to BIN 000001 (Salem Platform) or BIN 000002 (Tampa Platform), please contact your technical analyst or relationship manager if you are unsure which Platform your merchant account resides on.
+
+Paymentech Orbital Gateway Transaction Processing Model
+The Paymentech Orbital Gateway described in this document operates on the basis that a merchant initially instructs the gateway to perform an operation on his/her behalf. Assuming that the initial operation is successful, the gateway returns information that the merchant must use for all subsequent operations on the transaction in question. The gateway manages the “transaction state” on behalf of the merchant. The merchant moves the transaction between the various possible states using the API messages and fields defined in this document. Possible transaction states include Authorized, Marked for Capture, Captured, Refunded / Credited, Voided [Full and Partial].
+
+September 2004
+
+Orbital Gateway Interface Specification
+
+Page 8
+
+Message Types
+The Paymentech XML Internet Gateway offers the following message types: Immediate authorization request/response: Authorize the supplied information and return a transaction reference number for future transaction management steps. Force Authorization request/response. This transaction will use the message above, but include three additional tags including the <PriorAuthID> element to indicate this transaction should not be re-authorized. Authorization and automatic data capture request/response. Authorize the supplied information, mark it as being immediately ready for submission for clearing and return a transaction reference number for future transaction management steps. Data capture only request/response: (“mark for capture”). Mark a previously authorized transaction as being ready to be submitted for clearing. Purchasing Card II Data can even be added at this time if it was not originally supplied in the authorization request. If the mark for capture transaction amount is less than the original authorization request a split transaction will be created, allowing for additional fulfillment. Void request/response. Void a previous transaction either in the full amount or partial. If a Void request is sent for a partial amount, the transaction will be split into two components. A voided transaction in the amount of the partial void request and the remainder of the previous transaction in the same state the full amount was previously [Authorized or Marked for Capture] Refund request/response: Instruct the gateway to generate a refund [credit] based on the supplied information and returns a transaction reference number for future transaction management steps. Quick response: When a transaction has an error condition, such as a time out condition or a poorly formed message request, the gateway will generate a quick error message back to the requestor. This error response takes the form of a “Quick Response”. This section identifies the key data elements associated with this condition. End of Day Management: An “End of Day” request/response Instructs the gateway to submit all transactions previously marked for capture for clearing.
+
+September 2004
+
+Orbital Gateway Interface Specification
+
+Page 9
+
+Cardholder Authentication (Card Not Present)
+Address Verification
+Introduction
+The Visa, MasterCard, and Discover Address Verification Service (AVS) and American Express Automated Address Verification (AAV) are intended to reduce the fraudulent use of credit cards for mail, telephone, and other card not present transactions. AVS is available to U.S. issued cards including Visa, MasterCard, Diners and Discover card types. International is available U.K. issued Visa cards [BIN 000001 only], and Canadian issued MasterCard cards. AAV verifies U.S. and Canadian issued cards.
+
+AVS/AAV Process
+Each verification process is executed by comparing the transmitted billing address with the billing address data that is kept on file for the cardholder. The AVS/AAV request is routed from the merchant through the Paymentech system, directly to the specific credit card organization. The address information is then compared to the cardholder billing address on file. The result of the AVS/AAV comparison is included in the authorization response message returned to the merchant. The AVS response is reflected as a 1 or 2 character code. In the Orbital Gateway address format, merchants may transmit either the ZIP/Postal Code only or multiple lines of address information. For BIN 000001 accounts to support U.K. based AVS, the country code [UK or GB] must be sent. MCC’s that do not require AVS include: Government (9211, 9222, 9399) School (8211, 8220, 8299) Utility (4900) Insurance (5960, 6300) Cable and Other Pay TV (4899)
+
+Card Verification Numbers
+Visa CVV2/MasterCard CVC2/Discover CID Programs
+The Orbital Gateway supports Visa’s CVV2 (Card Verification Value 2), MasterCard’s CVC2 (Card Validation Code 2) and Discover’s CID fraud reduction programs. This section will provide some background information on supporting these programs. The value for these cards is 3 digits and can be found on the signature panel on the reverse side of the credit card and is represented by the three digits following the account number.
+
+September 2004
+
+Orbital Gateway Interface Specification
+
+Page 10
+
+This value may not be stored at all. Not even for future transactions, as it is against regulations to do so. The use of this value provides an important security check due to the fact that only the individual in possession of the actual credit card will be able to provide the value to the merchant. Statistics validate those individuals who may know the account number, but are not in possession of the actual credit card perpetrate much of the fraud occurring in the non-face-to-face environment. When a merchant collects this value and passes it in the authorization request, Paymentech passes this data through the authorization system to the card issuer. In the authorization response, the card issuer validates the accuracy of CVV2/CVC2/Discover CID value for the specific card. Used in conjunction with the valid expiration date, this service provides a valuable tool for assessing the true cardholder has placed the order with you for your services or product.
+
+American Express CID Merchant Processing Requirements
+American Express provides a similar program to Visa, MasterCard and Discover except with a few differences: • The value for these cards is 4 digits and is printed, not embossed, on the front of all cards. On the American Express card it appears on the right border of the card, however on Optima cards, it appears on the left border of the card. In situations where the CID value is invalid, American Express responds with an authorization decline message; as opposed to the other card types, which respond with a separate CVV2, CVC2 or CID response code. To process American Express CID, the merchant must contact their American Express Client Manager to have their American Express service establishment numbers flagged to accept the Amex CID value. American Express will not provide validation of the CID value if the merchant’s Service Establishment (SE #) is not enabled.
+
+•
+
+•
+
+Verified by Visa/MasterCard SecureCode Programs
+The Orbital Gateway supports the Verified by Visa and MasterCard Secure Code Programs for merchants processing on the Salem system [BIN 000001]. The XML components for supporting these programs are included in this specification, but the detailed implementation information for it can be found in separate Orbital Gateway specifications specific to each program.
+
+September 2004
+
+Orbital Gateway Interface Specification
+
+Page 11
+
+Soft Descriptors
+Introduction
+The Soft Descriptor Records are used to define the merchant name/product description that will appear on the consumer’s statement. It allows the merchant greater flexibility in describing the consumer’s purchase. It is subject to issuer discretion whether this descriptor will be displayed on the cardholder statement.
+
+Soft Descriptor Support
+Support for Soft Descriptors is not globally available to all customers using the Orbital Gateway: Salem [BIN 000001] - The Orbital Gateway supports Soft Descriptors into the Salem Host. However: o o o Prior Risk Department approval is required. And the Merchant ID/Terminal ID must be enabled for Soft Descriptors on the Orbital Gateway. Please contact you Paymentech Representative.
+
+Tampa [BIN 000002] - The Orbital Gateway supports Soft Descriptors into the Tampa Host. However: o o o o It is only supported for Paymentech Canada customers. And the Merchant ID/Terminal ID must be enabled for Soft Descriptors on the Orbital Gateway. The behavior is different from that of the Salem Interface. Please refer to the Tampa development section to understand how it works. Please contact you Paymentech Representative.
+
+NOTE: At this time, Soft Descriptors are NOT supported via the Orbital Gateway Virtual Terminal. What this means is: Orders processed though the XML interface will not display the Soft Descriptor Information on the VT Response Screens. New Orders generated though the VT cannot have Soft Descriptors added as a part of the request.
+
+The VT will at some future date be enhanced to support full Soft Descriptor functionality.
+
+September 2004
+
+Orbital Gateway Interface Specification
+
+Page 12
+
+SALEM SUPPORT
+Rules and Guidelines – Credit Card
+The description in the merchant name field should be what is most recognizable to the cardholder. It should consist of the company name and /or trade name combined with some type of description of the product or service that was purchased. Paymentech will not generated or segregate reports by the Soft Descriptor. If the Merchant wishes to see Salem reports segregated by product, the Merchant must set up specific reporting divisions and deposit those transactions under that division number. For those Merchants who need to roll up several merchant names under one corporation, please contact your Paymentech Representative for details on the use and regulation of the Soft Descriptors. The Merchant Name can be one of 3 different Lengths: o o o 3 bytes 7 bytes 12 bytes
+
+And addition Product Description can be appended based on the length of the Merchant Name, such that they are a combined length of 21 bytes. In other words, the options are: o o o 18 bytes 14 bytes 9 bytes
+
+Notes:
+The City Field allows the merchant to identify the business location or provides the cardholder with a Customer Service Phone Number or URL. This is a requirement to qualify for Visa’s lowest Direct Marketing interchange rate. If the merchant submits a backslash (\) in the merchant descriptor, then it will be converted into a hyphen (-) on the cardholder statement. If the merchant submits a question mark (?) in the merchant descriptor, then it will be converted into a space on the cardholder statement. There are certain American Express card types/programs that ignore the descriptors send using Soft Descriptors. The Optima card is one of these types. The merchant should contact their American Express representative for more details.
+
+-
+
+-
+
+Rules and Guidelines – ECP
+The Automated Clearing House (ACH) uses two fields to describe the transaction to the consumer. The Merchant Name, 15 bytes, will always appear
+
+September 2004
+
+Orbital Gateway Interface Specification
+
+Page 13
+
+on the consumer’s statement, and the Entry Description, 10 bytes, will appear on the consumer’s statement a majority of the time. Both are required fields. Paymentech recommends that the Merchant Name be used for the Doing Business As (DBA) description and the Company Entry field be used for the product description. When utilizing the Soft Descriptor for ECP transactions, both the Merchant Name and the Entry Description are mandatory.
+
+Soft Descriptor Examples:
+A couple of different examples of Soft Descriptors are: - 3 Byte Merchant Descriptor with Phone # <SoftDescriptor> <SDMerchantName>XYZ</SDMerchantName> <SDMerchantPhone>888-888-8888</SDMerchantPhone> <SDProductDescription>PAYMENT1OF3</SDProductDescription> </SoftDescriptor> - 12 Byte Merchant Descriptor with Email <SoftDescriptor> <SDMerchantName>XYZCOMPANY</SDMerchantName> <SDMerchantEmail>suppt@xyz.com</SDMerchantEmail> <SDProductDescription>PYMT1OF3</SDProductDescription> </SoftDescriptor> - ECP <SoftDescriptor> <SDMerchantName>XYZCOMPANY12345</SDMerchantName> <SDProductDescription>PRODUCT123</SDProductDescription> </SoftDescriptor>
+
+TAMPA SUPPORT
+Rules and Guidelines
+Again, the support for Soft Descriptors via the Tampa Host is only for customers processing through Paymentech Canada. Unlike Salem, the only value that gets passed on the Cardholder statement is the Merchant Name field. And for these customers, it is a maximum of 25 bytes of data. All other Soft Descriptor fields can optionally be sent, but will not be submitted to the settlement host and will not display on the cardholder statement.
+
+Soft Descriptor Examples:
+<SoftDescriptor> <SDMerchantName>XYZ PAYMENT1OF3</SDMerchantName>
+
+September 2004
+
+Orbital Gateway Interface Specification
+
+Page 14
+
+</SoftDescriptor>
+
+September 2004
+
+Orbital Gateway Interface Specification
+
+Page 15
+
+Processing Interface Description
+Introduction
+The Processing Interface for the Paymentech Gateway is logically defined as follows: The Paymentech API uses XML (Extensible Markup Language) to make ecommerce payment requests using HTTPS (Hypertext Transfer Protocol Secure). It allows you to submit all transaction types supported by the Orbital Gateway, such as authorization, authorization and capture, prior authorization, capture, refund, void, and an end of day (batch).
+
+Communication Protocol
+The Paymentech gateway supports one method of communication – HTTPS. This method provides a ‘single-threaded’ (or synchronous) model in which a merchant makes an HTTPS request to the gateway and then blocks until the gateway sends back HTTPS response. While HTTPS is single threaded, a single interface can make multiple HTTPS requests at once.
+
+Posting to a URL
+The Orbital Gateway will only provide responses to HTTP POST requests. The POST method is used to request that the origin server accept the entity enclosed in the request as a new subordinate of the resource identified by the Request-URI in the Request-Line. Orbital Gateway does not support GET requests. The addresses for the certification and production Orbital Gateway are:
+
+Orbital Gateway certification system:
+Primary: ‘orbitalvar1.paymentech.net/authorize’ on port 443 Secondary: ‘orbitalvar2.paymentech.net/authorize’ on port 443
+
+Orbital Gateway production system:
+Primary: ‘orbital1.paymentech.net/authorize’ on port 443 Secondary: ‘orbital2.paymentech.net/authorize’ on port 443 Note:
+
+September 2004
+
+Orbital Gateway Interface Specification
+
+Page 16
+
+While the certification system is available for testing at all hours, it is only monitored for availability during business hours [8:00am EST – 5:30pm EST Monday – Friday]. In addition, the hardware in place is designed primary for certification testing, not load testing. If there is a need to ensure uptime outside of normal business hours, please advise your certification analyst of the testing requirements.
+
+Security
+Given the inherent risks associated with processing transactions over the Internet, the Orbital Gateway requires both encrypted traffic to prevent interception of the Payload and authentication of the source request generation. The next two sections define how the system manages that security.
+
+Secure Sockets Layer Implementation Required
+The XML gateway URL must be accessed using the https protocol so that private information is transferred securely. This requires the client to use a SSL implementation. There are SSL implementations available for most programming languages. It is the client's responsibility to gain the necessary expertise and technology to properly open a secure channel to the gateway [unless the client uses of one Paymentech’s available SDK’s]. Interfacing to the Orbital Gateway using SSL does not require the client to have a certificate. The Orbital Gateway uses a non-authenticated SSL session, meaning the client is not authenticated using a digital certificate as a component of the SSL negotiation. See below section for how Paymentech authenticates client traffic. Non-SSL postings should never be made across a network that is external or not totally controlled and secure. If a clear text request is made to the Orbital Gateway URL, it will return an error condition - an HTTP 403 error with the accompanying XML payload containing a ProcStatus 20403 error.
+
+Authentication
+The Orbital Gateway uses source IP authentication to authenticate the request generation. What this means from a client implementation is as follows: • When testing against the Orbital Gateway certification system, there is no authentication. No IP addresses need to be registered in order to establish a valid connection. When processing transactions against the production Orbital Gateway, the client servers Source IP or Source IP’s must be registered in the Orbital Gateway. Any activity presented on an IP address that are not registered in the Orbital Gateway will result in an HTTP 412 error with the accompanying
+
+•
+
+September 2004
+
+Orbital Gateway Interface Specification
+
+Page 17
+
+XML payload containing a ProcStatus 20412 error – see documentation for definition of these error fields]. • In addition, these IP addresses must be affiliated the Merchant ID’s for which the Client should be submitting transactions. Specifically: o This does allow Third Party Hosting service organizations presenting on behalf of other merchants to submit transactions. However, each time a new customer is added, the merchant or Third-Party hosting organization needs to ensure that the new Merchant ID’s or Chain ID’s are affiliated with the hosting companies IP’s. If the merchant expects to have more than one merchant account with the Orbital Gateway, it should have its IP addresses affiliated at the Chain level hierarchy within the Orbital Gateway. Each time a new merchant ID is added, as long as it is placed within the same Chain, it will simply work. Otherwise, the additional MID’s will need to be affiliated with the merchant IP’s. For example, we generally affiliate all Salem accounts [BIN 000001] with their Company Number [formerly called MA #] number so all MIDs or Divisions under that Company will automatically be affiliated. If an IP is registered, but the client presents an MID that has NOT been associated with the originating IP, the Orbital Gateway will return the following error: HTTP 200 with a ProcStatus of 9717.
+
+o
+
+•
+
+IP Failure and MID Failure o
+
+XML DTD
+The Paymentech gateway accepts and returns XML document types (DTD) that were defined by Paymentech. The latest DTD published for interfacing with the Orbital Gateway is ‘PTI26’. There are separate request and response DTD’s. This allows Paymentech requests and responses to be easily interpreted and manipulated using the w3c (World Wide Web Consortium) DOM (Document Object Model) or SAX (Simple API for XML) APIs.
+
+MIME Header
+MIME (Multipurpose Internet Mail Extensions) is a mechanism for specifying and describing the format of Internet message bodies. The Orbital Gateway supports both the HTTP/1.0 and HTTP/1.1 MIME Header specifications for describing the message payload along with other information that allows it to process the incoming transaction request; as well as the outgoing reply.
+
+September 2004
+
+Orbital Gateway Interface Specification
+
+Page 18
+
+MIME Header Field Definition
+Request MIME Header Definition:
+The following table lists each of the required fields within the MIME-Header for Orbital Gateway requests.
+
+Field POST /AUTHORIZE HTTP/1.0 MIME-Version: Content-type: Content-length: Content-transfer-encoding: Request-number: Document-type: Interface-Version:
+
+Definition Fixed Header Should always be “1.0”. Defines the XML DTD version Number. See more definition below. This value defines the length of the Request XML Document Defines the encoding of the associated XML document. Recommended encoding is “text”. Should always be “1” Defines whether this is a Request on Response. This value should always be “Request”. Optional MIME-Header element that can be used by Paymentech in production support. See more definition below.
+
+POST /AUTHORIZE HTTP/1.0:
+This value is static and always should be presented as indicated. The details of this are as described in the following sections. • • • HTTP Post: The Orbital Gateway will only provide responses to HTTP POST requests URI: The Request URI for the Orbital Gateway will always be Authorize. HTTP 1.0 or 1.1: Provide the HTTP Version #.
+
+Content-Type:
+This MIME-Header field is used by the Client to identify which DTD version is being used for the XML Payload. • • • The format data for this field is “application/(DTD Version)”. The latest DTD Version and recommended value is PTI26. As such, the recommended value for this field is “application/PTI26”
+
+September 2004
+
+Orbital Gateway Interface Specification
+
+Page 19
+
+Interface-Version:
+This MIME-Header field is used by the Client to identify information about their implementation to assist Paymentech in providing production support. This information will be logged distinctly for research purposes. For example, if our SDK’s are used, they pass the SDK type and Version Number in this field. Another example would be any Third Party Software Provider should log their Software name and version number in this field, such that Paymentech knows how the interface is being managed. A Merchant could place information about their development version and implementation language. Please work with your Certification Analyst to best identify what values should be used in this field.
+
+Response MIME Header Definition:
+This may not be an all-inclusive list of MIME-Header response fields. Do not code your system to support only these. Field Definition
+
+HTTP
+Date: MIME-Version: Content-type: Content-length: Content-transfer-encoding: Request-number: Document-type:
+
+See below section for more definition
+Returns the Server Date and Tamp stamp, for example: Fri, 27 Oct 2000 20:29:58 GMT Will always be “1.1”. Defines the XML DTD version Number. This will be an echo of what is submitted in the request This value defines the length of the Response XML Document Defines the encoding of the associated XML document. Should always be “1” Defines whether this is a Request or Response. This value will always be “Response”.
+
+HTTP Responses
+When successfully interacting with the Orbital Gateway, the HTTP value returned will always be a 200 response, such as “HTTP/1.0 200 OK”. All other responses indicate some sort of connection problem. Please refer to RFC # 2616 http://www.w3.org/Protocols/rfc2616/rfc2616.txt for more definition of the variance HTTP responses that could be returned and their meaning. A HTTP 200 response in and of itself does not constitute a good response. It simply means that the connection has successfully been established with the Orbital Gateway. Please read the response handling sections for full response interpretation definition.
+
+September 2004
+
+Orbital Gateway Interface Specification
+
+Page 20
+
+Retry Logic
+When processing transactions over the Internet, there is always the risk that a response to a request will not be received. When processing credit card authorizations especially, clients require a means to determine the result of the transaction through a programmatic interface. To address this problem, the Orbital Gateway offers functionality, referred to as “Retry Logic”, which allows a customer to retry a transaction without duplicating the original request. The result is any Client properly utilizing Retry Logic can reprocess transactions with an unknown result without: • • Risk of double authorizing a transaction against a cardholder’s available balance. Prevent duplicate [or more] settlement items.
+
+For more information on how to implement Retry Logic, please refer to the Orbital Gateway Retry Logic Specification.
+
+September 2004
+
+Orbital Gateway Interface Specification
+
+Page 21
+
+XML Templates
+
+Introduction
+This document provides a detail definition of all the relevant fields within the Orbital Gateway DTD’s, which contain many elements and attributes that were created for functionality that may or may not be integrated into the Gateway. Below is one example of an Orbital Gateway request and response including the MIME header and XML document. While on the surface the number of elements and attributes associated with the Orbital Gateway XML document seems complex, there is not really that many dynamic data sets associated with a particular transaction type [such as Recurring Authorization]. As such a compliment document, “Orbital Gateway Message Templates v 2.2.0”, identifies all the base XML templates [all card types, transaction types and extended data combinations] and should provide a simple framework for coding to the Orbital Gateway.
+
+Sample XML Auth Request with MIME Header:
+POST /AUTHORIZE HTTP/1.0 MIME-Version: 1.0 Content-type: application/PTI26 Content-length: 876 Content-transfer-encoding: text Request-number: 1 Document-type: Request Interface-Version: Test 1.4 <Request> <Refund POSEntryMode="01" AccountTypeInd="91" TermEntCapInd="05" CATInfoInd="06" TermLocInd="01" CardHolderAttendanceInd="01" CardPresentInd="N" POSConditionCode="59" AttendedTermDataInd="01" FormatInd="N" HcsTcsInd="T" TxCatg="7" MessageType="FR" Version="2" TzCode="705"> <Comments>Customer Refund</Comments> <AccountNum AccountTypeInd="91">4012888888881</AccountNum> <MerchantID>123456789012</MerchantID> <TerminalID TermEntCapInd="05" CATInfoInd="06" TermLocInd="01" CardPresentInd="N" POSConditionCode="59" AttendedTermDataInd="01">001</TerminalID> <BIN>000002</BIN> <OrderID>1234567890123456789123</OrderID> <Amount>000000005000</Amount> <Currency CurrencyCode="840" CurrencyExponent="2"/>
+
+September 2004
+
+Orbital Gateway Interface Specification
+
+Page 22
+
+<TxDateTime/> <CardPresence> <CardNP> <Exp>1205</Exp> </CardNP> </CardPresence> <POScardID>4</POScardID> <EntryDataSrc>02</EntryDataSrc> </Refund> </Request>
+
+Sample XML Auth Response with MIME Header
+HTTP/1.1 200 OK Date: Fri, 14 Feb 2003 12:00:00 GMT MIME-Version: 1.0 Content-type: application/PTI26 Content-length: 646 Content-transfer-encoding: text Request-number: 1 Document-type: Response <Response> <RefundResponse CapStatus="1" HcsTcsInd="T" LangInd="00" MessageType="FR" TzCode="705" Version="2"> <TxRefIdx>1</TxRefIdx> <TxRefNum>EB847AD1B02AD5119F5F00508B94EDEC844FE27A</TxRefNum> <ProcStatus>0</ProcStatus> <ApprovalStatus>1</ApprovalStatus> <MerchantID>123456789012</MerchantID> <TerminalID>001</TerminalID> <OrderNumber>1234567890123456</OrderNumber> <AccountNum>4012888888881</AccountNum> <POSEntryMode>01</POSEntryMode> <RespDate>010410</RespDate> <RespTime>10012001120003</RespTime> <CardType1>VI</CardType1> <ExpDate1>1205</ExpDate1> <ResponseCodes> <RespCode/> </ResponseCodes> </RefundResponse> </Response>
+
+Legends
+XML TYPE: E: A: R: O: Element Attribute Required Optional
+
+REQUIRED:
+
+September 2004
+
+Orbital Gateway Interface Specification
+
+Page 23
+
+FIELD TYPE: A: N: Alpha (Left justified space filled) Numeric(Right justified zero filled)
+
+September 2004
+
+Orbital Gateway Interface Specification
+
+Page 24
+
+Transaction Management Messages
+Authorization and Authorization-Capture Request Elements
+XML Name
+Request AC CommonData CommonMandatory AuthOverrideInd LangInd
+
+XML Type E/A
+E E E E A A
+
+XML Parent Element
+N/A Request AC CommonData CommonMandatory CommonMandatory
+
+Description
+Required XML Parent Tag XML tag that defines the transaction as an authorization request Required XML Parent Tag Required XML Parent Tag Constant ‘N’ Language Indicator: 00 – English
+
+Req. M/C/O
+M M M M M M
+
+Field Max. Type Char. A/N
+N/A N/A N/A N/A 1 2 N/A N/A N/A N/A A N
+
+CardHolderAttendanceInd
+
+A
+
+CommonMandatory
+
+Indicates if the cardholder was present at the POS: 01 – Cardholder not present [eCommerce and Mail Order] 02 – Cardholder not present [Recurring payment]
+
+M
+
+2
+
+N
+
+HcsTcsInd TxCatg
+
+A A
+
+CommonMandatory CommonMandatory
+
+Constant ‘T’ Defines transaction type: 1 – Mail Order Transaction 2 – Recurring Transaction 5 – Verified by Visa – Authenticated Transaction 6 – Verified by Visa – Attempted Authentication 7 – Non-SET Channel-encrypted – eCommerce Transaction
+
+M M
+
+1 1
+
+A N
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 25
+
+XML Name
+MessageType
+
+XML Type E/A
+A
+
+XML Parent Element
+CommonMandatory
+
+Description
+Defines Message Type: A - Authorization request AC - Authorization and Mark for Capture
+
+Req. M/C/O
+M
+
+Field Max. Type Char. A/N
+4 A
+
+Version TzCode
+
+A A
+
+CommonMandatory CommonMandatory
+
+Constant ‘2’ Time zone for Merchant: See appendix for values.
+
+M M
+
+1 3
+
+N N
+
+AccountNum
+
+E
+
+CommonMandatory
+
+Card Number identifying the customer. Should be null for electronic check processing
+
+M
+
+19
+
+N
+
+AccountTypeInd
+
+A
+
+AccountNum
+
+Defines Account type: 91 – Credit 92 – Switch / Solo 94 – Electronic Check
+
+M
+
+2
+
+N
+
+POSDetails POSEntryMode
+
+E A
+
+CommonMandatory POSDetails
+
+XML Parent Tag Code that defines the method to process cardholder account: 01 – Manual Entry [eCommerce, Recurring, and Mail Order]
+
+M M
+
+N/A 2
+
+N/A N
+
+MerchantID
+
+E
+
+CommonMandatory
+
+Gateway merchant account number assigned by Paymentech: This account number will match that of your host platform BIN 000001 – 6 digit Salem Division Number BIN 000002 – 12 digit Tampa Merchant ID
+
+M
+
+15
+
+N
+
+TerminalID
+
+E
+
+CommonMandatory
+
+Merchant Terminal ID assigned by Paymentech: All Terminal IDs at present are ‘001’
+
+M
+
+3
+
+N
+
+TermEntCapInd
+
+A
+
+TerminalID
+
+Code that defines the method to process cardholder account: 05 – Key entry only [eCommerce, Recurring and Mail Order]
+
+M
+
+2
+
+N
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 26
+
+XML Name
+CATInfoInd
+
+XML Type E/A
+A
+
+XML Parent Element
+TerminalID
+
+Description
+Indicates type of Cardholder Activated Terminal (CAT): 00 - Not a CAT device [Recurring and Mail Order] 06 - CAT level 6 [eCommerce]
+
+Req. M/C/O
+M
+
+Field Max. Type Char. A/N
+2 N
+
+TermLocInd
+
+A
+
+TerminalID
+
+Indicates terminal location: 00 – Card acceptor premises [Recurring and Mail Order] 01 – Cardholder premises [eCommerce]
+
+M
+
+2
+
+N
+
+CardPresentInd
+
+A
+
+TerminalID
+
+Indicates if the card was present at the POS: N - Card not present [eCommerce, Recurring and Mail Order]
+
+M
+
+1
+
+N
+
+POSConditionCode
+
+A
+
+TerminalID
+
+Code that defines the POS environment: 08 – Mail Order transaction 52 – Recurring Payment 59 – eCommerce transaction
+
+M
+
+2
+
+N
+
+AttendedTermDataInd
+
+A
+
+TerminalID
+
+Indicates if the card acceptor was at the point of sale: 01 – Unattended terminal [eCommerce] 02 – No terminal used [Recurring and Mail Order]
+
+M
+
+2
+
+N
+
+BIN
+
+E
+
+CommonMandatory
+
+Transaction Routing Definition: Assigned by Paymentech 000001 – Salem 000002 – Tampa
+
+M
+
+6
+
+N
+
+OrderID
+
+E
+
+CommonMandatory
+
+Merchant Defined Order Number: Field defined and supplied by the auth originator, and echoed back in response. The first 8 characters should be unique for each transaction. Valid Characters: abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVW XYZ0123456789-,$@ and a space character. However, the space character cannot be the leading character.
+
+M
+
+22
+
+A
+
+AmountDetails
+
+E
+
+CommonMandatory
+
+Required XML Parent Tag for defining the Transaction amount details.
+
+M
+
+N/A
+
+N/A
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 27
+
+XML Name
+Amount
+
+XML Type E/A
+E
+
+XML Parent Element
+AmountDetails
+
+Description
+Transaction Amount: Keys: Implied Decimal including those currencies that are a zero exponent. For example, both $100.00 (an exponent of ‘2’) and 100 Yen (an exponent of ‘0’) should be sent as <Amount>10000</Amount>. See table for min/max amount for each currency type.
+
+Req. M/C/O
+M
+
+Field Max. Type Char. A/N
+12 N
+
+Tax E AmountDetails
+
+Tax Amount for the purchase: Required for Purchasing Card Level II Data Implied decimal including those currencies that are a zero exponent.
+
+O
+
+12
+
+N
+
+TaxInd
+
+A
+
+Tax
+
+Defines the tax type: Required for Purchasing Card Level II Data 0 – Not provided 1 – Included 2 – Non-Taxable
+
+O
+
+1
+
+N
+
+TxTypeCommon TxTypeID
+
+E A
+
+CommonMandatory TxTypeCommon
+
+Required XML Parent Tag for TxTypeID Defines the transaction type: G – Goods & services
+
+M M
+
+N/A 2
+
+N/A A
+
+Currency CurrencyCode
+
+E A
+
+CommonMandatory Currency
+
+Required XML Parent Tag which includes all Currency data attributes Defines the transaction currency: The gateway using the standard ISO defines currency codes. Keys: Bin 000002 only supports the US Dollar [Code ‘840’]. See Appendix for values.
+
+M M
+
+N/A 3
+
+N/A N
+
+CurrencyExponent
+
+A
+
+Currency
+
+Defines the transactions currency exponent: See Appendix for values.
+
+M
+
+6
+
+N
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 28
+
+XML Name
+CardPresence
+
+XML Type E/A
+E
+
+XML Parent Element
+CommonMandatory
+
+Description
+XML Parent Tag in which child elements are card present or card not present. This tag and it child elements [<CardNP> and <Exp>] are mandatory for Credit Card and Switch – Solo card not present [eCommerce and Recurring] transactions. It is not valid for ECP transactions
+
+Req. M/C/O
+C
+
+Field Max. Type Char. A/N
+N/A N/A
+
+CardNP E CardPresence
+
+XML Parent Tag which defines the transaction as Card not present and the associated data elements that must be submitted as a result. Card Expiration Date: Formats: MMYY Mandatory for card not present transactions, except ECP.
+
+C
+
+N/A
+
+N/A
+
+Exp
+
+E
+
+CardNP
+
+C
+
+4
+
+N
+
+Salem [BIN 000001] allows a blank to be submitted when no known EXP date exists. Please discuss this feature with your certification analyst before implementing. There are three valid mechanisms for submitting a ‘Blank’ expiration date using Orbital to the Salem Host. They are: TxDateTime E CommonMandatory Null fill this XML element - <Exp/> Send four spaces - <Exp> </Exp> Zero fill the XML Element - <Exp>0000</Exp> M 14 N
+
+Transaction date and Time: Format – ‘hhmmssMMDDYYYY’ If a null value is sent in this field, the gateway system date will be assigned the transaction [in Eastern Standard Time].
+
+CommonOptional Comments
+
+E E
+
+CommonData CommonOptional
+
+Required XML Parent Tag Free form comments: Merchant can fill in this field and the info will be stored with the transaction details.
+
+M O
+
+N/A 64
+
+N/A A
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 29
+
+XML Name
+ShippingRef
+
+XML Type E/A
+E
+
+XML Parent Element
+CommonOptional
+
+Description
+Shipping Tracking Reference Number. Merchant can fill in this field and the info will be stored with the transaction details.
+
+Req. M/C/O
+O
+
+Field Max. Type Char. A/N
+40 A
+
+PCCore
+
+E
+
+CommonOptional
+
+XML Parent Tag for 2 of 4 Purchasing Card II Data Elements PCOrderNum PCDestZip
+
+C
+
+N/A
+
+N/A
+
+PCOrderNum
+
+E
+
+PCCore
+
+PO number or Order number from customer: Required for Purchasing Card Level II Data
+
+C
+
+17
+
+A
+
+PCDestZip
+
+E
+
+PCCore
+
+Shipping Destination Zip code for the purchase: Required for Purchasing Card Level II Data For Zip Code + 4 please separate with ‘-‘.
+
+C
+
+10
+
+A
+
+PCDestName
+
+E
+
+PCCore
+
+Amex Purchasing Card Data – Salem Only / Required for Amex Purchasing Card Data
+
+C
+
+30
+
+A
+
+PCDestAddress1
+
+E
+
+PCCore
+
+Amex Purchasing Card Data - Cardholder Ship To: Address line 1 Salem Only / Required for Amex Purchasing Card Data
+
+C
+
+30
+
+A
+
+PCDestAddress2
+
+E
+
+PCCore
+
+Amex Purchasing Card Data - Cardholder Ship To: Address line 2 Salem Only / Required for Amex Purchasing Card Data
+
+C
+
+30
+
+A
+
+PCDestCity
+
+E
+
+PCCore
+
+Amex Purchasing Card Data – Cardholder Ship TO: City Salem Only / Required for Amex Purchasing Card Data
+
+C
+
+20
+
+A
+
+PCDestState
+
+E
+
+PCCore
+
+Amex Purchasing Card Data – Cardholder Ship TO: State Salem Only / Required for Amex Purchasing Card Data
+
+C
+
+2
+
+A
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 30
+
+XML Name
+CardType
+
+XML Type E/A
+E
+
+XML Parent Element
+CommonOptional
+
+Description
+XML Parent tag which defines the Card Type and Brand: Required for: SW – Switch / Solo EC – Electronic Check
+
+Req. M/C/O
+C
+
+Field Max. Type Char. A/N
+N/A N/A
+
+CardBrand
+
+A
+
+CardType
+
+Defines the Card Type / Brand for the Transaction: See attached table. Required for: SW – Switch / Solo EC – Electronic Check
+
+C
+
+2
+
+A
+
+CardSecVal
+
+E
+
+CommonOptional
+
+Card Verification Number Visa CVV2 – 3 bytes MasterCard CVC2 – 3 bytes American Express CID – 4 bytes Discover CID – 3 bytes
+
+O
+
+4
+
+N
+
+NOTE: It is against regulations to store this value. CardSecInd A CardSecVal Supported by Visa and Discover Only: 1 - Value deliberately bypassed or not provided 2 - Value on card but illegible 9 - Cardholder states data not available NOTE: If the transaction is not a Visa or Discover transaction, null fill this attribute or do not submit the attribute at all. ECommerceData E CommonOptional XML Parent Tag that defines the transaction as a single purchase eCommerce transaction and the required data elements and attributes of that transaction type. All elements and attributes of this XML tag are required for an eCommerce transaction. ECSecurityInd A ECommerceData Defines Electronic Commerce security: 07 - Non-SET Channel-encrypted – eCommerce C 2 N C N/A N/A C 1 N
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 31
+
+XML Name
+ECOrderNum
+
+XML Type E/A
+E
+
+XML Parent Element
+ECommerceData
+
+Description
+Merchant Defined Order Number: Electronic commerce order number. This should be the same value filled in the <OrderID> tag. Always generate 16-digit value, right padding with either spaces or zeros if necessary. Valid Characters: abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVW XYZ0123456789-,$@ and a space character. However, the space character cannot be the leading character. This value cannot be all zeros or all spaces.
+
+Req. M/C/O
+C
+
+Field Max. Type Char. A/N
+22 A
+
+MailOrderData
+
+E
+
+CommonOptional
+
+XML Parent Tag that defines the transaction as a recurring purchase and the required data elements and attributes of that transaction type. All elements and attributes of this XML tag are required for a recurring and Mail Order transaction.
+
+C
+
+N/A
+
+N/A
+
+MailOrderNum
+
+E
+
+MailOrderData
+
+Merchant Defined Order Number: Always generate a full 9-digit value, right padding with either spaces or zeros if necessary. This value cannot be all zeros or all spaces.
+
+C
+
+9
+
+A
+
+MailOrderTypeInd
+
+A
+
+MailOrderNum
+
+Mail order indicator to describe the type of transaction: 1 – Mail Order transaction 2 - Recurring billing transaction.
+
+C
+
+1
+
+A
+
+AVSbase AVSzip
+
+E E
+
+MailOrderData AVSbase
+
+This tag is Mandatory if sending <MailOrderData> Cardholder Billing Address Zip Code: This tag is Mandatory if sending <MailOrderData>. Hiowever, this tag should be left blank. All AVS Data should be sent using the AVSextended Parent Tag.
+
+C O
+
+N/A 10
+
+N/A A
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 32
+
+XML Name
+RecurringInd
+
+XML Type E/A
+E
+
+XML Parent Element
+CommonOptional
+
+Description
+Recurring indicator: This tag is required for Merchants that are: Located in Canadian Processing on BIN 000002 Processing Recurring Transactions
+
+Req. M/C/O
+C
+
+Field Max. Type Char. A/N
+2 A
+
+This tag should not be combined with values above that define the industry code as Recurring. In Canada, the objective to define the initial transaction collection method [eCommerce or MOTO]. The valid values are: RF – First Recurring Transaction. RS – Subsequent Recurring Transactions. SoftDescriptor E CommonOptional XML Parent Tag that defines the transaction as containing Soft Descriptor Data. Conditionally required for Soft Descriptor Support Descriptors will appear on the cardholder’s statement C N/A N/A
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 33
+
+XML Name
+SDMerchantName
+
+XML Type E/A
+E
+
+XML Parent Element
+SoftDescriptor
+
+Description
+Soft Descriptor Merchant Name The Merchant Name field should be what is most recognizable to the cardholder [Company name or trade name]. The actual length of this field is conditionally tied to Host and the Size of the <SDProductDescription> field used. Salem: CREDIT – Three options, which conditionally affects the SDProductDescription [see below]: o Max 3 bytes o Max 7 bytes o Max 12 bytes ECP: o Tampa: Max 25 bytes. Max 15 bytes
+
+Req. M/C/O
+C
+
+Field Max. Type Char. A/N
+25 A
+
+-
+
+Required Soft Descriptor field. SDMerchantPhone E SoftDescriptor Soft Descriptor Merchant Phone Only one of the location Soft Descriptor records should be sent [meaning Phone, URL, or Email]. This field will not show on Cardholder statements for Tampa Merchants. Valid Formats: SDMerchantURL E SoftDescriptor NNN-NNN-NNNN NNN-AAAAAAA C 13 A C 12 A
+
+Soft Descriptor Merchant URL Only one of the location Soft Descriptor records should be sent [meaning Phone, URL, or Email]. This field will not show on Cardholder statements for Tampa Merchants.
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 34
+
+XML Name
+SDMerchantEmail
+
+XML Type E/A
+E
+
+XML Parent Element
+SoftDescriptor
+
+Description
+Soft Descriptor Merchant Email Only one of the location Soft Descriptor records should be sent [meaning Phone, URL, or Email]. This field will not show on Cardholder statements for Tampa Merchants.
+
+Req. M/C/O
+C
+
+Field Max. Type Char. A/N
+13 A
+
+SDProductDescription
+
+E
+
+SoftDescriptor
+
+Soft Descriptor Product Description Provides an accurate description of Salem: CREDIT: o If SDMerchantName = 3 bytes – then Max = 18 bytes o If SDMerchantName = 7 bytes – then Max = 14 bytes o If SDMerchantName = 12 bytes – then Max = 9 bytes ECP: o Tampa: This field will not show on Cardholder statements for Tampa Merchants. 10 bytes Max
+
+C
+
+18
+
+A
+
+-
+
+Required Soft Descriptor field. Auth AuthManditory FormatInd E E A AC Auth AuthManditory Required XML Parent Tag Required XML Parent Tag Determines format of additional data submitted in the subsequent XML Tag <AuthOptional> hierarchy: H – Home (AVS with Telephone format) W – Work (AVS with Telephone format) K – ECP (Electronic Check format) S – Switch (Switch / Solo Card format) AuthOptional E Auth Required XML Parent Tag for extended transaction data relative to transaction type. M N/A N/A M M M N/A N/A 1 N/A N/A A
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 35
+
+XML Name
+AVSextended
+
+XML Type E/A
+E
+
+XML Parent Element
+AuthOptional
+
+Description
+XML Parent Tag for address verification request Address and name information can only sent on credit card and ECP transactions, not Switch – Solo transactions. ECP requires only Name not Address detail.
+
+Req. M/C/O
+O
+
+Field Max. Type Char. A/N
+N/A N/A
+
+AVSphoneNum
+
+E
+
+AVSextended
+
+Cardholder Billing Phone Number AAAEEENNNNXXXX, where AAA = Area Code EEE = Exchange NNNN = Number XXXX = Extension
+
+O
+
+14
+
+A
+
+AVSname AVSaddress1
+
+E E
+
+AVSextended AVSextended
+
+Cardholder Billing Name Cardholder Billing Address line 1 Should not include any of the following characters types: % | ^ \ /
+
+O O
+
+30 30
+
+A A
+
+AVSaddress2
+
+E
+
+AVSextended
+
+Cardholder Billing Address Line 2 Should not include any of the following characters types: % | ^ \ /
+
+O
+
+30
+
+A
+
+AVScity
+
+E
+
+AVSextended
+
+Cardholder Billing City Should not include any of the following characters types: % | ^ \ /
+
+O
+
+20
+
+A
+
+AVSstate
+
+E
+
+AVSextended
+
+Cardholder Billing State Should not include any of the following characters types: % | ^ \ /
+
+O
+
+2
+
+A
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 36
+
+XML Name
+AVSzip
+
+XML Type E/A
+E
+
+XML Parent Element
+AVSextended
+
+Description
+Cardholder Billing Address Zip Code: All AVS Requests must minimally include the 5-digit Zip Code. If sending Zip Code + 4, please separate with a ‘-‘
+
+Req. M/C/O
+O
+
+Field Max. Type Char. A/N
+10 A
+
+AVScountryCode
+
+E
+
+AVSextended
+
+Cardholder Billing Address Country Code: Required if processing a U.K. based Address. Valid values: US – United States CA – Canada GB – Great Britain UK – United Kingdom “ “ – Blank for all other countries
+
+O
+
+2
+
+A
+
+DebitCard DebitCardStartDate
+
+E E
+
+AuthOptional DebitCard
+
+Switch – Solo XML Parent Tag for all associated elements and attributes of the card type. Switch – Solo cards activation date: Format ‘MMYY’ Tag Mandatory for Switch – Solo. If no activation date sent, Null fill this element.
+
+C C
+
+N/A 4
+
+N/A N
+
+DebitCardIssueNum
+
+E
+
+DebitCard
+
+Switch – Solo incremental counter for lost or replacement cards. Tag Mandatory for Switch – Solo. If no card issue number sent, Null fill this element.
+
+C
+
+2
+
+N
+
+CardType
+
+E
+
+DebitCard
+
+XML Parent tag which defines the Card Type and Brand: Required for to be sent again under <DebitCard> parent tag for Switch – Solo
+
+C
+
+N/A
+
+N/A
+
+CardBrand
+
+A
+
+CardType
+
+Defines the Card Type / Brand for the Transaction: Required to be sent again for Switch – Solo. SW – Switch / Solo
+
+C
+
+2
+
+A
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 37
+
+XML Name
+BankCheck
+
+XML Type E/A
+E
+
+XML Parent Element
+AuthOptional
+
+Description
+Electronic Check (ECP) XML Parent Tag for all associated elements and attributes of the card type. This and all of its child elements and attributes are required for ECP processing.
+
+Req. M/C/O
+C
+
+Field Max. Type Char. A/N
+N/A N/A
+
+BankPmtDelv
+
+A
+
+BankCheck
+
+Defines the ECP payment delivery method: This field indicates the preferred manner to deposit the transaction. B – Best Possible Method [US Only]
+Paymentech utilizes the method that best fits the situation. If the RDFI is not an ACH participant, a facsimile draft will be created. This should be the default value for this field.
+
+C
+
+1
+
+A
+
+A – ACH [US or Canadian]
+Deposit the transaction by ACH only. If the RDFI is not an ACH participant, the transaction is rejected.
+
+BankAccountType
+
+A
+
+BankCheck
+
+Defines the deposit account type: For Electronic Check processing. C – Consumer Checking [US or Canadian] S – Consumer Savings [US Only] X – Commercial Checking [US Only]
+
+C
+
+1
+
+A
+
+CheckDDA
+
+E
+
+BankCheck
+
+Customer DDA account number For Electronic Check processing.
+
+C
+
+17
+
+A
+
+BCRtNum
+
+E
+
+BankCheck
+
+Bank routing and transit number for the customer. For Electronic Check processing. NOTE: All US Bank Routing Numbers are 9 digits All Canadian Bank Routing Numbers are 8 Digits
+
+C
+
+9
+
+N
+
+VerifiedByVisa
+
+E
+
+AuthOptional
+
+Verified by Visa Parent Tag
+
+C
+
+N/A
+
+N/A
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 38
+
+XML Name
+XID
+
+XML Type E/A
+E
+
+XML Parent Element
+VerifiedByVisa
+
+Description
+Transaction ID (XID): • • This number must be Base 64 Encoded. Unique tracking number set by the Merchant and sent to the Issuer Authentication/Service in the Authentication Request message [Optional]
+
+Req. M/C/O
+O
+
+Field Max. Type Char. A/N
+40 A
+
+CAVV
+
+E
+
+VerifiedByVisa
+
+Cardholder Authentication Verification Value (CAVV): • • This number must be Base 64 Encoded. Cryptographic value derived with an algorithm that applies the Issuer’s private key to the combination of the Cardholder account number, the Transaction Identifier (XID), and other data.
+
+C
+
+40
+
+A
+
+MCSecureCode AAV
+
+E E
+
+AuthOptional MCSecureCode
+
+MasterCard SecureCode Parent Tag Accountholder Authentication Value: • • This number must be Base 64 Encoded. Unique transaction token generated by the issuer and presented to the merchant each time a cardholder conducts an electronic transaction using MasterCard SecureCode. AAV incorporates elements specific to the transaction and effectively binds the cardholder to a transaction at a merchant for a given sales amount.
+
+O C
+
+N/A 32
+
+N/A A
+
+Cap CapManditory EntryDataSrc
+
+E E E
+
+AC Cap CapManditory
+
+Required XML Parent Tag Required XML Parent Tag Indicates how primary Account number originally entered: 02 – Manually Entered.
+
+M M M
+
+N/A N/A 2
+
+N/A N/A N
+
+CapOptional AMEXdata
+
+E E
+
+Cap CapOptional
+
+Required XML Parent Tag Required XML Parent Tag for Amex Additional Purchasing Card Data
+
+M O
+
+N/A N/A
+
+N/A N/A
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 39
+
+XML Name
+AMEXTranAdvAddn1
+
+XML Type E/A
+E
+
+XML Parent Element
+AMEXdata
+
+Description
+Amex Purchasing Card Data – Transaction Advice Addendum #1 The TAA Record is used to further identify the purchase that is associated with the charge to the cardholder. It is also used in Purchasing / Procurement card transactions to provide specific details about the transaction to the cardholder for tracking purposes. TAA’s should be as concise as possible. A TAA of “Merchandise” for example, would not be acceptable. Salem Only / Required for Amex Purchasing Card Data
+
+Req. M/C/O
+O
+
+Field Max. Type Char. A/N
+40 A
+
+AMEXTranAdvAddn2
+
+E
+
+AMEXdata
+
+Amex Purchasing Card Data – Transaction Advice Addendum #2 Salem Only / Required for Amex Purchasing Card Data
+
+O
+
+40
+
+A
+
+AMEXTranAdvAddn3
+
+E
+
+AMEXdata
+
+Amex Purchasing Card Data – Transaction Advice Addendum #3 Salem Only / Required for Amex Purchasing Card Data
+
+O
+
+40
+
+A
+
+AMEXTranAdvAddn4
+
+E
+
+AMEXdata
+
+Amex Purchasing Card Data – Transaction Advice Addendum #4 Salem Only / Required for Amex Purchasing Card Data
+
+O
+
+40
+
+A
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 40
+
+Authorization and Authorization-Capture Response Elements
+The following Elements and Attributes include only those components important to identifying the result of the Authorization (Optional Mark for Capture) request result. All other fields that can be returned in the response are defined at the end of this document in Section 7 “Transaction Management Message Label Full Descriptions.” The following is the recommended approach to managing the Paymentech Gateway Response Messages: Transaction response mapping should be managed at the protocol level [i.e. using the MIME Header] as defined in Section 2 titled “Protocol Definition for the Paymentech Merchant Interface”, subsection, “MIME”.
+
+XML Name
+ProcStatus
+
+XML Type E/A
+E
+
+XML Parent Element
+CommonManditory Response
+
+Description
+Process Status: The first element that should be checked to determine the result of a request. It is the only element that is returned in all response scenarios. It identifies whether transactions have successfully passed all of the Gateway edit checks. 0 – Success All other values constitute an error condition. See appendix for definition of those error values.
+
+Req. M/C/O
+M
+
+Max. Char.
+6
+
+Field Type A/N
+A
+
+ApprovalStatus
+
+E
+
+CommonManditory Respnse
+
+Approval Status: Conditional on Process Status returning a ‘0’ or successful response. If so, approval status identifies the result of the authorization request to the host system. 0 – Decline 1 – Approved 2 – Message/System Error
+
+C
+
+1
+
+N
+
+RespCode
+
+E
+
+ResponseCodes
+
+Response Code: Normalized authorization response code issued by the host system [Salem / Tampa], which identifies an approval (‘00’) or the reason for a decline or error. See appendix for values.
+
+C
+
+2
+
+A
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 41
+
+XML Name
+AuthCode
+
+XML Type E/A
+E
+
+XML Parent Element
+ResponseCodes
+
+Description
+Issuer approval Code: Unique transactional level code issuer uses to show each request was approved
+
+Req. M/C/O
+C
+
+Max. Char.
+6
+
+Field Type A/N
+A
+
+AVSRespCode
+
+E
+
+ResponseCodes
+
+Address verification request response: See appendix for values Conditional on AVS request being sent.
+
+C
+
+2
+
+A
+
+CVV2RespCode
+
+E
+
+ResponseCodes
+
+Card verification value request response: See appendix for values Conditional on card verification request being sent
+
+C
+
+1
+
+A
+
+CAVVRespCode StatusMsg StatusMsgLth RespMsg TxRefNum
+
+E E A E E
+
+ResponseCodes CommonManditory Response ResponseCodes CommonManditory Respnse CommonManditory Response
+
+Response code to VbV Requests Text message associated with ProcStatus value. Length of StatusMessage. Messages associated with RespCode. Gateway transaction reference number: A unique value for each transaction, which is required to adjust any transaction in the gateway [such as Mark for Capture or void]. Gateway transaction index: Used to identify the unique components of transactions adjusted more than one time. Required on for void transactions, not for Mark for Captures. Date / time the transaction was processed by gateway: Format – ‘MMDDYYYYhhmiss’
+
+C C C C C
+
+1 Var 4 80 40
+
+A A N A A
+
+TxRefIdx
+
+E
+
+CommonManditory Response
+
+C
+
+4
+
+A
+
+RespTime
+
+E
+
+CommonMandatory Response
+
+C
+
+14
+
+N
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 42
+
+XML Name
+HostRespCd
+
+XML Type E/A
+E
+
+XML Parent Element
+ResponseCodes
+
+Description
+Actual host response code: Exact response sent by host authorization system [nonnormalized by the gateway]. For those systems that have already coded to the Salem / Tampa authorization response values, they are available still via this tag.
+
+Req. M/C/O
+C
+
+Max. Char.
+3
+
+Field Type A/N
+A
+
+HostAVSRespCd
+
+E
+
+ResponseCodes
+
+Actual host address verification response code: Exact address verification response sent by host authorization system [non-normalized by the gateway]. For those systems that have already coded to the Salem / Tampa authorization response values, they are available still via this tag.
+
+C
+
+2
+
+A
+
+HostCVV2RespCd
+
+E
+
+ResponseCodes
+
+Actual host card verification response code: Exact card verification response sent by host authorization system [non-normalized by the gateway]. For those systems that have already coded to the Salem / Tampa authorization response values, they are available still via this tag.
+
+C
+
+1
+
+A
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 43
+
+Prior Authorization Request Elements
+The following Elements added to an Authorization Transaction message turn it into a “Prior Authorization” transaction [a.k.a. as a “Force”]
+
+XML Name
+PriorAuthID
+
+XML Type E/A
+E
+
+XML Parent Element
+TxTypeCommon
+
+Description
+Defines the transaction type as a Prior Auth: When this tag is present, the request is considered a force authorization. No on-line authorization will be generated to the Host systems. This should always be presented as a Null Value
+
+Req. M/C/O
+M
+
+Max. Char.
+N/A
+
+Field Type A/N
+N/A
+
+AuthCd
+
+E
+
+AuthOptional
+
+Prior Authorization Code: If a prior authorization code is available, It should be sent in this tag. This reduces the risk of chargebacks. - This element should not be included on an ECP transaction
+
+C
+
+6
+
+A
+
+AuthSrc
+
+A
+
+AuthCd
+
+Defines the source of the original authorization: See appendix “AuthSource Tag Values”. If the value is unknown, the field should be null
+
+C
+
+1
+
+A
+
+Prior Authorization Response Element
+This will be identical to an Authorization Transaction Response message.
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 44
+
+Mark for Capture (of a previous authorization) Request Elements
+Notes: Optional data should only be sent with the transaction to enhance the original authorization when either the data was not sent in the original authorization or has changed from the original authorization. Please refer to page 48 for further information on this subject. Purchasing Card Data only to be supplied when not sent in the original authorization. When a split shipment is marked for capture, the split amount for the shipment should be included in the amount attribute for this message. The split transaction also results in the creation of a new order for the balance left over from the original authorization and adjustments as required to the original authorization. Upon marking a portion or the remainder of the split transaction, the system will automatically attempt to obtain a new authorization for the new order. (See diagram to the right.)
+SPLIT SHIPMENT EXAMPLE FLOW:
+TRANSACTION AMOUNT $20 $20 $20 $20 $20
+
+1. Original Authorization Request Sent by Merchant $100 USD
+
+1a.There is a Marked for Capture or an Unmarked transaction for $100
+
+2. Merchant sends Marked for Capture (MFC) for $20
+
+2b. System Authorization Reversal (Visa Only): $80
+
+2a. Original $100 Trans. MFC for $20
+
+2c. New "Unmarked" order systemically created for remainder of original order amount: $80
+
+3. Merchant sends MFC for $30 3a. System performs Auth request for $30 3b. Unmarked $80 transaction now MFC for $50
+
+3c. New "Unmarked" order systemically created for remainder of split: $50
+
+4. Merch. sends MFC for $10 4a. Syst. Performs Auth for $10 4b. Unmkd $50 now MFC for $10
+
+4c. New "Unmarked" order systemically created for remainder of split: $40
+
+5. Merchant sends MFC for $40 5a. System performs new Auth request for $40 5b. Unmarked $40 now MFC for $40
+
+Finally, Purchasing Card II data sent on TRANSACTION KEY: a Mark for Capture [MFC] will over write - Authorization Request the Purchasing Card data II, if any, was - Marked Transaction submitted on an Authorization. In split - Mark for Capture [MFC] Request transaction scenarios, the Purchasing - Unmarked Transaction Card data can be submitted for each component, if desired. All P-Card II fields are required to ensure this overwrite works correctly.
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 45
+
+XML Name
+Request AC CommonData CommonMandatory MessageType
+
+XML Type E/A
+E E E E A
+
+XML Parent Element
+N/A Request AC CommonData CommonMandator y CommonMandator y
+
+Description
+
+Req. M/C/O
+M M M M M
+
+Max. Char.
+N/A N/A N/A N/A 4
+
+Field Type A/N
+N/A N/A N/A N/A A
+
+Required XML Parent Tag XML tag that defines the transaction as an authorization request Required XML Parent Tag Required XML Parent Tag Defines Message Type: C – Capture Gateway merchant account number assigned by Paymentech: This account number will match that of your host platform BIN 000001 – 6 digit Salem Division Number BIN 000002 – 12 digit Tampa Merchant ID
+
+MerchantID
+
+E
+
+M
+
+15
+
+N
+
+TerminalID
+
+E
+
+CommonMandator y CommonMandator y
+
+Merchant Terminal ID assigned by Paymentech: All Terminal IDs at present are ‘001’ Transaction Routing Definition: Assigned by Paymentech 000001 – Salem 000002 – Tampa
+
+M
+
+3
+
+N
+
+BIN
+
+E
+
+M
+
+6
+
+N
+
+OrderID
+
+E
+
+CommonMandator y CommonMandator y
+
+Merchant Defined Order Number: Should use the same OrderID as the original request Required XML Parent Tag for defining the Transaction amount details
+
+M
+
+22
+
+A
+
+AmountDetails
+
+E
+
+M
+
+N/A
+
+N/A
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 46
+
+XML Name
+Amount
+
+XML Type E/A
+E
+
+Description XML Parent Element
+AmountDetails Transaction Amount: Keys: Amount being captured. It can be less than or equal to the original authorization. Anything less than will create a split transaction. Implied decimal including those currencies that are a zero exponent. For example, both $100.00 (an exponent of ‘2’) and 100 Yen (an exponent of ‘0’) should be sent as <Amount>10000</Amount>. See table for min/max amount for each currency type.
+
+Req. M/C/O
+M
+
+Max. Char.
+12
+
+Field Type A/N
+N
+
+-
+
+Tax E AmountDetails
+
+Tax Amount for the purchase: Required for Purchasing Card Level II Data Implied decimal including those currencies that are a zero exponent.
+
+O
+
+12
+
+N
+
+TaxInd
+
+A
+
+Tax
+
+Defines the tax type: Required for Purchasing Card Level II Data 0 – Not provided 1 – Included 2 – Non-Taxable
+
+O
+
+1
+
+N
+
+TxDateTime
+
+E
+
+CommonMandator y
+
+Transaction date and Time: Format – ‘hhmmssMMDDYYYY’ If a null value is sent in this field, the gateway system date will be assigned the transaction [in Eastern Standard Time].
+
+M
+
+14
+
+N
+
+CommonOptional PCCore
+
+E E
+
+CommonData CommonOptional
+
+Required XML Parent Tag XML Parent Tag for 2 of 4 Purchasing Card II Data Elements PCOrderNum PCDestZip
+
+M O
+
+N/A N/A
+
+N/A N/A
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 47
+
+XML Name
+PCOrderNum
+
+XML Type E/A
+E
+
+Description XML Parent Element
+PCCore PO number or Order number from customer: Required for Purchasing Card Level II Data
+
+Req. M/C/O
+O
+
+Max. Char.
+17
+
+Field Type A/N
+A
+
+PCDestZip
+
+E
+
+PCCore
+
+Shipping Destination Zip code for the purchase: Required for Purchasing Card Level II Data For Zip Code + 4 please separate with ‘-‘.
+
+O
+
+10
+
+A
+
+PCDestName
+
+E
+
+PCCore
+
+Amex Purchasing Card Data – Salem Only / Required for Amex Purchasing Card Data
+
+O
+
+30
+
+A
+
+PCDestAddress1
+
+E
+
+PCCore
+
+Amex Purchasing Card Data - Cardholder Ship To: Address line 1 Salem Only / Required for Amex Purchasing Card Data
+
+O
+
+30
+
+A
+
+PCDestAddress2
+
+E
+
+PCCore
+
+Amex Purchasing Card Data - Cardholder Ship To: Address line 2 Salem Only / Required for Amex Purchasing Card Data
+
+O
+
+30
+
+A
+
+PCDestCity
+
+E
+
+PCCore
+
+Amex Purchasing Card Data – Cardholder Ship TO: City Salem Only / Required for Amex Purchasing Card Data
+
+O
+
+20
+
+A
+
+PCDestState
+
+E
+
+PCCore
+
+Amex Purchasing Card Data – Cardholder Ship TO: State Salem Only / Required for Amex Purchasing Card Data
+
+O
+
+2
+
+A
+
+TxRefNum
+
+E
+
+CommonOptional
+
+Gateway transaction reference number: A unique value for each transaction, which is required to adjust any transaction in the gateway [such as Mark for Capture or void].
+
+M
+
+40
+
+A
+
+CapOptional AMEXdata
+
+E E
+
+Cap CapOptional
+
+Required XML Parent Tag with no child elements for this transaction type at this time. Required XML Parent Tag for Amex Additional Purchasing Card Data
+
+M O
+
+N/A N/A
+
+N/A N/A
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 48
+
+XML Name
+AMEXTranAdvAddn1
+
+XML Type E/A
+E
+
+Description XML Parent Element
+AMEXdata Amex Purchasing Card Data – Transaction Advice Addendum #1 The TAA Record is used to further identify the purchase that is associated with the charge to the cardholder. It is also used in Purchasing / Procurement card transactions to provide specific details about the transaction to the cardholder for tracking purposes. TAA’s should be as concise as possible. A TAA of “Merchandise” for example, would not be acceptable. Salem Only / Required for Amex Purchasing Card Data
+
+Req. M/C/O
+O
+
+Max. Char.
+40
+
+Field Type A/N
+A
+
+AMEXTranAdvAddn2
+
+E
+
+AMEXdata
+
+Amex Purchasing Card Data – Transaction Advice Addendum #2 Salem Only / Required for Amex Purchasing Card Data
+
+O
+
+40
+
+A
+
+AMEXTranAdvAddn3
+
+E
+
+AMEXdata
+
+Amex Purchasing Card Data – Transaction Advice Addendum #3 Salem Only / Required for Amex Purchasing Card Data
+
+O
+
+40
+
+A
+
+AMEXTranAdvAddn4
+
+E
+
+AMEXdata
+
+Amex Purchasing Card Data – Transaction Advice Addendum #4 Salem Only / Required for Amex Purchasing Card Data
+
+O
+
+40
+
+A
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 49
+
+Mark for Capture Response Elements
+The following Elements and Attributes include only those components important to identifying the result of the Mark for Capture request result. All other fields that can be returned in the response are defined at the end of this document in Section 7 “Transaction Management Message Label Full Descriptions.”
+
+XML Name
+ProcStatus
+
+XML Type E/A
+E
+
+XML Parent Element
+CommonManditoryRe sponse
+
+Description
+Process Status: The first element that should be checked to determine the result of a request. It is the only element that is returned in all response scenarios. It identifies whether transactions have successfully passed all of the Gateway edit checks. 0 – Success All other values constitute an error condition. See appendix for definition of those error values.
+
+Req. M/C/O
+M
+
+Max. Char.
+6
+
+Field Type A/N
+A
+
+CapStatus
+
+A
+
+CapManditoryRespon se
+
+Capture Status: 0 – Not marked for capture 1 – Marked for capture If not Tag is sent, that defines the transaction as being a Capture Status of 1.
+
+C
+
+1
+
+N
+
+StatusMsg StatusMsgLth TxRefIdx
+
+E A E
+
+CommonManditoryRe sponse ResponseCodes CommonManditoryRe sponse
+
+Text message associated with ProcStatus value. Length of StatusMessage. Gateway transaction index: Used to identify the unique components of transactions adjusted more than one time. Required on for void transactions, not for Mark for Captures. Date / time the transaction was processed by gateway: Format – ‘MMDDYYYYhhmiss’
+
+C C C
+
+Var 4 4
+
+A N A
+
+RespTime
+
+E
+
+CommonMandatoryR esponse
+
+C
+
+14
+
+N
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 50
+
+Void (full and partial) Request Elements
+Notes for void transactions: The following information instructs on how to set some of the key elements when attempting void transactions under various circumstances.
+
+Full Void of previous authorization • Use full void template • TxRefIdx = Null Void of a Capture • TxRefIdx = Use value given in the response of the Capture or the Auth Capture • Use Full Void Template Partial Void • Use partial void template • Submit amount you want to void. • TxRefIdx = Null
+
+Split Shipments
+Void balance of authorization after split shipment • Use partial void template • TxRefIdx = null • Leave amount empty Void the MFC • Use partial void template • TxRefIdx = Use value given in the response of the Capture • Submit amount of the MFC you wish to void
+
+XML Label
+Request Void MessageType
+
+XML Type E/A
+E E A
+
+XML Level
+N/A Request Void
+
+Description
+Required XML Parent Tag XML tag that defines the transaction as an Void request Defines Message Type: V – Void
+
+Req. M/C/O
+M M M
+
+Field Max. Type Char. A/N
+N/A N/A 4 N/A N/A A
+
+MerchantID
+
+E
+
+Void
+
+Gateway merchant account number assigned by Paymentech: This account number will match that of your host platform BIN 000001 – 6 digit Salem Division Number BIN 000002 – 12 digit Tampa Merchant ID
+
+M
+
+15
+
+N
+
+TerminalID
+
+E
+
+Void
+
+Merchant Terminal ID assigned by Paymentech: All Terminal IDs at present are ‘001’
+
+M
+
+3
+
+N
+
+BIN
+
+E
+
+Void
+
+Transaction Routing Definition: Assigned by Paymentech 000001 – Salem 000002 – Tampa
+
+M
+
+6
+
+N
+
+TxRefNum
+
+E
+
+Void
+
+Gateway transaction reference number: A unique value for each transaction, which is required to adjust any transaction in the gateway [such as Mark for Capture or void].
+
+M
+
+40
+
+A
+
+TxRefIdx
+
+E
+
+Void
+
+Gateway transaction index: Used to identify the unique components of transactions adjusted more than one time. Required on for void transactions, not for Mark for Captures.
+
+M
+
+4
+
+N
+
+AdjustedAmt
+
+E
+
+Void
+
+Amount for Partial Voids if necessary: When a specific amount is included with this tag, that amount will be voided [assuming that the amount is not greater than the transaction amount remaining]. However, the absence of this tag on a void transaction will perform a full Void.
+
+C
+
+12
+
+N
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 52
+
+Void (full and partial) Response Elements
+The following Elements and Attributes include only those components important to identifying the result of the Void request result. All other fields that can be returned in the response are defined at the end of this document in Section 7 “Transaction Management Message Label Full Descriptions.”
+
+XML Name
+ProcStatus
+
+XML Type E/A
+E
+
+XML Parent Element
+VoidResponse
+
+Description
+Process Status: The first element that should be checked to determine the result of a request. It is the only element that is returned in all response scenarios. It identifies whether transactions have successfully passed all of the Gateway edit checks. 0 – Success All other values constitute an error condition. See appendix for definition of those error values.
+
+Req. M/C/O
+M
+
+Max. Char.
+6
+
+Field Type A/N
+A
+
+StatusMsg StatusMsgLth TxRefIdx
+
+E E E
+
+VoidResponse VoidResponse VoidResponse
+
+Text message associated with ProcStatus value. Length of StatusMessage. Gateway transaction index: Used to identify the unique components of transactions adjusted more than one time. Required on for void transactions, not for Mark for Captures.
+
+C M M
+
+Var 4 4
+
+A N N
+
+Element TxRefNum
+
+E
+
+VoidResponse
+
+Gateway transaction reference number: A unique value for each transaction, which is required to adjust any transaction in the gateway [such as Mark for Capture or void].
+
+M
+
+4
+
+A
+
+RespTime
+
+E
+
+VoidResponse
+
+Date / time the transaction was processed by gateway: Format – ‘MMDDYYYYhhmiss’
+
+M
+
+14
+
+N
+
+OutstandingAmt
+
+E
+
+VoidResponse
+
+Remaining Non-voided amount for partial Voids
+
+C
+
+12
+
+N
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 53
+
+Refund Request Elements
+XML Name
+Request Refund POSEntryMode
+
+XML Type E/A
+E E A
+
+XML Parent Element
+N/A Request Refund
+
+Description
+Required XML Parent Tag XML tag that defines the transaction as an Refund request Code that defines the method to process cardholder account: 01 – Manual Entry [eCommerce, Recurring, and Mail Order]
+
+Req. M/C/O
+M M M
+
+Max. Char.
+N/A N/A 2
+
+Field Type A/N
+N/A N/A N
+
+AccountTypeInd
+
+A
+
+Refund
+
+Defines Account type: 91 – Credit 92 – Switch / Solo 94 – Electronic Check
+
+M
+
+2
+
+N
+
+TermEntCapInd
+
+A
+
+Refund
+
+Code that defines the method to process cardholder account: 05 – Key entry only [eCommerce, Recurring and Mail Order]
+
+M
+
+2
+
+N
+
+CATInfoInd
+
+A
+
+Refund
+
+Indicates type of Cardholder Activated Terminal (CAT): 00 - Not a CAT device [Recurring and Mail Order] 06 - CAT level 6 [eCommerce]
+
+M
+
+2
+
+N
+
+TermLocInd
+
+A
+
+Refund
+
+Indicates terminal location: 00 – Card acceptor premises [Recurring and Mail Order] 01 – Cardholder premises [eCommerce]
+
+M
+
+2
+
+N
+
+CardHolderAttendanceInd
+
+A
+
+Refund
+
+Indicates if the cardholder was present at the POS: 01 – Cardholder not present [eCommerce and Mail Order] 02 – Cardholder not present [Recurring payment]
+
+M
+
+2
+
+N
+
+CardPresentInd
+
+A
+
+Refund
+
+Indicates if the card was present at the POS: N - Card not present [eCommerce, Recurring and Mail Order]
+
+M
+
+1
+
+N
+
+POSConditionCode
+
+A
+
+Refund
+
+Code that defines the POS environment: 08 – Mail Order transaction 52 – Recurring Payment 59 – eCommerce transaction
+
+M
+
+2
+
+N
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 54
+
+XML Name
+AttendedTermDataInd
+
+XML Type E/A
+A
+
+XML Parent Element
+Refund
+
+Description
+Indicates if the card acceptor was at the point of sale: 01 – Unattended terminal [eCommerce] 02 – No terminal used [Recurring and Mail Order]
+
+Req. M/C/O
+M
+
+Max. Char.
+2
+
+Field Type A/N
+N
+
+FormatInd
+
+A
+
+Refund
+
+Determines format of additional data submitted in the subsequent XML Tag <AuthOptional> hierarchy: N – Not Applicable [Only option for Return Transactions]
+
+M
+
+1
+
+A
+
+HcsTcsInd TxCatg
+
+A A
+
+Refund Refund
+
+Constant ‘T’ Defines transaction type: 1 – Mail Order Transaction 2 – Recurring Transaction 5 – Verified by Visa – Authenticated Transaction 6 – Verified by Visa – Attempted Authentication 7 – Non-SET Channel-encrypted – eCommerce Transaction
+
+M M
+
+1 1
+
+A N
+
+MessageType
+
+Refund
+
+Defines Message Type: FR – Refund
+
+M
+
+4
+
+A
+
+Version TzCode
+
+A A
+
+Refund Refund
+
+Constant ‘2’ Time zone for Merchant: See appendix for values
+
+M M
+
+1 3
+
+N N
+
+Comments
+
+E
+
+Refund
+
+Free form comments: Merchant can fill in this field and the info will be stored with the transaction details.
+
+O
+
+64
+
+A
+
+AccountNum
+
+E
+
+Refund
+
+Card Number identifying the customer. Should be null for electronic check processing
+
+M
+
+19
+
+N
+
+AccountTypeInd
+
+A
+
+AccountNum
+
+Defines Account type: 91 – Credit 92 – Switch / Solo 94 – Electronic Check Duplicates the information in <Refund>, but still required.
+
+M
+
+2
+
+N
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 55
+
+XML Name
+MerchantID
+
+XML Type E/A
+E
+
+XML Parent Element
+Refund
+
+Description
+Gateway merchant account number assigned by Paymentech: This account number will match that of your host platform BIN 000001 – 6 digit Salem Division Number BIN 000002 – 12 digit Tampa Merchant ID
+
+Req. M/C/O
+M
+
+Max. Char.
+15
+
+Field Type A/N
+N
+
+TerminalID
+
+E
+
+Refund
+
+Merchant Terminal ID assigned by Paymentech: All Terminal IDs at present are ‘001’
+
+M
+
+3
+
+N
+
+TermEntCapInd
+
+A
+
+TerminalID
+
+Code that defines the method to process cardholder account: 05 – Key entry only [eCommerce, Recurring and Mail Order] Duplicates the information in <Refund>, but still required.
+
+M
+
+2
+
+N
+
+CATInfoInd
+
+A
+
+TerminalID
+
+Indicates type of Cardholder Activated Terminal (CAT): 00 - Not a CAT device [Recurring and Mail Order] 06 - CAT level 6 [eCommerce] Duplicates the information in <Refund>, but still required.
+
+M
+
+2
+
+N
+
+TermLocInd
+
+A
+
+TerminalID
+
+Indicates terminal location: 00 – Card acceptor premises [Recurring and Mail Order] 01 – Cardholder premises [eCommerce] Duplicates the information in <Refund>, but still required.
+
+M
+
+2
+
+N
+
+CardPresentInd
+
+A
+
+TerminalID
+
+Indicates if the card was present at the POS: N - Card not present [eCommerce, Recurring and Mail Order] Duplicates the information in <Refund>, but still required.
+
+M
+
+1
+
+N
+
+POSConditionCode
+
+A
+
+TerminalID
+
+Code that defines the POS environment: 08 – Mail Order transaction 52 – Recurring Payment 59 – eCommerce transaction Duplicates the information in <Refund>, but still required.
+
+M
+
+2
+
+N
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 56
+
+XML Name
+AttendedTermDataInd
+
+XML Type E/A
+A
+
+XML Parent Element
+TerminalID
+
+Description
+Indicates if the card acceptor was at the point of sale: 01 – Unattended terminal [eCommerce] 02 – No terminal used [Recurring and Mail Order] Duplicates the information in <Refund>, but still required.
+
+Req. M/C/O
+M
+
+Max. Char.
+2
+
+Field Type A/N
+N
+
+BIN
+
+E
+
+Refund
+
+Transaction Routing Definition: Assigned by Paymentech 000001 – Salem 000002 – Tampa
+
+M
+
+6
+
+N
+
+OrderID
+
+E
+
+Refund
+
+Merchant Defined Order Number: Field defined and supplied by the auth originator, and echoed back in response. The first 8 characters should be unique for each transaction. Valid Characters: abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWX YZ0123456789-,$@ and a space character. However, the space character cannot be the leading character.
+
+M
+
+22
+
+A
+
+AmountDetails Amount
+
+E E
+
+Refund AmountDetails
+
+Required XML Parent Tag for defining the Transaction amount details. Transaction Amount: Keys: Implied decimal including those currencies that are a zero exponent. For example, both $100.00 (an exponent of ‘2’) and 100 Yen (an exponent of ‘0’) should be sent as <Amount>10000</Amount>. See table for min/max amount for each currency type.
+
+M M
+
+N/A 12
+
+N/A N
+
+Tax E AmountDetails
+
+Tax Amount for the purchase: Required for Purchasing Card Level II Data Implied decimal including those currencies that are a zero exponent.
+
+O
+
+12
+
+N
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 57
+
+XML Name
+TaxInd
+
+XML Type E/A
+A
+
+XML Parent Element
+Tax
+
+Description
+Defines the tax type: Required for Purchasing Card Level II Data 0 – Not provided 1 – Included 2 – Non-Taxable
+
+Req. M/C/O
+O
+
+Max. Char.
+1
+
+Field Type A/N
+N
+
+Currency CurrencyCode
+
+E A
+
+Refund Currency
+
+Required XML Parent Tag which includes all Currency data attributes Defines the transaction currency: The gateway using the standard ISO defines currency codes. Keys: Bin 000002 only supports the US Dollar [Code ‘840’].
+
+M M
+
+N/A 3
+
+N/A N
+
+See Appendix for values. CurrencyExponent A Currency Defines the transactions currency exponent: See Appendix for values. TxDateTime E Refund Transaction date and Time: Format – ‘hhmmssMMDDYYYY’ If a null value is sent in this field, the gateway system date will be assigned the transaction [in Eastern Standard Time]. C N/A N/A M 14 N M 6 N
+
+CardType
+
+E
+
+Refund
+
+XML Parent tag which defines the Card Type and Brand: Tag Mandatory for Switch – Solo and ECP. When present always null fill this element.
+
+CardBrand
+
+A
+
+CardType
+
+Defines the Card Type / Brand for the Transaction: See attached table. Required for: SW – Switch / Solo EC – Electronic Check
+
+C
+
+2
+
+A
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 58
+
+XML Name
+CardPresence
+
+XML Type E/A
+E
+
+XML Parent Element
+Refund
+
+Description
+XML Parent Tag in which child elements are card present or card not present. This tag and it child elements [<CardNP> and <Exp>] are mandatory for Credit Card and Switch – Solo card not present [eCommerce and Recurring] transactions. While not valid for ECP transactions on authorizations, the DTD requires this element and all its child elements for all transaction types including ECP.
+
+Req. M/C/O
+M
+
+Max. Char.
+N/A
+
+Field Type A/N
+N/A
+
+-
+
+CardNP
+
+E
+
+CardPresence
+
+XML Parent Tag which defines the transaction as Card not present and the associated data elements that must be submitted as a result. Card Expiration Date: Formats: MMYY Mandatory for card not present transactions, except ECP.
+
+M
+
+N/A
+
+N/A
+
+Exp
+
+E
+
+CardNP
+
+M
+
+4
+
+N
+
+Salem [BIN 000001] allows a blank to be submitted when no known EXP date exists. Please discuss this feature with your certification analyst before implementing. There are three valid mechanisms for submitting a ‘Blank’ expiration date using Orbital to the Salem Host. They are: POScardID E Refund Null fill this XML element - <Exp/> Send four spaces - <Exp> </Exp> Zero fill the XML Element - <Exp>0000</Exp> M 1 N
+
+Defines cardholder location: 4 – Mail Order [eCommerce and Recurring]
+
+EntryDataSrc
+
+E
+
+Refund
+
+Indicates how primary Account number originally entered: 2 – Manually Entered.
+
+M
+
+2
+
+N
+
+DebitCard
+
+E
+
+Refund
+
+Switch – Solo XML Parent Tag for all associated elements and attributes of the card type. Required for Switch – Solo. At least, one of the two child elements to this tag must be submitted. This will vary based on which value is used by the particular card issuer.
+
+C
+
+N/A
+
+N/A
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 59
+
+XML Name
+DebitCardStartDate
+
+XML Type E/A
+E
+
+XML Parent Element
+DebitCard
+
+Description
+Switch – Solo cards activation date: Format ‘MMYY’ Tag Mandatory for Switch – Solo. If no activation date sent, Null fill this element.
+
+Req. M/C/O
+C
+
+Max. Char.
+4
+
+Field Type A/N
+N
+
+DebitCardIssueNum
+
+E
+
+DebitCard
+
+Switch – Solo incremental counter for lost or replacement cards. Tag Mandatory for Switch – Solo. If no card issue number sent, Null fill this element.
+
+C
+
+2
+
+N
+
+CardType
+
+E
+
+DebitCard
+
+XML Parent tag which defines the Card Type and Brand: Required for to be sent again under <DebitCard> parent tag for Switch – Solo
+
+C
+
+N/A
+
+N/A
+
+CardBrand
+
+A
+
+CardType
+
+Defines the Card Type / Brand for the Transaction: Required to be sent again for Switch – Solo. SW – Switch / Solo
+
+C
+
+2
+
+A
+
+BankCheck
+
+E
+
+Refund
+
+Electronic Check (ECP) XML Parent Tag for all associated elements and attributes of the card type. This and all of its child elements and attributes are required for ECP processing.
+
+C
+
+N/A
+
+N/A
+
+BankPmtDelv
+
+A
+
+BankCheck
+
+Defines the ECP payment delivery method: This field indicates the preferred manner to deposit the transaction. B – Best Possible Method [US Only]
+Paymentech utilizes the method that best fits the situation. If the RDFI is not an ACH participant, a facsimile draft will be created. This should be the default value for this field.
+
+C
+
+1
+
+A
+
+A – ACH [US or Canadian]
+Deposit the transaction by ACH only. If the RDFI is not an ACH participant, the transaction is rejected.
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 60
+
+XML Name
+BankAccountType
+
+XML Type E/A
+A
+
+XML Parent Element
+BankCheck
+
+Description
+Defines the deposit account type: For Electronic Check processing. C – Consumer Checking [US or Canadian] S – Consumer Savings [US Only] X – Commercial Checking [US Only]
+
+Req. M/C/O
+C
+
+Max. Char.
+1
+
+Field Type A/N
+A
+
+CheckDDA
+
+E
+
+BankCheck
+
+Customer DDA account number For Electronic Check processing.
+
+C
+
+17
+
+A
+
+BCRtNum
+
+E
+
+BankCheck
+
+Bank routing and transit number for the customer. For Electronic Check processing. NOTE: All US Bank Routing Numbers are 9 digits All Canadian Bank Routing Numbers are 8 Digits
+
+C
+
+9
+
+N
+
+AVSextended
+
+E
+
+Refund
+
+XML Parent Tag for address verification request Name information Mandatory for all ECP transaction types. No other card type supports AVS Data on Refund transaction types.
+
+C
+
+N/A
+
+N/A
+
+AVSphoneNum
+
+E
+
+AVSextended
+
+Cardholder Billing Phone Number AAAEEENNNNXXXX, where AAA = Area Code EEE = Exchange NNNN = Number XXXX = Extension
+
+O
+
+14
+
+A
+
+AVSname PCCore PCOrderNum
+
+E E E
+
+AVSextended Refund PCCore
+
+Checkholder Billing Name XML Parent Tag for Purchasing Card II Data Elements PO number or Order number from customer: Required for Purchasing Card Level II Data
+
+O O O
+
+30 N/A 17
+
+A N/A A
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 61
+
+XML Name
+PCDestZip
+
+XML Type E/A
+E
+
+XML Parent Element
+PCCore
+
+Description
+Shipping Destination Zip code for the purchase: Required for Purchasing Card Level II Data For Zip Code + 4 please separate with ‘-‘.
+
+Req. M/C/O
+O
+
+Max. Char.
+10
+
+Field Type A/N
+A
+
+PCDestName
+
+E
+
+PCCore
+
+Amex Purchasing Card Data – Salem Only / Required for Amex Purchasing Card Data
+
+O
+
+30
+
+A
+
+PCDestAddress1
+
+E
+
+PCCore
+
+Amex Purchasing Card Data - Cardholder Ship To: Address line 1 Salem Only / Required for Amex Purchasing Card Data
+
+O
+
+30
+
+A
+
+PCDestAddress2
+
+E
+
+PCCore
+
+Amex Purchasing Card Data - Cardholder Ship To: Address line 2 Salem Only / Required for Amex Purchasing Card Data
+
+O
+
+30
+
+A
+
+PCDestCity
+
+E
+
+PCCore
+
+Amex Purchasing Card Data – Cardholder Ship TO: City Salem Only / Required for Amex Purchasing Card Data
+
+O
+
+20
+
+A
+
+PCDestState
+
+E
+
+PCCore
+
+Amex Purchasing Card Data – Cardholder Ship TO: State Salem Only / Required for Amex Purchasing Card Data
+
+O
+
+2
+
+A
+
+AMEXdata AMEXTranAdvAddn1
+
+E E
+
+Refund AMEXdata
+
+Required XML Parent Tag for Amex Additional Purchasing Card Data Amex Purchasing Card Data – Transaction Advice Addendum #1 The TAA Record is used to further identify the purchase that is associated with the charge to the cardholder. It is also used in Purchasing / Procurement card transactions to provide specific details about the transaction to the cardholder for tracking purposes. TAA’s should be as concise as possible. A TAA of “Merchandise” for example, would not be acceptable. Salem Only / Required for Amex Purchasing Card Data
+
+O O
+
+N/A 40
+
+N/A A
+
+AMEXTranAdvAddn2
+
+E
+
+AMEXdata
+
+Amex Purchasing Card Data – Transaction Advice Addendum #2 Salem Only / Required for Amex Purchasing Card Data
+
+O
+
+40
+
+A
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 62
+
+XML Name
+AMEXTranAdvAddn3
+
+XML Type E/A
+E
+
+XML Parent Element
+AMEXdata
+
+Description
+Amex Purchasing Card Data – Transaction Advice Addendum #3 Salem Only / Required for Amex Purchasing Card Data
+
+Req. M/C/O
+O
+
+Max. Char.
+40
+
+Field Type A/N
+A
+
+AMEXTranAdvAddn4
+
+E
+
+AMEXdata
+
+Amex Purchasing Card Data – Transaction Advice Addendum #4 Salem Only / Required for Amex Purchasing Card Data
+
+O
+
+40
+
+A
+
+RecurringInd
+
+E
+
+Refund
+
+Recurring indicator: This tag is required for Merchants that are: Located in Canadian Processing on BIN 000002 Processing Recurring Transactions
+
+C
+
+2
+
+A
+
+This tag should not be combined with values above that define the industry code as Recurring. In Canada, the objective to define the initial transaction collection method [eCommerce or MOTO]. The valid values are: RF – First Recurring Transaction. RS – Subsequent Recurring Transactions. SoftDescriptor E Refund XML Parent Tag that defines the transaction as containing Soft Descriptor Data. Conditionally required for Soft Descriptor Support Descriptors will appear on the cardholder’s statement C N/A N/A
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 63
+
+XML Name
+SDMerchantName
+
+XML Type E/A
+E
+
+XML Parent Element
+SoftDescriptor
+
+Description
+Soft Descriptor Merchant Name The Merchant Name field should be what is most recognizable to the cardholder [Company name or trade name]. The actual length of this field is conditionally tied to Host and the Size of the <SDProductDescription> field used. Salem: CREDIT – Three options, which conditionally affects the SDProductDescription [see below]: o Max 3 bytes o Max 7 bytes o Max 12 bytes ECP: o Tampa: Max 25 bytes. Max 15 bytes
+
+Req. M/C/O
+C
+
+Max. Char.
+25
+
+Field Type A/N
+A
+
+-
+
+Required Soft Descriptor field. SDMerchantPhone E SoftDescriptor Soft Descriptor Merchant Phone Only one of the location Soft Descriptor records should be sent [meaning Phone, URL, or Email]. This field will not show on Cardholder statements for Tampa Merchants. Valid Formats: SDMerchantURL E SoftDescriptor NNN-NNN-NNNN NNN-AAAAAAA C 13 A C 12 A
+
+Soft Descriptor Merchant URL Only one of the location Soft Descriptor records should be sent [meaning Phone, URL, or Email]. This field will not show on Cardholder statements for Tampa Merchants.
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 64
+
+XML Name
+SDMerchantEmail
+
+XML Type E/A
+E
+
+XML Parent Element
+SoftDescriptor
+
+Description
+Soft Descriptor Merchant Email Only one of the location Soft Descriptor records should be sent [meaning Phone, URL, or Email]. This field will not show on Cardholder statements for Tampa Merchants.
+
+Req. M/C/O
+C
+
+Max. Char.
+13
+
+Field Type A/N
+A
+
+SDProductDescription
+
+E
+
+SoftDescriptor
+
+Soft Descriptor Product Description Provides an accurate description of Salem: CREDIT: o If SDMerchantName = 3 bytes – then Max = 18 bytes o If SDMerchantName = 7 bytes – then Max = 14 bytes o If SDMerchantName = 12 bytes – then Max = 9 bytes ECP: o Tampa: This field will not show on Cardholder statements for Tampa Merchants. 10 bytes Max
+
+C
+
+18
+
+A
+
+-
+
+Required Soft Descriptor field.
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 65
+
+The following Elements and Attributes include only those components important to identifying the result of the Refund request result. All other fields that can be returned in the response are defined at the end of this document in Section 7 “Transaction Management Message Label Full Descriptions.”
+
+Refund Response Elements
+
+XML Name
+ProcStatus
+
+XML Type E/A
+E
+
+XML Parent Element
+RefundResponse
+
+Description
+Process Status: The first element that should be checked to determine the result of a request. It is the only element that is returned in all response scenarios. It identifies whether transactions have successfully passed all of the Gateway edit checks. 0 – Success All other values constitute an error condition. See appendix for definition of those error values.
+
+Req. M/C/O
+M
+
+Max. Char.
+6
+
+Field Type A/N
+A
+
+StatusMsg StatusMsgLth TxRefIdx
+
+E E E
+
+RefundResponse RefundResponse RefundResponse
+
+Text message associated with ProcStatus value. Length of StatusMessage. Gateway transaction index: Used to identify the unique components of transactions adjusted more than one time. Required on for void transactions, not for Mark for Captures.
+
+C M M
+
+Var 4 40
+
+A N A
+
+TxRefNum
+
+E
+
+RefundResponse
+
+Gateway transaction reference number: A unique value for each transaction, which is required to adjust any transaction in the gateway [such as Mark for Capture or void].
+
+M
+
+4
+
+A
+
+RespTime
+
+E
+
+RefundResponse
+
+Date / time the transaction was processed by gateway: Format – ‘MMDDYYYYhhmiss’
+
+M
+
+14
+
+N
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 66
+
+Quick Response Elements
+Note: For any request when the message cannot be delivered to the Host Authorization or Capture Systems, A Quick Response message may be issued. The relevant fields are:
+
+XML Name
+ProcStatus
+
+XML Type E/A
+E
+
+XML Parent Tag
+QuickResponse
+
+Description
+Process Status: The first element that should be checked to determine the result of a request. It is the only element that is returned in all response scenarios. It identifies whether transactions have successfully passed all of the Gateway edit checks. 0 – Success All other values constitute an error condition. See appendix for definition of those error values.
+
+Req. M/C/O
+M
+
+Field Max. Type Char. A/N
+6 A
+
+ApprovalStatus
+
+E
+
+QuickResponse
+
+Approval Status: Approval status identifies the result of the authorization request to the host system. If present, it should always be 2 for error.
+
+C
+
+1
+
+N
+
+StatusMsg StatusMsgLth
+
+E E
+
+QuickResponse QuickResponse
+
+Text message associated with ProcStatus value. Length of StatusMessage.
+
+M M
+
+Var 4
+
+A N
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 67
+
+“End of Day” Messages
+Submit all Marked for Capture Transactions For Clearing (Batch Request) Elements
+From an “End of Day” perspective, a merchant may be configured in one of two ways on the Paymentech Internet Gateway: Autosettle or Merchant initiated settlement. Merchant’s configured in auto-settle mode can ignore the message types defined in this section.
+
+XML Label
+Request Batch Version MessageType
+
+XML Type E/A
+E E A A
+
+XML Parent Tag
+N/A Request Batch Batch
+
+Description
+Required XML Parent Tag XML tag that defines the transaction as an Batch request Constant ‘2’ Defines Message Type: B - Batch release
+
+Req. M/C/O
+M M M M
+
+Field Max. Type Char. A/N
+N/A N/A 1 4 N/A N/A N A
+
+MerchantID
+
+E
+
+Batch
+
+Gateway merchant account number assigned by Paymentech: This account number will match that of your host platform BIN 000001 – 6 digit Salem Division Number BIN 000002 – 12 digit Tampa Merchant ID
+
+M
+
+15
+
+N
+
+TerminalID
+
+E
+
+Batch
+
+Merchant Terminal ID assigned by Paymentech: All Terminal IDs at present are ‘001’
+
+M
+
+3
+
+N
+
+TermEntCapInd
+
+A
+
+TerminalID
+
+Code that defines the method to process cardholder account: 05 – Key entry only [eCommerce, Recurring and Mail Order]
+
+M
+
+2
+
+N
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 68
+
+XML Label
+CATInfoInd
+
+XML Type E/A
+A
+
+XML Parent Tag
+TerminalID
+
+Description
+Indicates type of Cardholder Activated Terminal (CAT): 00 - Not a CAT device [Recurring and Mail Order] 06 - CAT level 6 [eCommerce]
+
+Req. M/C/O
+M
+
+Field Max. Type Char. A/N
+2 N
+
+TermLocInd
+
+A
+
+TerminalID
+
+Indicates terminal location: 00 – Card acceptor premises [Recurring and Mail Order] 01 – Cardholder premises [eCommerce]
+
+M
+
+2
+
+N
+
+CardPresentInd
+
+A
+
+TerminalID
+
+Indicates if the card was present at the POS: N - Card not present [eCommerce, Recurring and Mail Order]
+
+M
+
+1
+
+N
+
+POSConditionCode
+
+A
+
+TerminalID
+
+Code that defines the POS environment: 08 – Mail Order transaction 52 – Recurring Payment 59 – eCommerce transaction
+
+M
+
+2
+
+N
+
+AttendedTermDataInd
+
+A
+
+TerminalID
+
+Indicates if the card acceptor was at the point of sale: 01 – Unattended terminal [eCommerce] 02 – No terminal used [Recurring and Mail Order]
+
+M
+
+2
+
+N
+
+BIN
+
+E
+
+Batch
+
+Transaction Routing Definition: Assigned by Paymentech 000001 – Salem 000002 – Tampa
+
+M
+
+6
+
+N
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 69
+
+Batch Response Elements
+XML Label
+ProcStatus
+
+XML Type E/A
+E
+
+XML Parent Tag
+Batchresponse
+
+Label
+Process Status: The first element that should be checked to determine the result of a request. It is the only element that is returned in all response scenarios. It identifies whether transactions have successfully passed all of the Gateway edit checks. 0 – Success All other values constitute an error condition. See appendix for definition of those error values.
+
+Req. M/C/O
+M
+
+Max. Char.
+6
+
+Field Type A/N
+A
+
+StatusMsg StatusMsgLth RespTime
+
+E E E
+
+Batchresponse Batchresponse Batchresponse
+
+Text message associated with ProcStatus value. Length of StatusMessage. Date / time the transaction was processed by gateway: Format – ‘MMDDYYYYhhmiss’
+
+C M M
+
+Var 1 14
+
+A A N
+
+September, 2004
+
+Orbital Gateway Interface Specification
+
+Page 70
+
+Appendix A
+RespCode Tag Values
+Response codes received that are not in this table should be treated as a general error not approved.
+
+Key:
+
+Action Description
+Call Cust. Fix Resend Voice Wait Call your Paymentech Customer Service for assistance Try to resolve with customer or obtain alternate payment method There is an invalid value being sent. Fix and resend Send this transaction back at any time Perform a voice authorization per instructions provided by Paymentech Wait 2-3 days before resending or try to resolve with the customer
+
+Response Codes:
+
+Code
+00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15
+
+Definition
+Approved Call/Refer to Card Issuer Refer to Card issuer's special conditions Invalid Merchant Number Pickup Do Not Honor Other Error Stop Deposit Order Approved authorization, honor with identification Revocation of Auth Default Call Approved authorization, VIP Approval Invalid Transaction Type Bad Amount Invalid Credit Card Number Default Call Low Fraud
+
+Status
+Approved Decline Decline Error Decline Decline Decline Decline Approved Decline Decline Approved Decline Decline Decline Decline
+
+Action
+None Voice Voice Fix Cust. Cust. Cust. Cust. None Cust. Voice None Cust. Fix Fix Voice
+
+Code
+16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 40 41 43 50 52 56 58 59 60 61 62 63
+
+Definition
+Default Call Medium Fraud Default Call High fraud Default Call Unavailable Fraud Re-enter Transaction Floor Low Fraud Floor Medium Fraud Floor High fraud Floor Unavailable Fraud Validated Verified Pre-noted No reason to decline Received and stored Provided Auth Invalid value in message Request received BIN Alert Card is expired Approved for partial Zero Amount Bad Total Auth amount Invalid Secure Payment Data Merchant not MC SecureCode Enabled Requested Function not supported Lost / Stolen Lost / Stolen Card Positive ID Processor Decline Restraint Transaction not permitted to terminal Soft AVS Do Not Honor Low Fraud Do Not Honor Medium Fraud Do Not Honor High fraud Do Not Honor Unavailable Fraud
+
+Status
+Decline Decline Decline Error Decline Decline Decline Decline Approved Approved Approved Decline Approved Approved Error Approved Approved Decline Approved Error Error Error Decline Error Decline Decline Decline Decline Decline Error Decline Decline Decline Decline Decline
+
+Action
+Voice Voice Voice Resend Cust. Cust. Cust. Cust. None None None Cust. None None Fix None None Cust. None Fix Fix Fix Call Call or Fix Cust. Cust. Cust. Cust. Cust. Call Cust. Cust. Cust. Cust. Cust.
+
+July, 2003
+
+Orbital Gateway Interface Specification
+
+Page 72
+
+Code
+64 65 66 68 69 71 72 73 74 75 77 78 79 80 81 82 83 84 85 86 87 88 89 91 92 93 94 95 96 97 98 99 A1 A2 A3
+
+Definition
+CVV2/CVC2 Failure Invalid Amex CID Other Error Invalid CC Number Does not match MOP No Account Invalid Institution Code Method of Payment is Invalid for Merchant Invalid Expiration Date Bad Amount Invalid Amount Missing Companion Data Invalid Merchant Invalid MOP for division Call Low Fraud Call Medium Fraud Call High Fraud Call Unavailable Fraud Duplicated Order # Auth Recycle Host down Invalid Currency Invalid Purch. Level III Credit Floor Approved Low Fraud Approved Medium Fraud Approved High Fraud Approved Fraud Service Unavailable Invalid Data Type Invalid Record Sequence Percents Not Total 100 Issuer Unavailable No Answer / Unable to send Payments Not Total Order Bad Order Number FPO Locked
+
+Status
+Decline Decline Error Error Error Decline Decline Error Decline Error Decline Error Error Error Decline Decline Decline Decline Error Error Error Error Decline Approved Approved Approved Approved Error Error Error Decline Error Error Error Error
+
+Action
+Cust. Cust. Fix Fix Fix Fix Fix Fix Cust. Fix Fix Fix Fix Fix Voice Voice Voice Voice Fix Wait Fix Fix Cust. None None None None Fix Fix Fix Resend Resend Fix Fix Wait
+
+July, 2003
+
+Orbital Gateway Interface Specification
+
+Page 73
+
+Code
+A4 A5 A6 A8 A9 B1 B2 B3 B5 B7 B8 B9 C1 C2 C3 C4 C5 C6 C7 C8 C9 D1 D2 D3 D4 D5 D6 D7 D8 D9 E3 E4 E5 E6 E7
+
+Definition
+FPO Not Allowed Auth Amount Wrong Illegal Action Invalid Start Date Invalid Issue Number Invalid Transaction Type Account Previously Activated Unable to void transaction Not on file Fraud Bad Debt On Negative File Invalid Issuer Invalid Response Code Excessive Pin Try Over Limit Over Freq Limit Over Sav limit Over Sav Freq Over Credit limit Over Credit Freq Invalid For Credit Invalid For Debit Rev Exceed Withdrawal One Purchasing Limit On Negative File Changed Field Insufficient Funds Encrypted Data Bad Altered Data Invalid Prefix Invalid Institution Invalid Cardholder BIN Block Stored
+
+Status
+Error Error Error Error Error Error Decline Error Decline Decline Decline Decline Decline Decline Decline Decline Decline Decline Decline Decline Decline Decline Decline Decline Decline Decline Decline Decline Decline Decline Decline Decline Decline Decline Approved
+
+Action
+Call Fix Fix Fix Fix Fix Cust Fix Fix Cust. Cust. Cust. Cust. Fix Cust. Cust. Cust. Cust. Cust. Cust. Cust. Fix Fix Cust. Cust. Cust. Fix Cust. Fix Fix Fix Fix Fix Fix None
+
+July, 2003
+
+Orbital Gateway Interface Specification
+
+Page 74
+
+Code
+E8 E9 F1 F2 F3 F4 F5 F6 F7 F8 F9 G1 G2 G3 G4 G5 G6 G7 G8 G9 H1 H2 H3 H4 H5 H6 H7 H8 I1
+
+Definition
+Invalid Transit Routing Number Unknown Transit Routing Number Missing Name Invalid Account Type Account Closed No Account / Unable To Locate Account holder Deceased Beneficiary Deceased Account Frozen Customer Opt Out ACH Non-Participant No Pre-note No Address Invalid Account Number Authorization Revoked by Consumer Customer Advises Not Authorized Invalid CECP Action Code Invalid Account Format Bad Account Number Data No Capture No Credit Function No Debit Function Rev Exceed Withdrawal Changed Field Terminal Not Owned Invalid Time Invalid Date Invalid Terminal Number Block activation failed – Card Range not set up for MOD 10 Block activation failed – email or fulfillment flags were set to Y Declined – Issuance doesn’t meet minimum amount Declined – no original auth found Declined – outstanding auth, funds on hold
+
+Status
+Error Error Error Error Error Error Error Error Error Error Error Error Error Error Error Error Error Error Error Decline Decline Decline Decline Decline Decline Decline Decline Decline Error
+
+Action
+Fix Fix Fix Fix Cust. Fix Cust. Cust. Cust. Cust. Cust. Fix Fix Fix Cust. Cust. Fix Fix Fix N/A N/A N/A Cust. N/A N/A Fix Fix Fix Fix
+
+I2 I3 I4 I5
+
+Error Declined Decline Decline
+
+Fix Cust Cust Cust
+
+July, 2003
+
+Orbital Gateway Interface Specification
+
+Page 75
+
+Code
+I6 I7 I8 I9 H9 J1 J2 J3 J4 J5 J6 J7 J8 J9 K1 K2 K3 K4 K5 K6 K7 K8 K9 L1 L2 L3 L4 L5 L6 L7 L8 L9 M1
+
+Definition
+Activation amount incorrect Block activation failed- account not correct or block size not correct Mag stripe CVD value failed Max Redemption limit met Invalid PIN No Manual Key Not Signed In Excessive Pin Try No DDA No SAV Excess DDA Excess DDA FREQ Excess SAV Excess SAV FREQ Excess Card Excess Card Freq Reserved Future Reserved Closing Dormant NSF Future RD Six Future RD Seven Transaction Code Conflict In Progress Process Unavailable Invalid Expiration Invalid Effective Invalid Issuer Tran not allowed for cardholder Unable to Determine Network Routing System Error Database Error Merchant Override Decline
+
+Status
+Decline Decline Decline Decline Decline Decline Decline Decline Decline Decline Decline Decline Decline Decline Decline Decline Decline Decline Decline Decline Decline Decline Decline Decline Error Error Error Decline Decline Error Error Error Decline
+
+Action
+Fix Fix Fix Fix Fix Fix Fix Cust. Fix Fix Cust. Cust. Cust. Cust. Cust. Cust. N/A N/A Cust. Cust. N/A N/A Fix Wait Resend Fix Fix Fix Cust. Call Call Call Cust.
+
+July, 2003
+
+Orbital Gateway Interface Specification
+
+Page 76
+
+AVSRespCode Tag Values
+Code
+1 2 3 4 or R 5 6 7 8 9 A B C D E F G H J JA JB JC JD X Z ‘Blank’
+
+AVS Message
+No address supplied Bill-to address did not pass Auth Host edit checks AVS not performed Issuer does not participate in AVS Edit-error - AVS data is invalid System unavailable or time-out Address information unavailable Transaction Ineligible for AVS Zip Match / Zip4 Match / Locale match Zip Match / Zip 4 Match / Locale no match Zip Match / Zip 4 no Match / Locale match Zip Match / Zip 4 no Match / Locale no match Zip No Match / Zip 4 Match / Locale match Zip No Match / Zip 4 Match / Locale no match Zip No Match / Zip 4 No Match / Locale match No match at all Zip Match / Locale match Issuer does not participate in Global AVS International street address and postal match International street address match. Postal code not verified. International street address and postal code not verified. International postal code match. Street address not verified. Zip Match / Zip 4 Match / Address Match Zip Match / Locale no match Not applicable (non-Visa)
+
+CVV2RespCode Tag Values
+Code
+M
+
+CVV2 (CVC2/ Discover CID) Description
+CVV Match
+
+July, 2003
+
+Orbital Gateway Interface Specification
+
+Page 77
+
+N P S U I Y ‘Blank’
+
+CVV No match Not processed Should have been present Unsupported by issuer Invalid Invalid Not applicable (non-Visa)
+
+CAVVRespCode Tag Values
+Code
+‘Blank’ 0 1 2 3
+
+CAVV Description
+CAVV Not Present CAVV Not Validated due to erroneous data submitted CAVV Failed Validation – Authentication Transaction CAVV Passed Validation – Authentication Transaction CAVV Attempt a 3-D Secure authentication value of 7 from the Issuer ACS indicates authentication was attempted. (Determined that the issuer ACS generated this value from the use of Visa CAVV key[s]). CAVV Failed Validation – Attempt a 3-D Secure authentication value of 7 from Visa’s ACS indicates that an authentication attempt was performed. (Determined that Visa generated this value from the use of CAVV key[s]). Reserved for Future Use – NOT USED. CAVV Not Validated – Issuer not participating in CAVV validation. CAVV Failed Validation - Attempt (CAVV generated with Visa Key) CAVV Passed Validation – Attempt (CAVV generated with Visa Key) CAVV Failed Validation - Attempt (CAVV generated with Visa Key – Issuer ACS unavailable) CAVV Passed Validation – Attempt (CAVV generated with Visa Key – Issuer ACS unavailable) CAVV Passed Validation – Information only, no liability shift (CAVV with ECI = 7) CAVV Not Validated – Attempt Issuer did not return a CAVV results code in the Authorization response.
+
+4
+
+5 6 7 8 9 A B C
+
+July, 2003
+
+Orbital Gateway Interface Specification
+
+Page 78
+
+D I U
+
+CAVV Not Validated – Authentication – Issuer did not return a CAVV results code in the authorization response. Invalid Security Data Issuer does not participate or 3-D Secure data not utilized.
+
+HTTP Responses
+A few listing excluding specific Orbital Gateway HTTP responses and the descriptions can be found at http://www.w3.org/Protocols/rfc2616/rfc2616.txt. The Gateway specific and common HTTP responses are:
+
+Code
+200 400 403
+
+Definition
+Approved Invalid Request Forbidden: SSL Connection Required
+
+Status
+An HTTP Session was established with the Orbital Gateway. Error conditions can still be returned. The server, due to malformed syntax, could not understand the request. A Clear Text [or unencrypted] request was made to the Orbital Gateway. All transactions must be SSL Encrypted to interface to Orbital. The Response could not be processed within the maximum time allowed. A non-registered IP Address attempted to connect to the Orbital Gateway. The HTTP connection was refused as a result. The server encountered an unexpected condition, which prevented it from fulfilling the request. The server, while acting as a gateway or proxy, received an invalid response from the upstream server it accessed in attempting to fulfill the request.
+
+408 412
+
+Request Timed Out IP Security Failure
+
+500
+
+Internal Server Error
+
+502
+
+Connection Error
+
+ProcStatus Tag Values
+Code
+0
+
+Description
+PWS_PROCESS_SUCCESS
+
+Status
+Success
+
+Action
+No Error, See Response definition Resend Resend Resend Fix Resend
+
+1 2 3 40 205
+
+PWS_UNKNOWN_ERROR PWS_NETWORK_ERROR PWS_DB_ERROR PWS_NOT_MOST_RECENT_AUTH (Wrong TxRefIdx sent on a Void Request) PWS_DB_EXCEPTION_ERROR
+
+Error Error Error Error Error
+
+July, 2003
+
+Orbital Gateway Interface Specification
+
+Page 79
+
+Code
+208 301 303 328
+
+Description
+PWS_ERROR_FAILED_TO_CONNECT PWS_NW_OPEN_ERROR PWS_NW_READ_ERROR PWS_ERROR_BAD_REVERSAL_AMOUNT (An invalid amount submitted on a Partial Void Request) PWS_ERROR_BAD_REQUEST_AMOUNT PWS_ERROR_ALREADY_CAPTURED PWS_ERROR_INVALID_ACTION PWS_ERROR_MISSING_TRANSACTION_REFEREN CE_INDEX PWS_ERROR_SPLIT_AUTH_NOT_ALLOWED_ALRE ADY_MARKED PWS_DID_NOT_ALLOW_A_CAPTURE_REQUEST_ BECAUSE_THE_ORIGINAL_AUTH_WAS_NOT_SU CCESSFUL (Cannot Void a Transaction in which the Mark for Capture Failed) The amount requested cannot be zero This industry type does not allow a capture greater than the value of the auth There is nothing to capture [This error is returned when a Capture attempt is made on prior authorization, but there is no amount left to capture]. PWS_MANDATORY_FIELDS_ERROR FE_NETWORK_ERROR (cannot connect to eHost) FE_INTERRUPTED_SESSION (i/o problem while connecting to eHost) The Merchant ID / Acquiring BIN ID is invalid or missing. Message rejected This merchant is not active until … [This error is returned when a Merchant Account has been setup, but with an Activation date in the future of the present date]. This merchant is inactive
+
+Status
+Error Error Error Error
+
+Action
+Resend Resend Resend Fix
+
+329 330 331 333 335 348
+
+Error Error Error Error Error Error
+
+Fix Fix Fix Fix Fix Fix
+
+350 351 355
+
+Error Error Error
+
+Fix Fix Fix
+
+400 410 411 516 518
+
+Error Error Error Error Error
+
+Fix Resend Resend Fix Call Customer Service Call Customer Service Fix
+
+519
+
+Error
+
+521
+
+523 801 803 804 806
+
+eHost has received a badly formatted message [This error is returned when required fields are missing] An invalid TID was received {Terminal ID] PWS_ERR_VALIDATION_AMOUNT PWS_ERR_VALIDATION_AVSADDRESS PWS_ERR_VALIDATION_AVSZIPCODE PWS_ERR_VALIDATION_BIN
+
+Error
+
+Error Error Error Error Error
+
+Fix Fix Fix Fix Fix
+
+July, 2003
+
+Orbital Gateway Interface Specification
+
+Page 80
+
+Code
+811 812 814 817 818 822 823 825 826 827 831 832 833 834 835 836 838 839 840 841 842 844 845 846 847 848 849 850 851 852 853 881
+
+Description
+PWS_ERR_VALIDATION_CUSTOMERADDR PWS_ERR_VALIDATION_CUSTOMEREMAIL PWS_ERR_VALIDATION_CUSTOMERNAME PWS_ERR_VALIDATION_CUSTOMERPHONE PWS_ERR_VALIDATION_CVV2 PWS_ERR_VALIDATION_ISSUENUM PWS_ERR_VALIDATION_LANGUAGE PWS_ERR_VALIDATION_MERCHANTID PWS_ERR_VALIDATION_ORDERDESCRIPTION PWS_ERR_VALIDATION_ORDERID PWS_ERR_VALIDATION_TAXAMT PWS_ERR_VALIDATION_TAXINCLUDED PWS_ERR_VALIDATION_TERMINALID PWS_ERR_VALIDATION_TRANSDATE PWS_ERR_VALIDATION_TRANSTIME PWS_ERR_VALIDATION_ECOM PWS_ERR_VALIDATION_ACNUMBER PWS_ERR_VALIDATION_PAN_LUHN PWS_ERR_VALIDATION_PAN_LENGTH PWS_ERR_VALIDATION_PAN_RANGE PWS_ERR_VALIDATION_EXP_DATE_FORMAT PWS_ERR_VALIDATION_EXP_DATE_TOO_NEW PWS_ERR_VALIDATION_START_DATE_FORMAT PWS_ERR_VALIDATION_START_DATE_TOO_NEW PWS_ERR_VALIDATION_PAN_FORMAT PWS_ERR_VALIDATION_CURRENCY_FORMAT PWS_ERR_VALIDATION_CURRENCY_UNSUPPOR TED PWS_ERR_VALIDATION_CURRENCY_BAD_EXPO NENT PWS_ERR_VALIDATION_MERCHANT_UNSUPPO RTED PWS_ERR_VALIDATION_BRAND_UNSUPPORTED PWS_ERR_VALIDATION_BRAND_PAN_MISMATC H The LIDM you supplied # does not match with any existing transaction (Cannot void or Mark a Transaction because the TxRefNum does match a transaction)
+
+Status
+Error Error Error Error Error Error Error Error Error Error Error Error Error Error Error Error Error Error Error Error Error Error Error Error Error Error Error Error Error Error Error Error
+
+Action
+Fix Fix Fix Fix Fix Fix Fix Fix Fix Fix Fix Fix Fix Fix Fix Fix Fix Fix Fix Fix Fix Fix Fix Fix Fix Fix Fix Fix Fix Fix Fix Fix
+
+July, 2003
+
+Orbital Gateway Interface Specification
+
+Page 81
+
+Code
+882 9720 9721 9722 9723 9724 9725 9726
+
+Description
+LOCKED_DOWN (Cannot mark or unmark transaction) Soft Desc: Merchant not activated for soft descriptors Soft Desc: Merchant Name is required if soft descriptor data is sent Soft Desc: Merchant Name exceeds max length of [%s] for %s transactions Soft Desc: [%s] cannot contain leading spaces Soft Desc: [%s] exceeds max length of [%s] Soft Desc: Product Description cannot be present if Merchant Name is > %s Soft Desc: Product Description length cannot exceed [%s] if Merchant Name length is between %s and %s Soft Desc: Too many Merchant descriptors. Never send more than one of the following: City, phone, url OR email Soft Desc: [%s] is not allowed for ECP transactions Soft Desc: Invalid format for Merchant Phone. Must be nnn-nnn-aaaa or nnn-aaaaaaaa Invalid Data in the Request [such as bad AVS Data] Response timed out waiting for Authorization Host Invalid Card Number Invalid AVS ZIP Code Invalid Message Format. Transaction was flagged as an eCommerce Industry Type but No ECOrderNum was sent The ECOrderNum or MailOrderNum was all Zero’s or All Spaces. These are not valid Invalid Card Number Transaction Amount to Large Transaction Amount to Small Host eFalcon check requested from Tampa [BIN 000002] – This functionality is not supported on this platform GATEWAY SYSTEM ERROR CONDITIONS
+
+Status
+Error Error Error Error Error Error Error Error
+
+Action
+Fix Fix Fix Fix Fix Fix Fix Fix
+
+9727
+
+Error
+
+Fix
+
+9728 9729 10005 10011 10096 10204 10332
+
+Error Error Error Error Error Error Error
+
+Fix Fix Fix Resend Fix Fix Fix
+
+10333 10334 10336 10337 10349
+
+Error Error Error Error Error
+
+Fix Fix Fix Fix Fix
+
+All other 10000 – 11000
+
+Error
+
+Resend
+
+Retry Errors 9710 9711 9712 Message expired during retry Too many transactions to process Request timeout - Please try again Error Error Error Resend Wait & Resend Resend
+
+July, 2003
+
+Orbital Gateway Interface Specification
+
+Page 82
+
+Code
+9713 9714 9715
+
+Description
+Invalid MIME header - Merchant ID in MIME does not match XML message Invalid MIME header- Trace number must be between 1 and 9999999999999999 The retry request did not match the original request for this trace number IP Authentication Errors Security Information is Missing
+
+Status
+Error Error Error
+
+Action
+Fix Fix Fix
+
+9716
+
+Error
+
+9717
+
+Security Information - agent/chain/merchant is missing Web Server Errors
+
+Error
+
+Call Customer Service Call Customer Service Fix Fix Resend Call Customer Service Resend Resend Resend
+
+20400 20403 20408 20412
+
+Invalid Request Forbidden: SSL Connection Required Request Timed Out Precondition Failed: Security Information is missing Internal Server Error Connection Error Server Unavailable: Please Try Again Later
+
+Error Error Error Error
+
+20500 20502 20503
+
+Error Error Error
+
+Continued on next page
+
+July, 2003
+
+Orbital Gateway Interface Specification
+
+Page 83
+
+TzCode (Time Zone) Tag Values
+A 3-digit code used to calculate the local time in terms of Coordinated Universal Time (UTC or, formerly, GMT). It specifies the time zone differential from UTC. The first digit is used to designate the direction of the differential as well as whether daylight savings time is observed at the local site, and the last two digits specify the magnitude of the differential. US pre-calculated values are as follows: #
+1 2 3 4 5 6 7 8
+
+Time Zone
+Eastern Time Indiana Central Mountain Arizona Pacific Alaska Hawaii
+
+ISO Value
+705 105 706 707 107 708 709 110
+
+If a value outside is needed the formula is as follows: Byte #
+1
+
+Length Format
+1 N
+
+Description
+Direction 0 = Positive offset, in hours, ahead of UTC 2 = Positive offset, in 15 minute increments, ahead of UTC 4 = Positive offset, in 15 minute increments, ahead of UTC, in cities participating in daylight savings time 6 = Positive offset, in hours, ahead of UTC, in cities participating in daylight savings time 1 = Negative offset, in hours, ahead of UTC 3 = Negative offset, in 15 minute increments, ahead of UTC 5 = Negative offset, in 15 minute increments, ahead of UTC, in cities participating in daylight savings time 7 = Negative offset, in hours, ahead of UTC, in cities participating in daylight savings time
+
+2-3
+
+2
+
+N
+
+Time Zone
+
+July, 2003
+
+Orbital Gateway Interface Specification
+
+Page 84
+
+For Byte #1 = 0, 1, 6 or 7 0 <= Time Zone Region <= 12 For Byte #1 = 2, 3, 4, or 5 0 <= Time Zone Region <= 48
+
+CurrencyCode and CurrencyExponent Tag Values
+Currency
+US Dollar Canadian Dollar British Pound Sweden Krona Norwegian Kroner Danish Krone Swiss Franc Australian Dollars New Zealand Dollars Hong Kong Dollar Japanese Yen Euro Singapore Dollar South African Rand
+
+Code
+840 124 826 752 578 208 756 036 554 344 392 978 702 710
+
+Exponent
+2 2 2 2 2 2 2 2 2 2 0 2 2 2
+
+Min Amount
+All - 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1 1.00 1.00 1.00
+
+Max Amount
+99,999.00 37,000.00 25,000.00 231,250.00 233,750.00 212,500.00 45,000.00 46,250.00 55,000.00 15,000.00 3,200,000 25,000.00 43,750.00 192,500.00
+
+DownGradeReason Tag Values
+These values represent the reason code provided by Visa at time of authorization for transactions that were not able to qualify for a CPS program. New downgrade reasons are defined at Visa’s discretion and are outside of Paymentech’s control.
+
+Code
+AV CK IM IP
+
+Definition
+Address verification not requested Address verification data does not match issuer data Invalid merchant category code for transaction Invalid purchase identifier
+
+July, 2003
+
+Orbital Gateway Interface Specification
+
+Page 85
+
+Code
+NA NV TI 02
+
+Definition
+Transaction not approved Not a Visa card Transaction identifier is invalid Primary account number is missing
+
+AuthNetwkId Tag Values
+The following table contains the codes used to represent the various authorizing networks used in the authorization of transactions:
+
+Code
+00 01 02 05 12
+
+Definition
+Not electronically authorized VisaNet MasterCard BankNet American Express Direct Discover
+
+AuthSrc Tag Values
+The following table contains the codes used to represent the various authorizing networks used in the authorization of transactions:
+
+Code
+0 1 2 3 4 5 7 8 D E ‘Blank’
+
+Definition
+0 – Source Code unavailable. Stand-in processor (STIP), time out response. LCS response (amount below floor limit). STIP (issuer in suppress inquiry mode). STIP (issuer unavailable). Issuer provided. Acquire approval (BASE I down). Acquired approval of a referral. Referral (auth code manually keyed). E – Offline approval (auth code manually keyed). Unknown
+
+July, 2003
+
+Orbital Gateway Interface Specification
+
+Page 86
+
+Appendix B
+Full Listing of XML Label Descriptions
+Label Max. Length
+32
+
+Field Type A/N
+A
+
+Description
+
+AAV
+
+Accountholder Authentication Value: • • This number must be Base 64 Encoded. Unique transaction token generated by the issuer and presented to the merchant each time a cardholder conducts an electronic transaction using MasterCard SecureCode. AAV incorporates elements specific to the transaction and effectively binds the cardholder to a transaction at a merchant for a given sales amount.
+
+AC
+
+N/A
+
+N/A
+
+Required XML Parent Tag: For authorizations, Auth-Captures, and Mark for Capture Transactions. Child element of <Request>
+
+AccountNum
+
+19
+
+N
+
+Card Number identifying the customer. Should be null for electronic check processing
+
+AccountTypeInd
+
+2
+
+N
+
+Defines Account type: 91 – Credit 92 – Switch / Solo 94 – Electronic Check Amount for Partial Voids if necessary: When a specific amount is included with this tag, that amount will be voided [assuming that the amount is not greater than the transaction amount remaining]. However, the absence of this tag on a void transaction will perform a full Void.
+
+AdjustedAmt
+
+12
+
+N
+
+AMEXdata
+
+N/A
+
+N/A
+
+Required XML Parent Tag for Amex Additional Purchasing Card Data
+
+July, 2003
+
+Orbital Gateway Interface Specification
+
+Page 87
+
+Label
+
+Max. Length
+40
+
+Field Type A/N
+A
+
+Description
+
+AMEXTranAdvAddn1
+
+Amex Purchasing Card Data – Transaction Advice Addendum #1 The original transaction can be updated with purchasing card information during a mark for capture The TAA Record is used to further identify the purchase that is associated with the charge to the cardholder. It is also used in Purchasing / Procurement card transactions to provide specific details about the transaction to the cardholder for tracking purposes. TAA’s should be as concise as possible. A TAA of “Merchandise” for example, would not be acceptable. Salem Only / Required for Amex Purchasing Card Data
+
+AMEXTranAdvAddn2
+
+40
+
+A
+
+Amex Purchasing Card Data – Transaction Advice Addendum #2 The original transaction can be updated with purchasing card information during a mark for capture Salem Only / Required for Amex Purchasing Card Data
+
+AMEXTranAdvAddn3
+
+40
+
+A
+
+Amex Purchasing Card Data – Transaction Advice Addendum #3 The original transaction can be updated with purchasing card information during a mark for capture Salem Only / Required for Amex Purchasing Card Data
+
+AMEXTranAdvAddn4
+
+40
+
+A
+
+Amex Purchasing Card Data – Transaction Advice Addendum #4 The original transaction can be updated with purchasing card information during a mark for capture Salem Only / Required for Amex Purchasing Card Data
+
+Amount
+
+12
+
+N
+
+Transaction Amount: Keys: Implied decimal including those currencies that are a zero exponent. For example, both $100.00 (an exponent of ‘2’) and 100 Yen (an exponent of ‘0’) should be sent as <Amount>10000</Amount>. See table for min/max amount for each currency type.
+
+AmountDetails AttendedTermDataInd N/A 2 N/A N
+
+Required XML Parent Tag for defining the Transaction amount details. Indicates if the card acceptor was at the point of sale: 01 – Unattended terminal [eCommerce] 02 – No terminal used [Recurring and Mail Order]
+
+July, 2003
+
+Orbital Gateway Interface Specification
+
+Page 88
+
+Label
+
+Max. Length
+N/A
+
+Field Type A/N
+N/A
+
+Description
+
+Auth
+
+Required XML Parent Tag: For authorizations, Auth-Captures, and Mark for Capture Transactions. Child element of <AC>
+
+AuthCharInd
+
+1
+
+A
+
+Code issued by Visa for CPS evaluation: V – Meets requirements for card not present rate, AVS data provided. R – Meets requirements for recurring payment qualification, AVS data not provided.
+
+AuthCd
+
+6
+
+A
+
+Prior Authorization Code: If a prior authorization code is available, It should be sent in this tag. This reduces the risk of chargebacks. - This element should not be included on an ECP transaction
+
+AuthCode
+
+6
+
+A
+
+Issuer approval Code delivered in response: Unique transactional level code issuer uses to show each request was approved
+
+AuthID AuthMandatory
+
+6 N/A
+
+A N/A
+
+Populated for Visa incremental and reversal authorizations. Required XML Parent Tag: For authorizations, Auth-Captures, and Mark for Capture Transactions. Child element of <Auth>
+
+AuthNetwkId
+
+2
+
+A
+
+Code indicating network that processed the transaction: See appendix for possible values.
+
+AuthOptional
+
+N/A
+
+N/A
+
+Required XML Parent Tag: For authorizations, Auth-Captures, and Mark for Capture Transactions. Child element of <Auth>
+
+AuthOverrideInd AuthSrc
+
+1 1
+
+A A
+
+Constant ‘N’ Visa code indicating how an authorization was performed: See appendix for possible values.
+
+AVSaddress1
+
+30
+
+A
+
+Cardholder Billing Address line 1 Should not include any of the following characters types: % | ^ \ /
+
+AVSaddress2
+
+30
+
+A
+
+Cardholder Billing Address Line 2 Should not include any of the following characters types: % | ^ \ /
+
+AVSbase
+
+N/A
+
+N/A
+
+This tag is Mandatory if sending <MailOrderData>
+
+July, 2003
+
+Orbital Gateway Interface Specification
+
+Page 89
+
+Label
+
+Max. Length
+20
+
+Field Type A/N
+A
+
+Description
+
+AVScity
+
+Cardholder Billing City Should not include any of the following characters types: % | ^ \ /
+
+AVScountryCode
+
+2
+
+A
+
+Cardholder Billing Address Country Code: Required if processing a U.K. based Address. Valid values: US – United States CA – Canada GB – Great Britain UK – United Kingdom “ “ – Blank for all other countries
+
+AVSextended
+
+N/A
+
+N/A
+
+XML Parent Tag for address verification request Address and name information can only sent on credit card and ECP transactions, not Switch – Solo transactions. ECP requires only Name not Address detail.
+
+AVSname AVSphoneNum
+
+30 14
+
+A A
+
+Cardholder / Checkholder Billing Name Cardholder Billing Phone Number AAAEEENNNNXXXX, where AAA = Area Code EEE = Exchange NNNN = Number XXXX = Extension
+
+AVSRespCd
+
+2
+
+A
+
+Address verification request response: See appendix for values Conditional on AVS request being sent.
+
+AVSstate
+
+2
+
+A
+
+Cardholder Billing State Should not include any of the following characters types: % | ^ \ /
+
+AVSzip
+
+10
+
+A
+
+Cardholder Billing Address Zip Code: All AVS Requests must at minimally include the 5-digit Zip Code. If sending Zip Code + 4, please separate with a ‘-‘
+
+BankAccountType
+
+1
+
+A
+
+Defines the deposit account type: For Electronic Check processing. C – Consumer Checking [US or Canadian] S – Consumer Savings [US Only] X – Commercial Checking [US Only]
+
+July, 2003
+
+Orbital Gateway Interface Specification
+
+Page 90
+
+Label
+
+Max. Length
+N/A
+
+Field Type A/N
+N/A
+
+Description
+
+BankCheck
+
+Electronic Check (ECP) XML Parent Tag for all associated elements and attributes of the card type. This and all of its child elements and attributes are required for ECP processing.
+
+BankNetDate
+
+4
+
+N
+
+MasterCard generated response date: Format – ‘DDMM’
+
+BankNetRefNo BankPmtDelv
+
+9 1
+
+A A
+
+MasterCard generated identifier for each original auth request Defines the ECP payment delivery method: This field indicates the preferred manner to deposit the transaction. B – Best Possible Method [US Only]
+Paymentech utilizes the method that best fits the situation. If the RDFI is not an ACH participant, a facsimile draft will be created. This should be the default value for this field.
+
+A – ACH [US or Canadian]
+Deposit the transaction by ACH only. If the RDFI is not an ACH participant, the transaction is rejected.
+
+Batch BatchResponse BCRtNum
+
+N/A N/A 9
+
+N/A N/A N
+
+XML tag that defines the transaction as a batch [EOD] request XML tag that defines the transaction as a batch [EOD] response Bank routing and transit number for the customer. For Electronic Check processing. NOTE: All US Bank Routing Numbers are 9 digits All Canadian Bank Routing Numbers are 8 Digits
+
+BIN
+
+6
+
+N
+
+Transaction Routing Definition: Assigned by Paymentech 000001 – Salem 000002 – Tampa
+
+Cap
+
+N/A
+
+N/A
+
+Required XML Parent Tag: For authorizations, Auth-Captures, and Mark for Capture Transactions. Child element of <AC>
+
+CapMandatory
+
+N/A
+
+N/A
+
+Required XML Parent Tag: For authorizations, Auth-Captures, and Mark for Capture Transactions. Child element of <Cap>
+
+July, 2003
+
+Orbital Gateway Interface Specification
+
+Page 91
+
+Label
+
+Max. Length
+N/A
+
+Field Type A/N
+N/A
+
+Description
+
+CapOptional
+
+Required XML Parent Tag: For authorizations, Auth-Captures, and Mark for Capture Transactions. Child element of <Cap>
+
+CaptureStatus
+
+1
+
+N
+
+Status of Capture Request: 0 – Not marked for capture 1 – Marked for capture
+
+CardBrand
+
+2
+
+A
+
+Defines the Card Type / Brand for the Transaction: See attached table. Required for: SW – Switch / Solo EC – Electronic Check
+
+CardholderAttendanc eInd
+
+2
+
+N
+
+Indicates if the cardholder was present at the POS: 01 – Cardholder not present [eCommerce and Mail Order] 02 – Cardholder not present [Recurring payment]
+
+CardIssueNo
+
+2
+
+N
+
+European Debit Card (Switch Record Format Only) Incremental counter defined by issuing bank for lost or replacement cards.
+
+CardNP
+
+N/A
+
+N/A
+
+XML Parent Tag which defines the transaction as Card not present and the associated data elements that must be submitted as a result. XML Parent Tag in which child elements are card present or card not present. This tag and it child elements [<CardNP> and <Exp>] are mandatory for Credit Card and Switch – Solo card not present [eCommerce and Recurring] transactions.
+
+CardPresence
+
+N/A
+
+N/A
+
+CardPresentInd
+
+1
+
+N
+
+Indicates if the card was present at the POS: N - Card not present [eCommerce, Recurring and Mail Order]
+
+CardSecInd
+
+1
+
+N
+
+Supported by Visa and Discover Only: 1 - Value deliberately bypassed or not provided 2 - Value on card but illegible 9 - Cardholder states data not available NOTE: If the transaction is not a Visa or Discover transaction, null fill this attribute or do not submit the attribute at all.
+
+July, 2003
+
+Orbital Gateway Interface Specification
+
+Page 92
+
+Label
+
+Max. Length
+4
+
+Field Type A/N
+N
+
+Description
+
+CardSecVal
+
+Card Verification Number Visa CVV2 – 3 bytes MasterCard CVC2 – 3 bytes American Express CID – 4 bytes Discover CID – 3 bytes
+
+Note: It is against regulations to store this value. CardStartDate 4 N European Debit Card (Switch Record Format Only) This is the day the card becomes active CardType N/A N/A XML Parent tag which defines the Card Type and Brand: Required for: SW – Switch / Solo EC – Electronic Check CATInfoInd 2 N Indicates type of Cardholder Activated Terminal (CAT): 00 - Not a CAT device [Recurring and Mail Order] 06 - CAT level 6 [eCommerce] CAVV 40 A Cardholder Authentication Verification Value (CAVV): • • This number must be Base 64 Encoded. Cryptographic value derived with an algorithm that applies the Issuer’s private key to the combination of the Cardholder account number, the Transaction Identifier (XID), and other data.
+
+CheckDDA
+
+17
+
+N
+
+Customer DDA account number For Electronic Check processing.
+
+Comments
+
+64
+
+A
+
+Free form comments: Merchant can fill in this field and the info will be stored with the transaction details.
+
+CommonData
+
+N/A
+
+N/A
+
+Required XML Parent Tag: For authorizations, Auth-Captures, and Mark for Capture Transactions. Child element of <AC>
+
+CommonMandatory
+
+N/A
+
+N/A
+
+Required XML Parent Tag: For authorizations, Auth-Captures, and Mark for Capture Transactions. Child element of <CommonData>
+
+CommonMandatoryRe ponse
+
+N/A
+
+N/A
+
+XML tag sent in an authorizations, Auth-Captures, and Mark for Capture response
+
+July, 2003
+
+Orbital Gateway Interface Specification
+
+Page 93
+
+Label
+
+Max. Length
+N/A
+
+Field Type A/N
+N/A
+
+Description
+
+CommonOptional
+
+Required XML Parent Tag: For authorizations, Auth-Captures, and Mark for Capture Transactions. Child element of <CommonData>
+
+Currency CurrencyCode
+
+N/A 3
+
+N/A N
+
+Required XML Parent Tag which includes all Currency data attributes Defines the transaction currency: The gateway using the standard ISO defines currency codes. Keys: BIN 000002 only supports the US Dollar [Code ‘840’]. See appendix for values.
+
+CurrencyExponent
+
+6
+
+N
+
+Defines the transactions currency exponent: See appendix for values.
+
+CVV2RespCd
+
+1
+
+A
+
+Card verification value request response: See appendix for values Conditional on card verification request being sent
+
+DebitCard
+
+N/A
+
+N/A
+
+Switch – Solo XML Parent Tag for all associated elements and attributes of the card type. Required for Switch – Solo. At least, one of the two child elements to this tag must be submitted. This will vary based on which value is used by the particular card issuer.
+
+DebitCardIssueNum
+
+2
+
+N
+
+Switch – Solo incremental counter for lost or replacement cards. Tag Mandatory for Switch – Solo. If no card issue number sent, Null fill this element.
+
+DebitCardStartDate
+
+4
+
+N
+
+Switch – Solo cards activation date: Format ‘MMYY’ Tag Mandatory for Switch – Solo. If no activation date sent, Null fill this element.
+
+DownGradeReason
+
+2
+
+A
+
+Visa Interchange Downgrade Reason Code: See appendix for values.
+
+ECommerceData
+
+N/A
+
+N/A
+
+XML Parent Tag that defines the transaction as a single purchase eCommerce transaction and the required data elements and attributes of that transaction type. All elements and attributes of this XML tag are required for an eCommerce transaction.
+
+July, 2003
+
+Orbital Gateway Interface Specification
+
+Page 94
+
+Label
+
+Max. Length
+22
+
+Field Type A/N
+A
+
+Description
+
+ECOrderNum
+
+Merchant Defined Order Number: Electronic commerce order number. This should be the same value filled in the <OrderID> tag. Always generate 16-digit value, right padding with either spaces or zeros if necessary. Valid Characters: abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVW XYZ0123456789-,$@ and a space character. However, the space character cannot be the leading character. This value cannot be all zeros or all spaces.
+
+ECSecurityInd
+
+2
+
+N
+
+Defines Electronic Commerce security: 07 - Non-SET Channel-encrypted – eCommerce
+
+EntryDataSrc
+
+2
+
+N
+
+Indicates how primary Account number originally entered: 2 – Manually Entered.
+
+ErrBitNo
+
+3
+
+N
+
+Internal message mapping error location for this transaction: BIN 000002 Only For troubleshooting only
+
+ErrSubtagVal
+
+2
+
+A
+
+Internal message mapping error location for this transaction: BIN 000002 Only For troubleshooting only
+
+Exp
+
+4
+
+N
+
+Card Expiration Date: Formats: MMYY Mandatory for card not present transactions, except ECP.
+
+Salem [BIN 000001] allows a blank to be submitted when no known EXP date exists. Please discuss this feature with your certification analyst before implementing. There are three valid mechanisms for submitting a ‘Blank’ expiration date using Orbital to the Salem Host. They are: FormatInd 1 A Null fill this XML element - <Exp/> Send four spaces - <Exp> </Exp> Zero fill the XML Element - <Exp>0000</Exp>
+
+Determines format of additional data submitted in the subsequent XML Tag <AuthOptional> hierarchy : H – (Home AVS with Telephone format data included) W – (Work AVS with Telephone format data included) K – ECP (Electronic Check format data included) S – European debit Card Switch (Switch Card format data included) N – Not Applicable [Refund Transactions]
+
+July, 2003
+
+Orbital Gateway Interface Specification
+
+Page 95
+
+Label
+
+Max. Length
+1
+
+Field Type A/N
+A
+
+Description
+
+FraudInd
+
+eFalcon Fraud Scoring Flag: Determines whether fraud checking should occur on this transaction. Y – Yes, return a score. N – No, do not return a score. This attribute should only be present if the merchant is participating in Paymentech’s eFalcon Fraud scoring program.
+
+HcsTcsInd HostAVSRespCd
+
+1 2
+
+A A
+
+Constant ‘T’ Actual host address verification response code: Exact address verification response sent by host authorization system [non-normalized by the gateway]. For those systems that have already coded to the Salem / Tampa authorization response values, they are available still via this tag.
+
+HostCVV2RespCd
+
+1
+
+A
+
+Actual host card verification response code: Exact card verification response sent by host authorization system [non-normalized by the gateway]. For those systems that have already coded to the Salem / Tampa authorization response values, they are available still via this tag.
+
+HostRespCd
+
+3
+
+A
+
+Actual host response code: Exact response sent by host authorization system [nonnormalized by the gateway]. For those systems that have already coded to the Salem / Tampa authorization response values, they are available still via this tag.
+
+LangInd
+
+2
+
+N
+
+Language Indicator: 00 – English
+
+MailOrderData
+
+N/A
+
+N/A
+
+XML Parent Tag that defines the transaction as a recurring purchase and the required data elements and attributes of that transaction type. All elements and attributes of this XML tag are required for a recurring and Mail Order transaction.
+
+MailOrderNum
+
+9
+
+A
+
+Merchant Defined Order Number: Always generate a full 9-digit value, right padding with either spaces or zeros if necessary. This value cannot be all zeros or all spaces.
+
+MailOrderTypeInd
+
+1
+
+A
+
+Mail order indicator to describe the type of transaction: 1 – Mail Order transaction 2 - Recurring billing transaction.
+
+July, 2003
+
+Orbital Gateway Interface Specification
+
+Page 96
+
+Label
+
+Max. Length
+1
+
+Field Type A/N
+A
+
+Description
+
+MCInterchangeInd
+
+MasterCard Interchange Compliance Data: Response that indicates compliance data was provided for this transaction. See Appendix for list of possible values.
+
+MCPurchCardInd
+
+1
+
+A
+
+MasterCard Business Card Type Indicator: In Authorization response: P – MasterCard Purchasing Card B – MasterCard Corporate Card
+
+MCSecureCode MerchantID
+
+N/A 15
+
+N/A N
+
+MasterCard SecureCode Parent Tag Gateway merchant account number assigned by Paymentech: This account number will match that of your host platform BIN 000001 – 6 digit Salem Division Number BIN 000002 – 12 digit Tampa Merchant ID
+
+MerchantSIC MessageType
+
+4 4
+
+N A
+
+Merchant’s Standard Industry Code (a.k.a. MCC) Defines Message Type: A – Authorization request AC – Authorization and Mark for Capture C – Capture V – Void FR – Refund B – Batch Release
+
+OrderID
+
+22
+
+A
+
+Merchant Defined Order Number: Field defined and supplied by the auth originator, and echoed back in response. The first 8 characters should be unique for each transaction. Valid Characters: abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVW XYZ0123456789-,$@& and a space character. However, the space character cannot be the leading character.
+
+OrigAuthAmt
+
+12
+
+N
+
+Identifies the original amount authorized in Mark for Capture responses: Implied Decimal
+
+OutstandingAmt PCCore
+
+12 2
+
+N A
+
+Remaining Non-voided amount for partial Voids XML Parent Tag for 2 of 4 Purchasing Card II Data Elements PCOrderNum PCDestZip
+
+July, 2003
+
+Orbital Gateway Interface Specification
+
+Page 97
+
+Label
+
+Max. Length
+30
+
+Field Type A/N
+A
+
+Description
+
+PCDestAddress1
+
+Amex Purchasing Card Data - Cardholder Ship To: Address line 1 The original transaction can be updated with purchasing card information during a mark for capture Salem Only / Required for Amex Purchasing Card Data
+
+PCDestAddress2
+
+30
+
+A
+
+Amex Purchasing Card Data - Cardholder Ship To: Address line 2 The original transaction can be updated with purchasing card information during a mark for capture Salem Only / Required for Amex Purchasing Card Data
+
+PCDestCity
+
+20
+
+A
+
+Amex Purchasing Card Data – Cardholder Ship TO: City The original transaction can be updated with purchasing card information during a mark for capture Salem Only / Required for Amex Purchasing Card Data
+
+PCDestName
+
+30
+
+A
+
+Amex Purchasing Card Data – The original transaction can be updated with purchasing card information during a mark for capture Salem Only / Required for Amex Purchasing Card Data
+
+PCDestState
+
+2
+
+A
+
+Amex Purchasing Card Data – Cardholder Ship TO: State The original transaction can be updated with purchasing card information during a mark for capture Salem Only / Required for Amex Purchasing Card Data
+
+POSCardID
+
+1
+
+N
+
+Defines cardholder location: 4 – Mail Order [eCommerce and Recurring]
+
+POSConditionCode
+
+2
+
+N
+
+Code that defines the POS environment: 08 – Mail Order transaction 52 – Recurring Payment 59 – eCommerce transaction
+
+POSEntryMode
+
+2
+
+N
+
+Code that defines the method to process cardholder account: 01 – Manual Entry [eCommerce, Recurring, and Mail Order]
+
+POSValidCode
+
+1
+
+A
+
+MasterCard POS Entry Mode Validation Response: When value ‘Y’ in Authorization response, indicates MasterCard changed POS entry mode and acquirer is in a monitoring status
+
+July, 2003
+
+Orbital Gateway Interface Specification
+
+Page 98
+
+Label
+
+Max. Length
+N/A
+
+Field Type A/N
+N/A
+
+Description
+
+PriorAuthID
+
+Defines the transaction type as a Prior Auth: When this tag is present, the request is considered a force authorization. No on-line authorization will be generated to the Host systems. This should always be presented as a Null Value
+
+ProcStatus
+
+6
+
+A
+
+Process Status: The first element that should be checked to determine the result of a request. It is the only element that is returned in all response scenarios. It identifies whether transactions have successfully passed all of the Gateway edit checks. 0 – Success All other values constitute an error condition. See appendix for definition of those error values.
+
+PCDestZip
+
+10
+
+A
+
+Shipping Destination Zip code for the purchase: Required for Purchasing Card Level II Data For Zip Code + 4 please separate with ‘-‘.
+
+PCOrderNum
+
+17
+
+A
+
+PO number or Order number from customer: Required for Purchasing Card Level II Data
+
+QuickResponse RecurringInd
+
+N/A 2
+
+N/A A
+
+XML tag that defines the transaction as an Quick Response which is an error condition. Recurring indicator: This tag is required for Merchants that are: Located in Canadian Processing on BIN 000002 Processing Recurring Transactions
+
+This tag should not be combined with values above that define the industry code as Recurring. In Canada, the objective to define the initial transaction collection method [eCommerce or MOTO]. The valid values are: RF – First Recurring Transaction. RS – Subsequent Recurring Transactions. Refund RefundResponse Request RespCode N/A N/A N/A 2 N/A N/A N/A A XML tag that defines the transaction as a Refund request XML tag that defines the response as a Refund Response Required XML Parent Tag Response Code: Normalized authorization response code issued by the host system [Salem / Tampa], which identifies an approval (‘00’) or the reason for a decline or error. See appendix for values.
+
+July, 2003
+
+Orbital Gateway Interface Specification
+
+Page 99
+
+Label
+
+Max. Length
+6
+
+Field Type A/N
+N
+
+Description
+
+RespDate
+
+The date a response was generated by the Gateway: Format – ‘YYMMDD’
+
+RespMessage RespTime
+
+80 14
+
+A N
+
+Messages associated with RespCode. Date / time the transaction was processed by gateway: Format – ‘MMDDYYYYhhmiss’
+
+ResponseCodes SDMerchantEmail
+
+N/A 13
+
+N/A A
+
+XML tag in which all host response elements are delivered Soft Descriptor Merchant Email Only one of the location Soft Descriptor records should be sent [meaning Phone, URL, or Email]. This field will not show on Cardholder statements for Tampa Merchants.
+
+SDMerchantName
+
+25
+
+A
+
+Soft Descriptor Merchant Name The Merchant Name field should be what is most recognizable to the cardholder [Company name or trade name]. The actual length of this field is conditionally tied to Host and the Size of the <SDProductDescription> field used. Salem: CREDIT – Three options, which conditionally affects the SDProductDescription [see below]: o Max 3 bytes o Max 7 bytes o Max 12 bytes ECP: o Tampa: Max 25 bytes. Max 15 bytes
+
+-
+
+Required Soft Descriptor field. SDMerchantPhone 12 A Soft Descriptor Merchant Phone Only one of the location Soft Descriptor records should be sent [meaning Phone, URL, or Email]. This field will not show on Cardholder statements for Tampa Merchants. Valid Formats: NNN-NNN-NNNN NNN-AAAAAAA Soft Descriptor Merchant URL Only one of the location Soft Descriptor records should be sent [meaning Phone, URL, or Email]. This field will not show on Cardholder statements for Tampa Merchants.
+
+SDMerchantURL
+
+13
+
+A
+
+July, 2003
+
+Orbital Gateway Interface Specification
+
+Page 100
+
+Label
+
+Max. Length
+18
+
+Field Type A/N
+A
+
+Description
+
+SDProductDescription
+
+Soft Descriptor Product Description Provides an accurate description of Salem: CREDIT: o If SDMerchantName = 3 bytes – then Max = 18 bytes o If SDMerchantName = 7 bytes – then Max = 14 bytes o If SDMerchantName = 12 bytes – then Max = 9 bytes ECP: o Tampa: This field will not show on Cardholder statements for Tampa Merchants. 10 bytes Max
+
+-
+
+Required Soft Descriptor field. ShippingRef 40 A Shipping Tracking Reference Number. Merchant can fill in this field and the info will be stored with the transaction details. SoftDescriptor StatusMsg StatusMsgLth Tax N/A Var 4 12 N/A A N N Text message associated with ProcStatus value. Length of StatusMessage. Tax Amount for the purchase: TaxInd 1 N Required for Purchasing Card Level II Data Implied decimal including those currencies that are a zero exponent.
+
+Defines the tax amount: Required for Purchasing Card Level II Data 0 – Not provided 1 – Included 2 – Non-Taxable
+
+TermEntCapInd
+
+2
+
+N
+
+Code that defines the method to process cardholder account: 05 – Key entry only [eCommerce, Recurring and Mail Order]
+
+TerminalID
+
+3
+
+N
+
+Merchant Terminal ID assigned by Paymentech: All Terminal IDs at present are ‘001’
+
+TermLocInd
+
+2
+
+N
+
+Indicates terminal location: 00 – Card acceptor premises [Recurring and Mail Order] 01 – Cardholder premises [eCommerce]
+
+July, 2003
+
+Orbital Gateway Interface Specification
+
+Page 101
+
+Label
+
+Max. Length
+12
+
+Field Type A/N
+N
+
+Description
+
+TotAuthAmt
+
+This is the net amount for all authorizations for this Visa transaction. Assume 2 decimal places. Note: For Bin 000001 the maximum field length is 12, for Bin 000002 the maximum field length is 7.
+
+TransErrNo
+
+5
+
+N
+
+Internal error number for this transaction: BIN 000002 Only For troubleshooting only
+
+TransId TxCatg
+
+15 1
+
+N N
+
+Visa generated identifier for each original auth request Defines transaction type: 1 – Mail Order Transaction 2 – Recurring Transaction 5 – Verified by Visa – Authenticated Transaction 6 – Verified by Visa – Attempted Authentication 7 – Non-SET Channel-encrypted – eCommerce Transaction
+
+TxRefIdx
+
+4
+
+N
+
+Gateway transaction index: Used to identify the unique components of transactions adjusted more than one time. Required on for void transactions, not for Mark for Captures.
+
+TxRefNum
+
+40
+
+A
+
+Gateway transaction reference number: A unique value for each transaction, which is required to adjust any transaction in the gateway [such as Mark for Capture or void].
+
+TzCode
+
+3
+
+N
+
+Time zone for Merchant: See appendix for values
+
+TxDateTime
+
+14
+
+N
+
+Transaction date and Time: Format – ‘hhmmssMMDDYYYY’ If a null value is sent in this field, the gateway system date will be assigned the transaction [in Eastern Standard Time].
+
+TxTypeCommon TxTypeID
+
+N/A 2
+
+N/A A
+
+Required XML Parent Tag for TxTypeID and PriorAuthID Defines the transaction type: G – Goods & services
+
+ValidationCd VerifiedByVisa Version VisaCommCard
+
+4 N/A 1 1
+
+A N/A N A
+
+Validation code supplied by Visa for CPS qualification Verified by Visa Parent Tag Constant ‘2’ Indicates commercial card: See appendix for possible values.
+
+Void
+
+N/A
+
+N/A
+
+XML tag that defines the transaction as a Void request
+
+July, 2003
+
+Orbital Gateway Interface Specification
+
+Page 102
+
+Label
+
+Max. Length
+N/A 40
+
+Field Type A/N
+N/A A
+
+Description
+
+VoidResponse XID
+
+XML tag that defines the transaction as a Void response Transaction ID (XID): • • This number must be Base 64 Encoded. Unique tracking number set by the Merchant and sent to the Issuer Authentication/Service in the Authentication Request message [Optional]
+
+July, 2003
+
+Orbital Gateway Interface Specification
+
+Page 103
+
+Appendix C
+General Card Validation
+There are three common edits that catch the greatest majority of bad card numbers: • • • MOD 10 check digit Credit card prefix check Credit card length validation
+
+MOD 10 Check Digit
+The MOD 10 check digit calculation validates the credit card by calculating the last digit of the card number from all the other numbers in the card. The last digit of a credit card can be calculated based on a calculation performed upon all the digits preceding it. This operation is called a MOD 10 check digit routine.
+
+Continued on next page
+
+July, 2003
+
+Orbital Gateway Interface Specification
+
+Page 104
+
+Use the following card for Example: 5240159910151573
+5 2 4 0 1 5 9 9 1 0 1 5 1 5 7
+
+Start from the right and proceed to the left until all digits are multiplied by weight
+
+7 * 2 = 14 5*1=5 1*2=2 5*1=5 1*2=2 0*1=0 1*2=2 9*1=9 9 * 2 = 18 5*1=5 1*2=2 0*1=0 4*2=8 2 * 1 =2 5 * 2 =10
+
+sum = 1 + 4 sum = sum (5) sum = sum(10) sum = sum(12) sum = sum(17) sum = sum(19) sum = sum(19) sum = sum(21) sum = sum(30) sum = sum(39) sum = sum(44) sum = sum(46) sum = sum(46) sum = sum(54) sum = sum(56) +5 +2 +5 +2 +0 +2 +9 +1 + 8 +5 +2 +0 +8 +2 +1 +0
+
+=5 =10 =12 =17 =19 =19 =21 =30 =39 =44 =46 =46 =54 =56 =57
+
+Remove the check digit, 3, which is present in this example card. sum = 57 sum MOD 10 ———> 57 MOD 10 = 7 10-7 = 3 check digit of 5240159910151573 is 3.
+
+Continued on next page
+
+July, 2003
+
+Orbital Gateway Interface Specification
+
+Page 105
+
+Example Coding for MOD 10
+
+The following routine is a check digit routine written in the ‘C’ programming language: /* The operator for mod in ‘C’ is % */ long mod10 (card,card_len-1) /* module 10 check digit function */ char *card; /* credit card number */ short card_len /* card length */ { register int count; /* a counter */ register int weight; /* weight to apply to digit being checked*/ register int sum; /* sum of weights */ register int digit; /* digit being checked*/ long mod; weight=2; sum =0; /* compute the sum */ for (count = card_len - 1; count >=0; count = count -1) { digit = weight * (card[count] - ‘0’); /* add both the tens digit and the ones digit to the sum */ sum = sum + (digit / 10) + (digit % 10); if (weight ==2) weight = 1; else weight = 2; } /* subtract the ones digit of the sum from 10 and return the ones digit of that result */ mod = (10 - sum%10) % 10; return (mod) }
+
+July, 2003
+
+Orbital Gateway Interface Specification
+
+Page 106
+
+Card Prefix Check
+The prefix check is the comparison of the first few digits of each card number to a list of known prefixes.
+
+Card Type
+American Express / Optima Carte Blanche Diners Club Discover (Novus) JCB MasterCard Switch/Solo [BIN 000001 ONLY] Visa/Delta
+
+Prefix
+37, 34 389 30, 36, 381 - 388 60110, 60112, 60113, 60114, 60119 3528 – 3589 51 – 55 49, 56, 6* where * is any single digit 4
+
+Card Length Check
+The number of digits for each card is constant, allowing a validation to be performed by verifying the number of digits for each card number.
+
+Card Type
+American Express / Optima Carte Blanche Diners Club Discover (Novus) JCB MasterCard Switch/Solo [BIN 000001 ONLY] Visa/Delta
+
+Length
+15 14 14 16 16 16 16, 18, or 19 13 or 16
+
+End Of Document
+
+July, 2003
+
+Orbital Gateway Interface Specification
+
+Page 107
+
+

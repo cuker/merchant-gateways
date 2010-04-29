@@ -140,7 +140,7 @@ class PaymentechOrbital(Gateway):
         message = self.build_purchase_request(amount, credit_card, **self.options)
         return self.commit(message, **self.options)
 
-    def build_authorization_request(self, money, credit_card, **options):
+    def build_authorization_request_TODO(self, money, credit_card, **options):  #  where'd "NewOrder" come from? not in docs...
 
         assert isinstance(money, Money), 'TODO  always pass in a Money object - no exceptions!'
 
@@ -232,7 +232,7 @@ class PaymentechOrbital(Gateway):
     def commit(self, request, **options):
         url           = self.is_test and TEST_URL or LIVE_URL
         self.request  = request  # CONSIDER  standardize this
-        request       = self.build_request(request, **options)
+        # request       = self.build_request(request, **options)
         self.result   = self.parse(self.post_webservice(url, request))  #  CONSIDER  no version of post_webservice needs options
         self.success  = self.result['ApprovalStatus'] == '1'
         self.message  = self.result['StatusMsg']
@@ -248,7 +248,9 @@ class PaymentechOrbital(Gateway):
         r.result = self.result  #  TODO  use params for something else
         return r
 
-    def build_request(self, body, **options):
+    def build_authorization_request(self, money, credit_card, **options):
+        from money.Money import CURRENCY
+        numeric = CURRENCY[str(money.currency)].numeric  #  TODO  this should be an accessor
         return xStr(
           XML.Request(
               XML.AC(
@@ -269,7 +271,8 @@ class PaymentechOrbital(Gateway):
                     XML.AmountDetails(
                       XML.Amount('000000005000')),
                     XML.TxTypeCommon(TxTypeID='G'),
-                    XML.Currency(CurrencyCode='840', CurrencyExponent='2'),
+                    XML.Currency(CurrencyCode=numeric, 
+                                 CurrencyExponent='2'),
                     XML.CardPresence(
                       XML.CardNP(
                         XML.Exp('1205'))),
