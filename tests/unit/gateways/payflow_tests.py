@@ -245,7 +245,6 @@ class PayflowTests( MerchantGatewaysTestSuite,
                                                          Money('21.00', Moroccan_Dirham),
                                                          self.credit_card,
                                                          address= {'city': 'TODO'} )
-
         self.assert_xml(sample, lambda XML:
                                     XML.Authorization(
                                       XML.PayData(
