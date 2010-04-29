@@ -60,8 +60,6 @@ class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
         # TODO fields.update(address).update(options)
         #  TODO  for the love of god SELF.credit_card!!
 
-        print money.__dict__
-
         return ( xStr(XML.billTo(
                         XML.firstName(credit_card.first_name),
                         XML.lastName(credit_card.last_name),
