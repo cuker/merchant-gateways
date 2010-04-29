@@ -247,11 +247,11 @@ class PayflowTests( MerchantGatewaysTestSuite,
                                                          address= {'city': 'TODO'} )
 
         self.assert_xml(sample, lambda XML:
-                XML.Authorization(
-          XML.PayData(
-            XML.Invoice(
-              XML.TotalAmt('1.00', Currency='USD')),
-          )))
+                                    XML.Authorization(
+                                      XML.PayData(
+                                        XML.Invoice(
+                                          XML.TotalAmt('1.00', Currency=Moroccan_Dirham)),
+                                      )))
 
     def test_add_credit_card(self):
         cc = CreditCard(verification_value="123", number="4242424242424242", year=2011, card_type="visa",

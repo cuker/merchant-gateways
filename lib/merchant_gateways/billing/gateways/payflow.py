@@ -89,17 +89,17 @@ xmlns="http://www.paypal.com/XMLPay">
 '''  #  TODO  vary all this data
         return template % { 'request_body': request_body }
 
-    def build_credit_card_request(self, action, amount, credit_card, **options):
+    def build_credit_card_request(self, action, money, credit_card, **options):
         transaction_type = TRANSACTIONS[action]
           # amount=self.options['amount'] ) # TODO all options in options - no exceptions
-        formatted_amount = '%.2f' % amount.amount  #  TODO  rename to money; merge with grandTotalAmount system
+        formatted_amount = '%.2f' % money.amount  #  TODO  rename to money; merge with grandTotalAmount system
         bill_to_address = options.get('address', {})  #  TODO  billing_address etc???
 
         request = XML(transaction_type,
                     XML.PayData(
                       XML.Invoice(
                           self.add_address('BillTo', **bill_to_address),
-                          XML.TotalAmt(formatted_amount, Currency="USD")
+                          XML.TotalAmt(formatted_amount, Currency=str(money.currency))
                       ),
                       XML.Tender(
                           XML.Card(
