@@ -155,37 +155,31 @@ class CybersourceTests(MerchantGatewaysTestSuite,
         message = self.gateway.build_auth_request(self.money, self.credit_card, **self.options)
 #        {'start_month': None, 'verification_value': None, 'start_year': None, 'card_type': 'v', 'issue_number': None, }
 
-        expect = '''<billTo>
-                      <firstName>Hermione</firstName>
-                      <lastName>Granger</lastName>
-                      <street1>444 Main St.</street1>
-                      <street2>Apt 2</street2>
-                      <city>Dallas</city>
-                      <state>TX</state>
-                      <postalCode>77777</postalCode>
-                      <country>USA</country>
-                      <email>hgranger@hogwarts.edu</email>
-                    </billTo>
-                    <purchaseTotals>
-                      <currency>USD</currency>
-                      <grandTotalAmount>1.00</grandTotalAmount>
-                    </purchaseTotals>
-                    <card>
-                      <accountNumber>4242424242424242</accountNumber>
-                      <expirationMonth>12</expirationMonth>
-                      <expirationYear>2090</expirationYear>
-                      <cvNumber>123</cvNumber>
-                      <cardType>001</cardType>
-                    </card>
-                    <ccAuthService run="true"/>
-                    <businessRules>
-                    </businessRules>'''
+        self.assert_xml('<xml>'+message+'</xml>', lambda XML:
+                            XML.xml(
+                              XML.billTo(
+                                XML.firstName('Hermione'),
+                                XML.lastName('Granger'),
+                                XML.street1('444 Main St.'),
+                                XML.street2('Apt 2'),
+                                XML.city('Dallas'),
+                                XML.state('TX'),
+                                XML.postalCode('77777'),
+                                XML.country('USA'),
+                                XML.email('hgranger@hogwarts.edu')),
+                              XML.purchaseTotals(
+                                XML.currency('USD'),  #  TODO  vary this currency
+                                XML.grandTotalAmount('1.00')),
+                              XML.card(
+                                XML.accountNumber('4242424242424242'),
+                                XML.expirationMonth('12'),
+                                XML.expirationYear('2090'),  #  why exp_year 2090? Extendicreditus!
+                                XML.cvNumber('123'),
+                                XML.cardType('001')),
+                              XML.ccAuthService(run='true'),
+                              XML.businessRules()) )
 
-        # why exp_year 2090? Extendicreditus!
-
-        #  TODO  usd
-
-        self.assert_match_xml(expect, message)  #  TODO  now parse it back and assert_match_hash it!
+        # self.assert_match_xml(expect, message)  #  TODO  now parse it back and assert_match_hash it!
 
     def test_build_auth_request_without_street2(self):
         self.money = Money('2.00')

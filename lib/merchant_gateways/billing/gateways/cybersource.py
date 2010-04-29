@@ -72,7 +72,7 @@ class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
                         XML.email(fields['email'])
                         )) +
                 xStr(XML.purchaseTotals(
-                        XML.currency('USD'),
+                        XML.currency('USD'),  # TODO  money.currency!
                         XML.grandTotalAmount(grandTotalAmount)
                     )) +
                 xStr(XML.card(

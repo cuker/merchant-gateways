@@ -155,7 +155,7 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
             if node.attrib or children:  code += ', '
 
         if node.attrib:
-            attribs = [ '%s=%r' % (kv) for kv in node.attrib ]
+            attribs = [ '%s=%r' % (kv) for kv in node.attrib.items() ]
             code += ', '.join(attribs)
             if children:  code += ', '
 
