@@ -190,20 +190,20 @@ class PayflowTests( MerchantGatewaysTestSuite,
 
     def test_build_credit_card_request(self):
         options = { 'address': { 'name': 'Ron Weasley' } }
-        sample = self.gateway.build_credit_card_request('authorization', Money('1.00'), self.credit_card, **options)
+        sample = self.gateway.build_credit_card_request('authorization', Money('1.00', 'USD'), self.credit_card, **options)
         self.assert_match_xml(reference, sample)
 
     def test_build_credit_card_request(self):
         options = { 'address': { 'name': 'Ron Weasley' } }  #  TODO  change stuff; then test it
-        sample = self.gateway.build_credit_card_request('purchase', Money('1.00'), self.credit_card, **options)
+        sample = self.gateway.build_credit_card_request('purchase', Money('1.00', 'USD'), self.credit_card, **options)
         self.assert_xml(sample, '//Sale/PayData')
 
     def test_build_credit_card_request_without_an_address(self):
-        sample = self.gateway.build_credit_card_request('authorization', Money('1.00'), self.credit_card)  # TODO options is not optional
+        sample = self.gateway.build_credit_card_request('authorization', Money('1.00', 'USD'), self.credit_card)  # TODO options is not optional
         self.deny_xml(sample, '//BillTo')
 
     def test_build_credit_card_request_with_an_address_but_without_a_name(self):
-        sample = self.gateway.build_credit_card_request('authorization', Money('1.00'), self.credit_card, address= {'city': 'TODO'})
+        sample = self.gateway.build_credit_card_request('authorization', Money('1.00', 'USD'), self.credit_card, address= {'city': 'TODO'})
         #self.assert_match_xml(reference.replace('Ron Weasley', ''), sample)
         name = self.assert_xml(sample, '//BillTo/Name')  #  TODO  find empty name
         # self.assertNone(name.text)

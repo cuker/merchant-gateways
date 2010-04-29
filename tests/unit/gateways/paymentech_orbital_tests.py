@@ -158,7 +158,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
     #  TODO  always credit_card never creditcard
 
     def test_build_auth_request(self):
-        self.money = Money('100.00')
+        self.money = Money('100.00', 'USD')
 
         self.options = {
             'order_id': '1',
@@ -229,7 +229,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         # TODO default_dict should expose all members as read-only data values
 
     def test_build_auth_request_without_street2(self):
-        self.money = Money('2.00')
+        self.money = Money('2.00', 'USD')
 
         self.options = {
             'order_id': '1',

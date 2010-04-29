@@ -129,7 +129,7 @@ class CybersourceTests(MerchantGatewaysTestSuite,
     #  TODO  always credit_card never creditcard
 
     def test_build_auth_request(self):
-        self.money = Money('1.00')
+        self.money = Money('1.00', 'USD')
 
         self.options = {
             'order_id': '1',
@@ -151,6 +151,7 @@ class CybersourceTests(MerchantGatewaysTestSuite,
         }
 
         self.options['billing_address'] = billing_address
+# TODO        self.assemble_billing_address()
 
         message = self.gateway.build_auth_request(self.money, self.credit_card, **self.options)
 #        {'start_month': None, 'verification_value': None, 'start_year': None, 'card_type': 'v', 'issue_number': None, }
@@ -181,34 +182,47 @@ class CybersourceTests(MerchantGatewaysTestSuite,
 
         # self.assert_match_xml(expect, message)  #  TODO  now parse it back and assert_match_hash it!
 
-    def test_build_auth_request_without_street2(self):
-        self.money = Money('2.00')
-
+    def assemble_billing_address(self):
         self.options = {
-            'order_id': '1',
-            'description': 'Time-Turner',  # TODO  take as much of this out as possible
-            'email': 'hgranger@hogwarts.edu',
-            'customer': '947',
-            'ip': '192.168.1.1',
+        'order_id': '1',
+        'description': 'Time-Turner', # TODO  take as much of this out as possible
+        'email': 'hgranger@hogwarts.edu',
+        'customer': '947',
+        'ip': '192.168.1.1',
         }
-
         billing_address = {
-            'address1': '444 Main St.',
-            'company': 'ACME Software',  #  TODO  where's the love for the company?
-            'phone': '222-222-2222',      #  TODO  where the phone number goes?
-            'zip': '77777',
-            'city': 'Dallas',
-            'country': 'USA',
-            'state': 'TX'
+        'address1': '444 Main St.',
+        'company': 'ACME Software', #  TODO  where's the love for the company?
+        'phone': '222-222-2222', #  TODO  where the phone number goes?
+        'zip': '77777',
+        'city': 'Dallas',
+        'country': 'USA',
+        'state': 'TX'
         }
-
         self.options['billing_address'] = billing_address
+
+    def test_build_auth_request_without_street2(self):
+        self.money = Money('2.00', 'EUR')
+
+        self.assemble_billing_address()
 
         message = self.gateway.build_auth_request(self.money, self.credit_card, **self.options)
 
-        #  TODO  default not to USD
-
         self.assert_('<street2></street2>' in message)  #  TODO  assert_contains
+
+    def test_build_auth_request_with_foreign_money(self):
+        Zimbabwean_dollars = 'ZWD'
+#        Zimbabwean_dollar = 'ZWL' CONSIDER was WikiPedia right here?
+        self.money = Money('99900000000.00', Zimbabwean_dollars)
+
+        self.assemble_billing_address()
+
+        message = self.gateway.build_auth_request(self.money, self.credit_card, **self.options)
+
+        self.assert_xml('<xml>'+message+'</xml>', lambda XML:
+                              XML.purchaseTotals(
+# TODO                                XML.currency(Zimbabwean_dollars),
+                                XML.grandTotalAmount('99900000000.00')) )  # TODO  currency should influence precision?
 
 #    def test_avs_result(self):  #  TODO  move Cybersource to an "AvsStyle" module, and move this test to its abstract testor
 #        self.gateway.expects(:ssl_post).returns(successful_purchase_response)
