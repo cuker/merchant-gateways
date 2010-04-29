@@ -247,8 +247,6 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                        )
                    )
 
-        #  TODO  Payflow & AuthorizeNet probably are not on board with currency yet
-
     def test_build_auth_request_without_street2(self):
         self.money = Money('2.00', 'USD')
 
@@ -273,8 +271,6 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         self.options['billing_address'] = billing_address
 
         message = self.gateway.build_auth_request(self.money, self.credit_card, **self.options)
-
-        #  TODO  default not to USD
 
         # self.assert_('<street2></street2>' in message)  #  TODO  assert_contains
 

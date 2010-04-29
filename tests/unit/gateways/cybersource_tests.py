@@ -243,7 +243,7 @@ class CybersourceTests(MerchantGatewaysTestSuite,
         self.assert_equal( 'M', cvv.code )
         self.assert_equal( 'Match', cvv.message )
 
-    def test_(self):  #  CONSIDER  use this or lose it
+    def test_CONSIDER_use_or_lose_this_test_case(self):
         amount = 100
 
         credit_card = CreditCard( verification_value="123",

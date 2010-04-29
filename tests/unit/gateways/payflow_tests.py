@@ -28,7 +28,7 @@ class PayflowTests( MerchantGatewaysTestSuite,
                         self.gateway.post_webservice,
                                        'LOGIN',
                         '100.00',
-                        'USD',
+                        'USD',  #  TODO  use self.money.currency here
                         'Visa',
                         '4242424242424242',
                         '201109',
@@ -211,7 +211,10 @@ class PayflowTests( MerchantGatewaysTestSuite,
         #  CONSIDER  hallow as a feature if the address is a empty {}, it disappears anyway
 
     def test_build_credit_card_request_and_check_all_its_xml_in_nauseating_detail(self):
-        sample = self.gateway.build_credit_card_request('authorization', Money('1.00', 'USD'), self.credit_card, address= {'city': 'TODO'})
+        sample = self.gateway.build_credit_card_request( 'authorization',
+                                                         Money('1.00', 'USD'),  #  TODO  use self.money
+                                                         self.credit_card,
+                                                         address= {'city': 'TODO'})
 
         self.assert_xml(sample, lambda XML:
                 XML.Authorization(
@@ -527,7 +530,7 @@ end
 
 # CONSIDER  does Payflow have a remote test mode?
 
-#  TODO  better name for reference
+#  TODO  better name for reference - and use or lose it!
 reference = '''<Authorization>
   <PayData>
     <Invoice>
