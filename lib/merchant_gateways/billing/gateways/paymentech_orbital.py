@@ -13,6 +13,105 @@ from money import Money
 # http://doc.rhinonet.com/paymentech/Orbital%20Gateway%20Interface%20Specification%202.6.0.pdf
 # http://idotmind.com/chase-paymentech-orbital-gateway-phreebooks-payment-module-gotchas/
 
+#    Paymentech Orbital
+#        Return to Introduction  Previous page  Next page
+#    PaymentTechOrbital: http://www.paymentech.net
+#
+#    Supported Properties:
+#    Amount    Required
+
+#    AuthCode    Optional
+#    Address    Optional
+#    AvsCode    Optional
+
+#    BankCode    Not Used
+#    BankName    Not Used
+
+#    Certificate    Not Used
+#    City       Optional
+#    Code       Optional
+#    Country    Not Used
+#    CustomerID    Not Used
+#    Email       Not Used
+#    Description    Optional
+#    Server       Optional
+#    ErrorCode    Optional
+#    ErrorMessage    Optional
+
+#    Login       Required
+#    Password    Optional  uh...
+
+#    Month       Required
+#    FirstName    Optional
+#    LastName    Optional
+#    CardName    Optional
+#    Number    Required
+#    OrderID    Optional
+#    Phone       Not Used
+#    Setting       Not Used
+#    StateProvince    Optional
+#    TestMode    Optional
+#    Timeout    Optional
+#    TransactionID    Optional
+#    TransactionType Optional
+#    Year       Required
+#    ZipPostal    Optional
+#
+#    Note: You must configure your account with Paymentech Orbital for "End of Day Autosettle" to work with .netCHARGE.
+#
+#    Transaction Types: Authorize, sale, refund, void, force and postauthorize.
+#    Login: property is your merchant id.
+#    Password: This field is used to set platform's bin number. Salem Platform is "000001" and Tampa platform is "000002", default is "000002".
+#    TerminalID: Merchant Terminal ID assigned by Paymentech. If not set, it is set to "001".
+#    AuthCode: property only set for force transaction type.
+#    Amount: should not set for full amount void transaction.
+#    TransactionID: set from the original transaction value returned if processing a void or postauthorize.
+#    CardName:For setting the name on the credit card for this company, use the CardName property (for the full name provided by the customer) in place of FirstName and LastName.
+#    Currency: One of these 2 CurrencyCodes. CAD or USD currency code, default is USD.
+#    TimeZone: Set to one of the TimeZone enumeration values e.g. obj.TimeZone=TimeZone.PST
+#    Complete list of options:
+#    AST,EST,CST,MST,PST,AKST,HAST,Indiana, and Arizona.
+#    MerchantName: The Merchant Name field should be what is most recognizable to the cardholder [Company name or trade name]. See credit card statement message customization below for more information on accepted values and size limitations.
+#
+#    Paymentech Orbital Echeck:
+#    PaymentType = PaymentType.Echeck
+#    BankCode: Bank routing and transit number for the customer. All US Bank Routing Numbers are 9 digits and All Canadian Bank Routing Numbers are 8 Digits.
+#
+#    BankAccountType: Default is "C". Other options are:
+#    C - Consumer Checking [US or Canadian]
+#    S - Consumer Savings [US Only]
+#    X - Commercial Checking [US Only]
+#
+#    Number: Customer DDA account number
+#
+#    Common error and resolution:
+#    ErrorCode:protocolerror
+#    ErrorMessage: remote server returned an error (412) precondition failed
+#
+#    Resolution: Add your servers IP address to the Paymentech gateway. This is required before it will accept communication from it.
+#
+#    Credit card statement message customization (advanced):
+#    Salem:
+#    - CREDIT - Three options, which conditionally affects the Description [see below]:
+#    Max 3 bytes, Max 7 bytes or Max 12 bytes
+#    - ECheck: Max 15 bytes
+#
+#    Tampa: Max 25 bytes.
+#    Description: Product description.
+#    Salem:
+#    - CREDIT:
+#    If MerchantName = 3 bytes - then Max = 18 bytes
+#    If MerchantName = 7 bytes - then Max = 14 bytes
+#    If MerchantName = 12 bytes - then Max = 9 bytes
+#    - ECheck: 10 bytes Max
+#    Tampa:
+#    - This field will not show on Cardholder statements for Tampa Merchants.
+#
+#    If MerchantName is set, one of the following propreties (MerchantPhone, MerchantEmail or MerchantUrl) must be set.
+#    MerchantPhone: Customer Service Phone Number in this format: xxx-xxxxxxx or xxx-xxx-xxxx
+#    MerchantEmail: Merchant email.
+#    MerchantUrl: Merchant Url.
+
 TEST_URL = 'https://orbitalvar1.paymentech.net/authorize'
 LIVE_URL = 'https://orbital1.paymentech.net/authorize'
 
@@ -28,7 +127,7 @@ class PaymentechOrbital(Gateway):
         assert isinstance(money, Money), 'TODO  always pass in a Money object - no exceptions!'
         self.options.update(options)
 
-        message = self.build_auth_request(money, creditcard, **self.options)  #  TODO  _authorization_request, everywhere!!
+        message = self.build_authorization_request(money, creditcard, **self.options)  #  TODO  _authorization_request, everywhere!!
         return self.commit(message, **self.options)
 
     def purchase(self, amount, credit_card, **options):
@@ -41,7 +140,7 @@ class PaymentechOrbital(Gateway):
         message = self.build_purchase_request(amount, credit_card, **self.options)
         return self.commit(message, **self.options)
 
-    def build_auth_request(self, money, credit_card, **options):
+    def build_authorization_request(self, money, credit_card, **options):
 
         assert isinstance(money, Money), 'TODO  always pass in a Money object - no exceptions!'
 

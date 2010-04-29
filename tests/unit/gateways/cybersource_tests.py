@@ -128,7 +128,7 @@ class CybersourceTests(MerchantGatewaysTestSuite,
 
     #  TODO  always credit_card never creditcard
 
-    def test_build_auth_request(self):
+    def test_build_authorization_request(self):
         self.money = Money('1.00', 'USD')
 
         self.options = {
@@ -153,7 +153,7 @@ class CybersourceTests(MerchantGatewaysTestSuite,
         self.options['billing_address'] = billing_address
 # TODO        self.assemble_billing_address()
 
-        message = self.gateway.build_auth_request(self.money, self.credit_card, **self.options)
+        message = self.gateway.build_authorization_request(self.money, self.credit_card, **self.options)
 #        {'start_month': None, 'verification_value': None, 'start_year': None, 'card_type': 'v', 'issue_number': None, }
 
         self.assert_xml('<xml>'+message+'</xml>', lambda XML:
@@ -206,7 +206,7 @@ class CybersourceTests(MerchantGatewaysTestSuite,
 
         self.assemble_billing_address()
 
-        message = self.gateway.build_auth_request(self.money, self.credit_card, **self.options)
+        message = self.gateway.build_authorization_request(self.money, self.credit_card, **self.options)
 
         self.assert_('<street2></street2>' in message)  #  TODO  assert_contains
 
@@ -216,7 +216,7 @@ class CybersourceTests(MerchantGatewaysTestSuite,
 
         self.assemble_billing_address()
 
-        message = self.gateway.build_auth_request(self.money, self.credit_card, **self.options)
+        message = self.gateway.build_authorization_request(self.money, self.credit_card, **self.options)
 
         self.assert_xml('<xml>'+message+'</xml>', lambda XML:
                               XML.purchaseTotals(

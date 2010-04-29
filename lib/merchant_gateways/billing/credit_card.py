@@ -2,6 +2,7 @@ import re
 from datetime import datetime
 
 #  CONSIDER the card should raise an error if the type is not understood
+    #  CONSIDER  always credit_card never creditcard
 
 class CreditCard(object):
     require_verification_value = True

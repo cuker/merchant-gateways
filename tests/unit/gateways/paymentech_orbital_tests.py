@@ -23,6 +23,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         order_id = str(self.options['order_id'])  #  TODO  put something in options
         self.assert_equal('4A785F5106CCDC41A936BFF628BF73036FEC5401', self.response.authorization)
         self.assert_equal('Approved', self.gateway.message)
+
         # CONSIDER stash it there self.gateway.response
         #print self.response.result   #  TODO  and make it the RAW result!!
 
@@ -36,8 +37,6 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         #  CONSIDER stash the  'HostAVSRespCode': 'I3',
         # CONSIDER  use the 'AuthCode': 'tst554', 'RespTime': '121825', 'ProcStatus': '0', , 'HostRespCode': '100'}
 
-
-
         self.assert_equal('B ', self.response.result['AVSRespCode'])  #  CONSIDER why 'B '?
         avs = self.response.avs_result
         self.assert_equal( 'B', avs.code )
@@ -48,9 +47,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         cvv = self.response.cvv_result
         self.assert_equal( 'M', cvv.code )
         self.assert_equal( 'Match', cvv.message )  #  CONSIDER huh??
-
         assert self.response.success
-        # print self.gateway.post_webservice.call_args
 
     def assert_failed_authorization(self):
         self.assert_none(self.response.params['TxRefNum'])
@@ -61,8 +58,8 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                       'AccountNum': None,
                       'ApprovalStatus': None,
                       'AuthCode': None,
-                      'CAVVRespCode': None,  #  CONSIDER  diff between CAVV and CVV2??
-                      'CVV2RespCode': None,  #  TODO  cvv and avs systems?
+                      'CAVVRespCode': None,
+                      'CVV2RespCode': None,
                       'CardBrand': None,
                       'CustomerName': None,
                       'CustomerProfileMessage': 'Profile: Unable to Perform Profile Transaction. The Associated Transaction Failed. ',
@@ -174,8 +171,6 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         self.assert_equal({}, g.setup_address_hash()['shipping_address'])
         self.assert_equal(addy, g.setup_address_hash(shipping_address=addy)['shipping_address'])
 
-    #  TODO  always credit_card never creditcard
-
     def assemble_billing_address(self):
         self.options = {
         'order_id': '1',
@@ -216,14 +211,14 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         }
         self.options['billing_address'] = billing_address
 
-    def test_build_auth_request(self):
+    def test_build_authorization_request(self):
         self.money = Money('100.00', 'USD')
 
         billing_address = self.assemble_billing_address()
         self.options['login'] = 'Triwizard'  #  TODO  is the one true standard interface "login" or "username"
         self.options['password'] = 'Tournament'
 
-        message = self.gateway.build_auth_request(self.money, self.credit_card, **self.options)
+        message = self.gateway.build_authorization_request(self.money, self.credit_card, **self.options)
 
 #        {'start_month': None, 'verification_value': None, 'start_year': None, 'card_type': 'v', 'issue_number': None, }
 
@@ -273,7 +268,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         Nuevo_Sol_numeric = '604'
         self.money = Money('200.00', Nuevo_Sol)
         billing_address = self.assemble_billing_address()
-        message = self.gateway.build_auth_request(self.money, self.credit_card, **self.options)
+        message = self.gateway.build_authorization_request(self.money, self.credit_card, **self.options)
 
         self.assert_xml(message, lambda x:
                              x.Request(
@@ -290,7 +285,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
 
         self.assemble_another_address_too()
 
-        message = self.gateway.build_auth_request(self.money, self.credit_card, **self.options)
+        message = self.gateway.build_authorization_request(self.money, self.credit_card, **self.options)
 
         # self.assert_('<street2></street2>' in message)  #  TODO  assert_contains
 

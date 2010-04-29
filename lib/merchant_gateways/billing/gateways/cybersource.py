@@ -27,7 +27,7 @@ class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
 
         self.options.update(options)  #  TODO  everyone does it like this - and stop passing it around!
 
-        message = self.build_auth_request(money, creditcard, **self.options)
+        message = self.build_authorization_request(money, creditcard, **self.options)
         return self.commit(message, **self.options)
 
     def purchase(self, money, creditcard, **options):
@@ -39,7 +39,7 @@ class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
         self.options = self.setup_address_hash(**self.options)  #  TODO  why authorize uses this not? (and could it suck less?)
         # TODO return self.commit(build_purchase_request(money, creditcard, options), **options)
 
-    def build_auth_request(self, money, credit_card, **options):
+    def build_authorization_request(self, money, credit_card, **options):
         assert isinstance(money, Money), 'TODO  always pass in a Money object - no exceptions!'
 
         template_p = '''
@@ -341,7 +341,7 @@ class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
         commit(build_tax_calculation_request(creditcard, options), options)
       end
 
-      def build_auth_request(money, creditcard, options)
+      def build_authorization_request(money, creditcard, options)
         xml = Builder::XmlMarkup.new :indent => 2
         add_address(xml, creditcard, options[:billing_address], options)
         add_purchase_data(xml, money, true, options)
