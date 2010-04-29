@@ -221,7 +221,7 @@ class CybersourceTests(MerchantGatewaysTestSuite,
 
         self.assert_xml('<xml>'+message+'</xml>', lambda XML:
                               XML.purchaseTotals(
-# TODO                                XML.currency(Zimbabwean_dollars),
+                                XML.currency(Zimbabwean_dollars),
                                 XML.grandTotalAmount('99900000000.00')) )  # TODO  currency should influence precision?
 
 #    def test_avs_result(self):  #  TODO  move Cybersource to an "AvsStyle" module, and move this test to its abstract testor
