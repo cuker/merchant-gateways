@@ -180,7 +180,8 @@ Orbital Gateway Message Templates
 Page 6
 
 Introduction
-As a supplement to the Orbital Gateway Interface Specification, this reference provides sample XML messages that can be used for developing transaction templates. The intent of this document is to provide a visual reference from which to construct XML transaction messages. Paymentech recommends employing this template based development approach for XML message generation. This would allow a XML request message to be built by simply populating the unique transaction values into the correct XML template. Correspondingly, the response message should be handled by extracting the key elements from the specific tags. The highlighted values in each example message should be populated based on the specific transaction request. Other tag values not highlighted could be defaulted to the values shown. The templates are broken down to identify the specific template based on varying the : - Industry Types: o eCommerce – One time card not present purchases in which requests are initiated over the Internet. o Recurring billing – Subscriptions, services, etc. o Mail Order - One time card not present purchases in which requests are initiated over the telephone or mail. - Transaction type: o Authorization Request [and optionally Mark for Capture] o Mark for Capture previously authorized transactions. o Force o Refund [Credit] o Void [Full and Partial] o End of Day [Batch Release] - Data variations: o Address Verification o Card Verification Values [Visa CVV2 and Amex CID] o Purchasing Card II Data o Comments Tag o Shipping Reference Number o Soft Descriptors - Shipping Reference Number Tag Card type variations o Credit Card. o Switch – Solo [UK only based debit card] o Electronic Check [ECP]
+As a supplement to the Orbital Gateway Interface Specification, this reference provides sample XML messages that can be used for developing transaction templates. The intent of this document is to provide a visual reference from which to construct XML transaction messages. Paymentech recommends employing this template based development approach for XML message generation. This would allow a XML request message to be built by simply populating the unique transaction values into the correct XML template. Correspondingly, the response message should be handled by extracting the key elements from the specific tags. The highlighted values in each example message should be populated based on the specific transaction request. Other tag values not highlighted could be defaulted to the values shown. The templates are broken down to identify the specific template based on varying the : 
+- Industry Types: o eCommerce – One time card not present purchases in which requests are initiated over the Internet. o Recurring billing – Subscriptions, services, etc. o Mail Order - One time card not present purchases in which requests are initiated over the telephone or mail. - Transaction type: o Authorization Request [and optionally Mark for Capture] o Mark for Capture previously authorized transactions. o Force o Refund [Credit] o Void [Full and Partial] o End of Day [Batch Release] - Data variations: o Address Verification o Card Verification Values [Visa CVV2 and Amex CID] o Purchasing Card II Data o Comments Tag o Shipping Reference Number o Soft Descriptors - Shipping Reference Number Tag Card type variations o Credit Card. o Switch – Solo [UK only based debit card] o Electronic Check [ECP]
 
 June 2004
 
@@ -189,7 +190,12 @@ Orbital Gateway Message Templates
 Page 7
 
 XML Template Key:
-REQUEST - Shaded elements are Required Fields - Underlined elements are Conditional Fields in which some value is necessary. In other words, there should be defaulted value when nothing is submitted. - Bolded elements are Conditional if no data is provided the XML tag should be null filled. - Non-highlighted fields are static, non-changeable values. RESPONSE - Bolded elements are the relevant data elements from response message.
+REQUEST - Shaded elements are Required Fields 
+- Underlined elements are Conditional Fields in which some value is necessary.
+ In other words, there should be defaulted value when nothing is submitted. 
+- Bolded elements are Conditional if no data is provided the XML tag should be null filled. 
+- Non-highlighted fields are static, non-changeable values. 
+RESPONSE - Bolded elements are the relevant data elements from response message.
 
 June 2004
 

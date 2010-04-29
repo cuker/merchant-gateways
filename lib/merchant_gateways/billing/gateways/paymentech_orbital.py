@@ -130,14 +130,13 @@ class PaymentechOrbital(Gateway):
         message = self.build_authorization_request(money, creditcard, **self.options)  #  TODO  _authorization_request, everywhere!!
         return self.commit(message, **self.options)
 
-    def purchase(self, amount, credit_card, **options):
+    def purchase(self, money, credit_card, **options):
         '''Purchase is an auth followed by a capture
            You must supply an order_id in the options hash'''
 
-        money = amount
         assert isinstance(money, Money), 'TODO  always pass in a Money object - no exceptions!'
         self.options = self.setup_address_hash(**self.options)
-        message = self.build_purchase_request(amount, credit_card, **self.options)
+        message = self.build_purchase_request(money, credit_card, **self.options)
         return self.commit(message, **self.options)
 
     def build_authorization_request_TODO(self, money, credit_card, **options):  #  where'd "NewOrder" come from? not in docs...
@@ -271,7 +270,7 @@ class PaymentechOrbital(Gateway):
                     XML.AmountDetails(
                       XML.Amount('000000005000')),
                     XML.TxTypeCommon(TxTypeID='G'),
-                    XML.Currency(CurrencyCode=numeric, 
+                    XML.Currency(CurrencyCode=numeric,
                                  CurrencyExponent='2'),
                     XML.CardPresence(
                       XML.CardNP(

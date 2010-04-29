@@ -303,22 +303,22 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
 
     def assemble_billing_address(self):
         self.options = {
-        'order_id': '1',
-        'description': 'Time-Turner',
-        'email': 'hgranger@hogwarts.edu',
-        'customer': '947', #  TODO  test this going through
-        'ip': '192.168.1.1', #  TODO  test this going through
-        }
+            'order_id': '1',
+            'description': 'Time-Turner',
+            'email': 'hgranger@hogwarts.edu',
+            'customer': '947', #  TODO  test this going through
+            'ip': '192.168.1.1', #  TODO  test this going through
+            }
         billing_address = {
-        'address1': '444 Main St.',
-        'address2': 'Apt 2',
-        'company': 'ACME Software', #  CONSIDER  Orbital seems to have no slot for the company
-        'phone': '222-222-2222',
-        'zip': '77777',
-        'city': 'Dallas',
-        'country': 'USA',
-        'state': 'TX'
-        }
+            'address1': '444 Main St.',
+            'address2': 'Apt 2',
+            'company': 'ACME Software', #  CONSIDER  Orbital seems to have no slot for the company
+            'phone': '222-222-2222',
+            'zip': '77777',
+            'city': 'Dallas',
+            'country': 'USA',
+            'state': 'TX'
+            }
         self.options['billing_address'] = billing_address
         return billing_address
 
