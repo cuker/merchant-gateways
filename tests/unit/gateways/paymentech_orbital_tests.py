@@ -44,6 +44,10 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         self.assert_equal( 'Y', avs.street_match )  #  TODO  why none? What wrong with B?
         self.assert_equal( None, avs.postal_match )
         self.assert_equal('M', self.response.result['CVV2RespCode'])
+        cvv = self.response.cvv_result
+        cvv = self.response.cvv_result
+        self.assert_equal( 'M', cvv.code )
+        self.assert_equal( 'Match', cvv.message )  #  CONSIDER huh??
 
         assert self.response.success
         # print self.gateway.post_webservice.call_args

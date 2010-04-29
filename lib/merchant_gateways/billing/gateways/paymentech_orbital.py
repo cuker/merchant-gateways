@@ -143,8 +143,8 @@ class PaymentechOrbital(Gateway):
         r = self.__class__.Response( self.success, self.message, self.result,
                                      is_test=self.is_test,
                                      authorization=authorization,
-                                     avs_result=avs_resp_code.strip()
-                                     # TODO        cvv_result=self.result['cvCode']
+                                     avs_result=avs_resp_code.strip(),
+                                     cvv_result=self.result['CVV2RespCode']  #  CONSIDER  what about the 2?
                                     )
         r.result = self.result  #  TODO  use params for something else
         return r
