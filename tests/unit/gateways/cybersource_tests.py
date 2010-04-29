@@ -211,8 +211,7 @@ class CybersourceTests(MerchantGatewaysTestSuite,
         self.assert_('<street2></street2>' in message)  #  TODO  assert_contains
 
     def test_build_auth_request_with_foreign_money(self):
-        Zimbabwean_dollars = 'ZWD'
-#        Zimbabwean_dollar = 'ZWL' CONSIDER was WikiPedia right here?
+        Zimbabwean_dollars = 'ZWD' # 'ZWL' CONSIDER was WikiPedia right here?
         self.money = Money('99900000000.00', Zimbabwean_dollars)
 
         self.assemble_billing_address()
