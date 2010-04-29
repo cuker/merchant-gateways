@@ -75,7 +75,7 @@ class PaymentechOrbital(Gateway):
                         x.AccountNum(credit_card.number),
                         x.Exp(exp_code),
                         x.CurrencyCode(numeric),
-                        x.CurrencyExponent('2'),
+                        x.CurrencyExponent('2'),  #  TODO  figure out what this is it's probably important
                         x.CardSecValInd('1'),  #  CONSIDER  visa & discover only - nullify for others
                         x.CardSecVal(credit_card.verification_value),
                         x.AVSzip(fields['zip']),
@@ -88,14 +88,12 @@ class PaymentechOrbital(Gateway):
                         x.AVScountryCode('840'), #  CONSIDER  other countries
                         x.CustomerProfileFromOrderInd('A'),
                         x.CustomerProfileOrderOverrideInd('NO'),
-                        x.OrderID(''),
+                        x.OrderID(''),  #  TODO  
                         x.Amount(grandTotalAmount)
                         )
         return xStr(XML.Request(new_order))
 
 #                        XML.email(fields['email']),
-#                        XML.currency('USD'),
-#
 #                      XML.expirationMonth(str(credit_card.month)),
 #                      XML.expirationYear(str(credit_card.year)),
 #                      XML.cardType('001')  #  TODO
