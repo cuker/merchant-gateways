@@ -178,6 +178,25 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         self.options['billing_address'] = billing_address
         return billing_address
 
+    def assemble_another_address_too(self):
+        self.options = {
+        'order_id': '1',
+        'description': 'Time-Turner', # TODO  take as much of this out as possible
+        'email': 'hgranger@hogwarts.edu',
+        'customer': '947',
+        'ip': '192.168.1.1',
+        }
+        billing_address = {
+        'address1': '444 Main St.',
+        'company': 'ACME Software', #  TODO  where's the love for the company?
+        'phone': '222-222-2222', #  TODO  where the phone number goes?
+        'zip': '77777',
+        'city': 'Dallas',
+        'country': 'USA',
+        'state': 'TX'
+        }
+        self.options['billing_address'] = billing_address
+
     def test_build_auth_request(self):
         self.money = Money('100.00', 'USD')
 
@@ -250,25 +269,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
     def test_build_auth_request_without_street2(self):
         self.money = Money('2.00', 'USD')
 
-        self.options = {
-            'order_id': '1',
-            'description': 'Time-Turner',  # TODO  take as much of this out as possible
-            'email': 'hgranger@hogwarts.edu',
-            'customer': '947',
-            'ip': '192.168.1.1',
-        }
-
-        billing_address = {
-            'address1': '444 Main St.',
-            'company': 'ACME Software',  #  TODO  where's the love for the company?
-            'phone': '222-222-2222',      #  TODO  where the phone number goes?
-            'zip': '77777',
-            'city': 'Dallas',
-            'country': 'USA',
-            'state': 'TX'
-        }
-
-        self.options['billing_address'] = billing_address
+        self.assemble_another_address_too()
 
         message = self.gateway.build_auth_request(self.money, self.credit_card, **self.options)
 

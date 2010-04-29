@@ -2,7 +2,7 @@
 from gateway import Gateway
 from merchant_gateways.billing.avs_result import AVSResult
 from merchant_gateways.billing.cvv_result import CVVResult
-from money import Money  #  TODO  multiple currencies in AuthorizeNet - no exceptions!
+from money import Money  #  CONSIDER  multiple currencies in AuthorizeNet - no exceptions!
 
 from urllib import urlencode
 import re
@@ -10,11 +10,11 @@ import re
 try:
     import xml.etree.ElementTree as ET
 except ImportError:
-    import elementtree.ElementTree as ET  #  TODO  give a darn about this library??
+    import elementtree.ElementTree as ET  #  CONSIDER  give a darn about this library??
 
 import re
 
-from merchant_gateways.lib.post import post  #  TODO  move me to gateway.py
+from merchant_gateways.lib.post import post  #  CONSIDER  move me to gateway.py
 from merchant_gateways.billing import response
 
 # For more information on the Authorize.Net Gateway please visit their {Integration Center}[http://developer.authorize.net/]

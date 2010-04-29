@@ -188,7 +188,7 @@ class MerchantGatewaysTestSuite( MerchantGatewaysUtilitiesTestSuite,
         self.gateway = self.gateway_type()(is_test=True, login='X', password='Y')
         self.gateway.gateway_mode = 'test'
         from decimal import Decimal
-        self.amount = Money('100', 'US' + 'D')  # TODO  take out the search jammer
+        self.amount = Money('100', 'USD')
         self.options = dict(order_id=1)  #  TODO  change me to Harry Potter's favorite number & pass all tests
         from merchant_gateways.billing.credit_card import CreditCard
 

@@ -169,7 +169,7 @@ class CybersourceTests(MerchantGatewaysTestSuite,
                                 XML.country('USA'),
                                 XML.email('hgranger@hogwarts.edu')),
                               XML.purchaseTotals(
-                                XML.currency('US' + 'D'),  #  TODO  taKe out the search jammers
+                                XML.currency('USD'),
                                 XML.grandTotalAmount('1.00')),
                               XML.card(
                                 XML.accountNumber('4242424242424242'),
