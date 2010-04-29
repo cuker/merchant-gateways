@@ -2,7 +2,7 @@
 from gateway import Gateway
 from merchant_gateways.billing.avs_result import AVSResult
 from merchant_gateways.billing.cvv_result import CVVResult
-from money import Money
+from money import Money  #  TODO  multiple currencies in AuthorizeNet - no exceptions!
 
 from urllib import urlencode
 import re
@@ -34,7 +34,8 @@ from merchant_gateways.billing import response
 #
 # ==== Automated Recurring Billing (ARB)
 #
-# Automated Recurring Billing (ARB) is an optional service for submitting and managing recurring, or subscription-based, transactions.
+# Automated Recurring Billing (ARB) is an optional service for submitting and managing recurring, or
+# subscription-based, transactions.
 #
 # To use recurring, update_recurring, and cancel_recurring ARB must be enabled for your account.
 #
