@@ -8,9 +8,11 @@
 
 #  CONSIDER  exception handling, logging, conversation recording, signals for exceptions, success, & fail
 
+from money import Money  #  TODO  add cuker/python-money to the requirements
+
 
 class Gateway(object):
-    DEBIT_CARDS = ('switch', 'solo')
+    DEBIT_CARDS = ('switch', 'solo')  #  TODO  use this
     money_format = 'dollars'
     supported_cardtypes = []
     options = {}
@@ -40,20 +42,11 @@ class Gateway(object):
             return None
         return len(val.strip()) == 0
 
-    def amount(self, money):  #  TODO  use or lose this stuff
+    def amount(self, money):
         if money is None:
             return None
-        try:
-            cents = money.cents
-        except AttributeError:
-            cents = money
 
-        if type(money) == '' or int(cents) < 0:
-            raise TypeError, 'money amount must be either a Money ojbect or a positive integer in cents.'
-
-        if self.money_format == 'cents':
-            return str(cents)
-        return ("%.2f" % (float(cents) / 100))
+        return '%.2f' % money.amount
 
     def currency(money):
         try:
@@ -123,8 +116,7 @@ class default_dict(dict):  #  TODO  move to utils
         default = getattr(self, 'default', '')  #  the irony IS lost on us...
         return self.get(key, default)
 
-        
+
 def xStr(doc):
     from lxml import etree
     return etree.tostring(doc, pretty_print=True)  #  TODO  take out pretty_print to go out wire!
-

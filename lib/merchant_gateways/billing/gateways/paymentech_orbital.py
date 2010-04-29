@@ -7,6 +7,7 @@ from merchant_gateways.billing.cvv_result import CVVResult
 from lxml import etree
 from lxml.builder import ElementMaker
 XML = ElementMaker()
+from money import Money
 
 #  TODO  bow before http://www.userhelpguides.com/dotnetcharge/paymentechorbital.php
 # http://doc.rhinonet.com/paymentech/Orbital%20Gateway%20Interface%20Specification%202.6.0.pdf
@@ -24,6 +25,7 @@ class PaymentechOrbital(Gateway):
         You must supply an :order_id in the options hash  TODO  complain if it ain't there
         '''
 
+        assert isinstance(money, Money), 'TODO  always pass in a Money object - no exceptions!'
         self.options.update(options)
 
         message = self.build_auth_request(money, creditcard, **self.options)  #  TODO  _authorization_request, everywhere!!
@@ -33,17 +35,21 @@ class PaymentechOrbital(Gateway):
         '''Purchase is an auth followed by a capture
            You must supply an order_id in the options hash'''
 
+        money = amount
+        assert isinstance(money, Money), 'TODO  always pass in a Money object - no exceptions!'
         self.options = self.setup_address_hash(**self.options)
         message = self.build_purchase_request(amount, credit_card, **self.options)
         return self.commit(message, **self.options)
 
     def build_auth_request(self, money, credit_card, **options):
 
+        assert isinstance(money, Money), 'TODO  always pass in a Money object - no exceptions!'
+
         fields = default_dict(**self.options)
 
 #                            country='USA',  #  TODO vet this default
 
-        grandTotalAmount = '%.2f' % money  #  CONSIDER  format AMOUNT like this better, everywhere
+        grandTotalAmount = '%.2f' % money.amount  #  CONSIDER  format AMOUNT like this better, everywhere
         fields.update(options['billing_address'])  #  TODO  what about address?
         fields.update(options)
 

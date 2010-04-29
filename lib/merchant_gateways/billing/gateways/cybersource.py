@@ -7,6 +7,7 @@ from merchant_gateways.billing.cvv_result import CVVResult
 from lxml import etree
 from lxml.builder import ElementMaker # TODO document we do lxml only !
 XML = ElementMaker()
+from money import Money
 
 
 class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
@@ -21,6 +22,9 @@ class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
      # TODO   requires!(options, :order_id, :email)
      # TODO   setup_address_hash(options)
 
+
+        assert isinstance(money, Money), 'TODO  always pass in a Money object - no exceptions!'
+
         self.options.update(options)  #  TODO  everyone does it like this - and stop passing it around!
 
         message = self.build_auth_request(money, creditcard, **self.options)
@@ -29,11 +33,15 @@ class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
     def purchase(self, money, creditcard, **options):
         '''Purchase is an auth followed by a capture
            You must supply an order_id in the options hash'''
+
+        assert isinstance(money, Money), 'TODO  always pass in a Money object - no exceptions!'
         # TODO requires!(options, :order_id, :email)
         self.options = self.setup_address_hash(**self.options)  #  TODO  why authorize uses this not? (and could it suck less?)
         # TODO return self.commit(build_purchase_request(money, creditcard, options), **options)
 
-    def build_auth_request(self, money, credit_card, **options):  #  TODO  money == grandTotalAmount - doc & cement that
+    def build_auth_request(self, money, credit_card, **options):
+        assert isinstance(money, Money), 'TODO  always pass in a Money object - no exceptions!'
+
         template_p = '''
                     <ccAuthService run="true"/>
                     <businessRules>
@@ -45,7 +53,7 @@ class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
                         )
         #name='',
                        # TODO merge more _where_to=_where_to )
-        grandTotalAmount = str(money)
+        grandTotalAmount = str(money.amount)  #  TODO  pass the currency thru
         fields.update(options['billing_address'])
         fields.update(options)  #  TODO  options should override credit card - everywhere, and doc that!
 
@@ -554,4 +562,3 @@ CREDIT_CARD_CODES = dict( v='001',
 
 TEST_URL = 'https://ics2wstest.ic3.com/commerce/1.x/transactionProcessor'
 LIVE_URL = 'https://ics2ws.ic3.com/commerce/1.x/transactionProcessor'
-

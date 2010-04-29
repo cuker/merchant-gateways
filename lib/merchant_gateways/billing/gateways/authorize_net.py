@@ -2,6 +2,7 @@
 from gateway import Gateway
 from merchant_gateways.billing.avs_result import AVSResult
 from merchant_gateways.billing.cvv_result import CVVResult
+from money import Money
 
 from urllib import urlencode
 import re
@@ -82,6 +83,8 @@ class AuthorizeNet(Gateway):
        * creditcard -- The CreditCard details for the transaction.
        * options-- A hash of optional parameters.
         """
+
+        assert isinstance(money, Money), 'TODO  always pass in a Money object - no exceptions!'
         #self.order_id = options['order_id']  #  TODO put the order_id inside the options and only use it there. The order_id is just to require it
         post = {}
         self.options.update(options)  #  TODO  everyone does it like this

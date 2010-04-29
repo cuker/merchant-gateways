@@ -23,7 +23,7 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
 
         self.gateway.get_webservice.assert_called_with(
                 ('https://test.authorize.net/gateway/transact.dll?x_login=X&x_invoice_num=%i&' % self.options['order_id']) +
-                'x_last_name=Granger&x_card_code=456&x_card_num=4242424242424242&x_amount=1.00&x_delim_char=%2C&x_tran_key=Y&' +
+                'x_last_name=Granger&x_card_code=456&x_card_num=4242424242424242&x_amount=100.00&x_delim_char=%2C&x_tran_key=Y&' +
                 'x_encap_char=%24&x_version=3.1&x_first_name=Hermione&x_exp_date=1290&x_delim_data=TRUE&x_relay_response=FALSE&' +
                 'x_type=AUTH_ONLY&x_description=Chamber+of+Secrets&x_test_request=TRUE', {}
                 )  #  TODO  beautify the response, via assert_params
@@ -45,7 +45,7 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
 
         self.gateway.get_webservice.assert_called_with(
                 ('https://test.authorize.net/gateway/transact.dll?x_login=X&x_invoice_num=%i&x_trans_id=Y&' % self.options['order_id']) + \
-                  'x_last_name=Granger&x_card_code=456&x_card_num=4242424242424242&x_amount=1.00' + \
+                  'x_last_name=Granger&x_card_code=456&x_card_num=4242424242424242&x_amount=100.00' + \
                   '&x_delim_char=%2C&x_tran_key=Y&x_encap_char=%24&x_version=3.1&x_first_name=Hermione&' + \
                   'x_exp_date=1290&x_delim_data=TRUE&x_relay_response=FALSE&x_type=AUTH_CAPTURE&' + \
                   'x_description=&x_test_request=TRUE', {}

@@ -5,8 +5,6 @@ from merchant_gateways.tests.test_helper import *
 
 #  TODO  get working with many versions of python & django
 
-#  ERGO  all Decimal objects should optionally be Currency objects - Decimal + ISO country code
-
 #  TODO logging!
 
 class CybersourceTests(MerchantGatewaysTestSuite,
@@ -131,7 +129,7 @@ class CybersourceTests(MerchantGatewaysTestSuite,
     #  TODO  always credit_card never creditcard
 
     def test_build_auth_request(self):
-        self.money = Decimal('1.00')
+        self.money = Money('1.00')
 
         self.options = {
             'order_id': '1',
@@ -185,10 +183,12 @@ class CybersourceTests(MerchantGatewaysTestSuite,
 
         # why exp_year 2090? Extendicreditus!
 
+        #  TODO  usd
+
         self.assert_match_xml(expect, message)  #  TODO  now parse it back and assert_match_hash it!
 
     def test_build_auth_request_without_street2(self):
-        self.money = Decimal('2.00')
+        self.money = Money('2.00')
 
         self.options = {
             'order_id': '1',

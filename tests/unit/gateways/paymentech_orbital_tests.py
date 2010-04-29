@@ -6,6 +6,8 @@ from merchant_gateways.tests.test_helper import *
 from pprint import pprint
 from lxml.builder import ElementMaker
 XML = ElementMaker()
+from money import Money
+
 
 class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                              MerchantGatewaysTestSuite.CommonTests):
@@ -156,7 +158,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
     #  TODO  always credit_card never creditcard
 
     def test_build_auth_request(self):
-        self.money = Decimal('100.00')
+        self.money = Money('100.00')
 
         self.options = {
             'order_id': '1',
@@ -227,7 +229,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         # TODO default_dict should expose all members as read-only data values
 
     def test_build_auth_request_without_street2(self):
-        self.money = Decimal('2.00')
+        self.money = Money('2.00')
 
         self.options = {
             'order_id': '1',

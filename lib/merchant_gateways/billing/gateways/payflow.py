@@ -8,6 +8,7 @@ from merchant_gateways.billing.gateways.gateway import xStr
 from lxml import etree
 from lxml.builder import ElementMaker # TODO document we do lxml only !
 XML = ElementMaker()
+from money import Money
 
 # TODO use this      XMLNS = 'http://www.paypal.com/XMLPay'
 # TODO  actually write a real post_webservice
@@ -19,6 +20,7 @@ class Payflow(Gateway):
     LIVE_URL = 'https://payflowpro.paypal.com'
 
     def authorize(self, money, credit_card_or_reference, **options):  #  TODO  rename money to amount, everywhere
+        assert isinstance(money, Money), 'TODO  always pass in a Money object - no exceptions!'
         self.request = self.build_sale_or_authorization_request('authorization', money, credit_card_or_reference, **options)
         return self.commit(self.request)
 
@@ -49,6 +51,7 @@ class Payflow(Gateway):
         return self.response
 
     def purchase(self, money, credit_card_or_reference, **options):  #  TODO every purchase can work on a cc or ref!
+        assert isinstance(money, Money), 'TODO  always pass in a Money object - no exceptions!'
         self.message = self.build_sale_or_authorization_request('purchase', money, credit_card_or_reference, **options)
         self.commit(self.message)
 
@@ -89,7 +92,7 @@ xmlns="http://www.paypal.com/XMLPay">
     def build_credit_card_request(self, action, amount, credit_card, **options):
         transaction_type = TRANSACTIONS[action]
           # amount=self.options['amount'] ) # TODO all options in options - no exceptions
-        formatted_amount = '%.2f' % amount
+        formatted_amount = '%.2f' % amount.amount  #  TODO  rename to money; merge with grandTotalAmount system
         bill_to_address = options.get('address', {})  #  TODO  billing_address etc???
 
         request = XML(transaction_type,
