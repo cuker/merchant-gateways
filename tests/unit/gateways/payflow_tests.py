@@ -210,6 +210,11 @@ class PayflowTests( MerchantGatewaysTestSuite,
 
         #  CONSIDER  hallow as a feature if the address is a empty {}, it disappears anyway
 
+    def test_build_credit_card_request_with_a_foreign_currency_TODO_abstract_me(self):
+        sample = self.gateway.build_credit_card_request('authorization', Money('1.00', 'USD'), self.credit_card, address= {'city': 'TODO'})
+        print sample
+        print self.convert_xml_to_element_maker(sample)        
+
     def test_add_credit_card(self):
         cc = CreditCard(verification_value="123", number="4242424242424242", year=2011, card_type="visa",
                                 month=9, last_name="Longsen", first_name="Longbob")

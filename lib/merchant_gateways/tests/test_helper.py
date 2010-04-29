@@ -164,7 +164,7 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
         code += ')'
         return code
 
-    def convert_to_element_maker(self, thang):
+    def convert_xml_to_element_maker(self, thang):
         'script that coverts XML to its ElementMaker notation'
 
         from lxml import etree
