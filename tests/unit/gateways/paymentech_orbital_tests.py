@@ -161,9 +161,8 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
     def test_parse_purchase_response(self):
         soap = self.successful_purchase_response()
         sample = self.gateway.parse(soap)
-        return # TODO
-        self.assert_equal(sample['cvCode'], 'M')
-        self.assert_equal(sample['cvCodeRaw'], 'M')  #  TODO  what to do with the raw code?
+        reference = {'AVSRespCode': 'B ', 'RespCode': '00', 'HostCVV2RespCode': 'M', 'TerminalID': '000', 'CVV2RespCode': 'M', 'RespMsg': None, 'CardBrand': 'MC', 'MerchantID': '000000', 'AccountNum': '5454545454545454', 'ProfileProcStatus': '0', 'CustomerName': 'JOE SMITH', 'MessageType': 'AC', 'HostAVSRespCode': 'I3', 'RecurringAdviceCd': None, 'IndustryType': None, 'OrderID': '1', 'StatusMsg': 'Approved', 'ApprovalStatus': '1', 'TxRefIdx': '1', 'TxRefNum': '4A785F5106CCDC41A936BFF628BF73036FEC5401', 'CustomerRefNum': '2145108', 'CustomerProfileMessage': 'Profile Created', 'AuthCode': 'tst554', 'RespTime': '121825', 'ProcStatus': '0', 'CAVVRespCode': None, 'HostRespCode': '100'}
+        self.assert_match_hash(reference, sample)
 
     def test_setup_address_hash(self):  #  TODO  everyone should fixup like these (Payflow does it a different way)
         g = self.gateway
