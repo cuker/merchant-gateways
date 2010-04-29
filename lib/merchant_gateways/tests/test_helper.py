@@ -150,7 +150,7 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
         code = '\n' + ' ' * depth * 2 + 'XML.' + node.tag + '('
         children = node.xpath('*')
 
-        if node.text:
+        if node.text and not re.search('^\s*$', node.text):
             code += repr(node.text)
             if node.attrib or children:  code += ', '
 

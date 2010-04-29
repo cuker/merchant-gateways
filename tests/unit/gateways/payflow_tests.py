@@ -210,10 +210,48 @@ class PayflowTests( MerchantGatewaysTestSuite,
 
         #  CONSIDER  hallow as a feature if the address is a empty {}, it disappears anyway
 
-    def test_build_credit_card_request_with_a_foreign_currency_TODO_abstract_me(self):
+    def test_build_credit_card_request_and_check_all_its_xml_in_nauseating_detail(self):
         sample = self.gateway.build_credit_card_request('authorization', Money('1.00', 'USD'), self.credit_card, address= {'city': 'TODO'})
-        print sample
-        print self.convert_xml_to_element_maker(sample)        
+
+        self.assert_xml(sample, lambda XML:
+                XML.Authorization(
+          XML.PayData(
+            XML.Invoice(
+              XML.BillTo(
+                XML.Name(),
+                XML.Phone('(555)555-5555'),
+                XML.Address(
+                  XML.Street(),
+                  XML.City('TODO'),
+                  XML.State(),
+                  XML.Country(),
+                  XML.Zip())),
+              XML.TotalAmt('1.00', Currency='USD')),
+            XML.Tender(
+              XML.Card(
+                XML.CardType('Visa'),
+                XML.CardNum('4242424242424242'),
+                XML.ExpDate('201109'),
+                XML.NameOnCard('Hermione'),
+                XML.CVNum('456'),
+                XML.ExtData(Name='LASTNAME', Value='Granger')))))
+            )  #  CONSIDER  make this the dominant test of its ilk
+
+    def test_build_credit_card_request_with_a_foreign_currency_TODO_abstract_me(self):
+
+        Moroccan_Dirham = 'MAD'  #  What, Moor worry? [ C-: ]
+
+        sample = self.gateway.build_credit_card_request( 'authorization',
+                                                         Money('21.00', Moroccan_Dirham),
+                                                         self.credit_card,
+                                                         address= {'city': 'TODO'} )
+
+        self.assert_xml(sample, lambda XML:
+                XML.Authorization(
+          XML.PayData(
+            XML.Invoice(
+              XML.TotalAmt('1.00', Currency='USD')),
+          )))
 
     def test_add_credit_card(self):
         cc = CreditCard(verification_value="123", number="4242424242424242", year=2011, card_type="visa",
