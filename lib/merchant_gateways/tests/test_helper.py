@@ -154,13 +154,15 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
             code += repr(node.text)
             if node.attrib or children:  code += ', '
 
+        if children:
+            child_nodes = [ self._convert_child_nodes(n, depth + 1) for n in children ]
+            code += (',' ).join(child_nodes)
+            if node.attrib:  code += ', '
+
         if node.attrib:
             attribs = [ '%s=%r' % (kv) for kv in node.attrib.items() ]
             code += ', '.join(attribs)
-            if children:  code += ', '
 
-        child_nodes = [ self._convert_child_nodes(n, depth + 1) for n in children ]
-        code += (',' ).join(child_nodes)
         code += ')'
         return code
 

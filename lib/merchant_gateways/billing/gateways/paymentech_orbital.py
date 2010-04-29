@@ -249,30 +249,61 @@ class PaymentechOrbital(Gateway):
         return r
 
     def build_request(self, body, **options):
-        template = '''<?xml version="1.0" encoding="UTF-8"?>
-            <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
-              <s:Header>
-                <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" s:mustUnderstand="1">
-                  <wsse:UsernameToken>
-                    <wsse:Username>l</wsse:Username>
-                    <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">p</wsse:Password>
-                  </wsse:UsernameToken>
-                </wsse:Security>
-              </s:Header>
-              <s:Body xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-                <requestMessage xmlns="urn:schemas-cybersource-com:transaction-data-1.32">
-                  <merchantID>l</merchantID>
-                  <merchantReferenceCode>1000</merchantReferenceCode>
-                  <clientLibrary>Ruby Active Merchant</clientLibrary>
-                  <clientLibraryVersion>1.0</clientLibraryVersion>
-                  <clientEnvironment>Linux</clientEnvironment>
-                    %s
-                </requestMessage>
-              </s:Body>
-            </s:Envelope>
-            '''
-
-        return template % body
+        return xStr(
+          XML.Request(
+              XML.AC(
+                XML.CommonData(
+                  XML.CommonMandatory(
+                    XML.AccountNum('4012888888881', AccountTypeInd='91'),
+                    XML.POSDetails(POSEntryMode='01'),
+                    XML.MerchantID('123456789012'),
+                    XML.TerminalID('001',
+                                   TermEntCapInd='05',
+                                   CATInfoInd='06',
+                                   TermLocInd='01',
+                                   CardPresentInd='N',
+                                   POSConditionCode='59',
+                                   AttendedTermDataInd='01'),
+                    XML.BIN('000002'),
+                    XML.OrderID('1234567890123456'),
+                    XML.AmountDetails(
+                      XML.Amount('000000005000')),
+                    XML.TxTypeCommon(TxTypeID='G'),
+                    XML.Currency(CurrencyCode='840', CurrencyExponent='2'),
+                    XML.CardPresence(
+                      XML.CardNP(
+                        XML.Exp('1205'))),
+                    XML.TxDateTime(),
+                        AuthOverrideInd='N',
+                        LangInd='00',
+                        CardHolderAttendanceInd='01',
+                        HcsTcsInd='T',
+                        TxCatg='7',
+                        MessageType='A',
+                        Version='2',
+                        TzCode='705'),
+                  XML.CommonOptional(
+                    XML.Comments('This is an AVS/CVV2 auth request'),
+                    XML.ShippingRef('FEDEX WB12345678 Pri 1'),
+                    XML.CardSecVal('705', CardSecInd='1'),
+                    XML.ECommerceData(
+                      XML.ECOrderNum('1234567890123456'), ECSecurityInd='07'))),
+                XML.Auth(
+                  XML.AuthMandatory(FormatInd='H'),
+                  XML.AuthOptional(
+                    XML.AVSextended(
+                      XML.AVSname('JOE SMITH'),
+                      XML.AVSaddress1('1234 WEST MAIN STREET'),
+                      XML.AVSaddress2('SUITE 123'),
+                      XML.AVScity('TAMPA'),
+                      XML.AVSstate('FL'),
+                      XML.AVSzip('33123-1234'),
+                      XML.AVScountryCode('US')))),
+                XML.Cap(
+                  XML.CapMandatory(
+                    XML.EntryDataSrc('02')),
+                  XML.CapOptional())))
+            )
 
     def build_purchase_request(self, money, creditcard, **options):
 

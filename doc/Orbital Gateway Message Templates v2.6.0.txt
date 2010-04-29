@@ -1,0 +1,504 @@
+Orbital Gateway Message Templates
+V2.6.0
+
+Change Log
+Date
+10/23/01 02/10/02 02/10/02
+
+Page No(s)
+All All
+
+Action
+New Change Added N/A
+
+Description of Change
+All fields now in one of four categories [Static, mandatory, recommended default, Conditional] Added Mail Order Templates Separated Visa/Discover from MasterCard/Amex eCommerce templates to distinguish how the associations expect card verification numbers be sent. Both Visa and Discover expect a Cardholder Security Indicator; whereas, MasterCard and Amex do not want this value sent. Removed the eFalcon Template Credit Card Mark for Capture Template with Purchasing Card II Data. This allows the adding or changing of Purchasing Card II data after the initial Authorization. Updated the DTD Version and Reference Documents to be the latest. Updated Credit Card and Switch Solo MFC Templates to reflect the fact that the Card Number is no longer a mandatory data element [but the tag still is]. Updated Mark for Capture and Void Templates to reflect simplified DTD [version 24] Amex Purchasing Card Template [template # 6] Added Support for AVS Country Code Added Support for Soft Descriptors [Credit Card, ECP, Sales and Refunds] Added required XML Definition Tag to Templates <?xml version="1.0" encoding="UTF-8"?>
+
+07/10/03 07/10/03
+
+9 & 11 N/A
+
+Updated Deleted
+
+12/09/03 12/09/03
+
+30 6
+
+Added Updated
+
+12/09/03 03/03/04 06/01/04 10/28/04 10/28/04 10/28/04
+
+28, 32
+
+Updated Updated
+
+14 Many Pages 18, 20, 28, 29 Many
+
+Added Added Added Updated
+
+June 2004
+
+Orbital Gateway Message Templates
+
+Page 2
+
+Table of Contents
+Introduction
+XML Template Key:
+
+7
+8
+
+Authorization Templates
+1: Visa/Discover Credit card eCommerce
+
+9
+9
+
+XML Request Template:..................................................................9 XML Response Template: .............................................................10
+2: Amex/MasterCard Credit card eCommerce 11
+
+XML Request Template:................................................................11
+3: Credit card Recurring transaction 12
+
+XML Recurring Request Template: .............................................12
+4: Credit card Mail Order transaction 13
+
+XML Request Template:................................................................13
+5: Purchasing Card II Data credit card eCommerce transaction 14
+
+XML Request Template:................................................................14
+6: Amex Purchasing Card II Data credit card eCommerce txn 15
+
+XML Request Template:................................................................15
+7: Purchasing Card II Data credit card Recurring transaction 17
+
+XML Request Template:................................................................17
+8: Credit Card eCommerce transaction with Soft Descriptor Data 18
+
+XML Request Template:................................................................18
+9: Electronic Check transaction [BIN 000001] 19
+
+XML Request Template:................................................................19
+10: Electronic Check transaction with Soft Descriptor Data 20
+
+XML Request Template:................................................................20
+11: Switch/Solo transaction [BIN 000001] 21
+
+June 2004
+
+Orbital Gateway Message Templates
+
+Page 3
+
+XML Request Template:................................................................21
+
+Prior Authorization (Force) Templates
+12: Credit card force transaction [prior authorization]
+
+22
+22
+
+XML Request Template:................................................................22 XML Response Template: .............................................................23
+13: Electronic Check Force [BIN 000001] 24
+
+XML Request Template:................................................................24
+
+Refund Templates
+14: Credit card eCommerce Refund transaction
+
+25
+25
+
+XML Request Template:................................................................25 XML Response Template: .............................................................25
+15: Credit card Recurring Refund transaction 26
+
+XML Request Template:................................................................26
+16: Credit card Mail Order Refund transaction 27
+
+XML Request Template:................................................................27
+17: Credit card eCommerce Refund transaction with Soft Descriptor Data 28
+
+XML Request Template:................................................................28
+18: Electronic Check Refund transaction [BIN 000001] 29
+
+XML Request Template:................................................................29
+19: Electronic Check Refund transaction with Soft Descriptor Data 30
+
+XML Request Template:................................................................30
+20: Switch/Solo Refund transaction [BIN 000001] 31
+
+XML Request Template:................................................................31
+
+Void Templates
+21: Full Void transaction (of a Previous Authorization)
+
+32
+32
+
+XML Request Template:................................................................32 XML Response Template: .............................................................32
+22: Partial Void transaction (of a Previous Auth) 33
+
+June 2004
+
+Orbital Gateway Message Templates
+
+Page 4
+
+XML Request Template:................................................................33
+
+Mark for Capture Templates
+23: Mark for Capture (of a previous auth.)
+
+34
+34
+
+XML Request Template:................................................................34 XML Response Template: .............................................................35
+24: Mark for Capture with P-Card II data 36
+
+XML Request Template:................................................................36
+
+End of Day [Batch Settlement] Templates 37
+25: Batch settlement transaction 37
+
+XML Request Template:................................................................37 XML Response Template: .............................................................37
+
+June 2004
+
+Orbital Gateway Message Templates
+
+Page 5
+
+Version : V02.6.0 Document Name : Orbital Gateway Message Templates v2.6.0 Reference Documents : Orbital Gateway Interface Specification V02.6.0 Request_PTI26.dtd Response_PTI26.dtd
+
+© This publication is for information purposes only and its content does not represent a contract in any form. Furthermore, this publication shall not be deemed to be a warranty of any kind, either express or implied. Paymentech expressly disclaims, and you expressly waive, any and all warranties, including without limitation those of merchantability and fitness for a particular purpose. Paymentech reserves the right to alter product specifications without notice. No part of this publication may be reproduced or transmitted in any form or by any means, electronic or mechanical, including photocopy, recording, or any information storage or retrieval system, without Paymentech's permission.
+
+June 2004
+
+Orbital Gateway Message Templates
+
+Page 6
+
+Introduction
+As a supplement to the Orbital Gateway Interface Specification, this reference provides sample XML messages that can be used for developing transaction templates. The intent of this document is to provide a visual reference from which to construct XML transaction messages. Paymentech recommends employing this template based development approach for XML message generation. This would allow a XML request message to be built by simply populating the unique transaction values into the correct XML template. Correspondingly, the response message should be handled by extracting the key elements from the specific tags. The highlighted values in each example message should be populated based on the specific transaction request. Other tag values not highlighted could be defaulted to the values shown. The templates are broken down to identify the specific template based on varying the : - Industry Types: o eCommerce – One time card not present purchases in which requests are initiated over the Internet. o Recurring billing – Subscriptions, services, etc. o Mail Order - One time card not present purchases in which requests are initiated over the telephone or mail. - Transaction type: o Authorization Request [and optionally Mark for Capture] o Mark for Capture previously authorized transactions. o Force o Refund [Credit] o Void [Full and Partial] o End of Day [Batch Release] - Data variations: o Address Verification o Card Verification Values [Visa CVV2 and Amex CID] o Purchasing Card II Data o Comments Tag o Shipping Reference Number o Soft Descriptors - Shipping Reference Number Tag Card type variations o Credit Card. o Switch – Solo [UK only based debit card] o Electronic Check [ECP]
+
+June 2004
+
+Orbital Gateway Message Templates
+
+Page 7
+
+XML Template Key:
+REQUEST - Shaded elements are Required Fields - Underlined elements are Conditional Fields in which some value is necessary. In other words, there should be defaulted value when nothing is submitted. - Bolded elements are Conditional if no data is provided the XML tag should be null filled. - Non-highlighted fields are static, non-changeable values. RESPONSE - Bolded elements are the relevant data elements from response message.
+
+June 2004
+
+Orbital Gateway Message Templates
+
+Page 8
+
+Authorization Templates
+1: Visa/Discover Credit card eCommerce
+XML Request Template:
+<?xml version="1.0" encoding="UTF-8"?> <Request> <AC> <CommonData> <CommonMandatory AuthOverrideInd="N" LangInd="00" CardHolderAttendanceInd="01" HcsTcsInd="T" TxCatg="7" MessageType="A" Version="2" TzCode="705"> <AccountNum AccountTypeInd="91">4012888888881</AccountNum> <POSDetails POSEntryMode="01"/> <MerchantID>123456789012</MerchantID> <TerminalID TermEntCapInd="05" CATInfoInd="06" TermLocInd="01" CardPresentInd="N" POSConditionCode="59" AttendedTermDataInd="01">001</TerminalID> <BIN>000002</BIN> <OrderID>1234567890123456</OrderID> <AmountDetails> <Amount>000000005000</Amount> </AmountDetails> <TxTypeCommon TxTypeID="G"/> <Currency CurrencyCode="840" CurrencyExponent="2"/> <CardPresence> <CardNP> <Exp>1205</Exp> </CardNP> </CardPresence> <TxDateTime/> </CommonMandatory> <CommonOptional> <Comments>This is an AVS/CVV2 auth request</Comments> <ShippingRef>FEDEX WB12345678 Pri 1</ShippingRef> <CardSecVal CardSecInd="1">705</CardSecVal> <ECommerceData ECSecurityInd="07"> <ECOrderNum>1234567890123456</ECOrderNum> </ECommerceData> </CommonOptional> </CommonData> <Auth> <AuthMandatory FormatInd="H"/> <AuthOptional> <AVSextended> <AVSname>JOE SMITH</AVSname> <AVSaddress1>1234 WEST MAIN STREET</AVSaddress1> <AVSaddress2>SUITE 123</AVSaddress2> <AVScity>TAMPA</AVScity> <AVSstate>FL</AVSstate> <AVSzip>33123-1234</AVSzip> <AVScountryCode>US</AVScountryCode> </AVSextended> </AuthOptional> </Auth> <Cap> <CapMandatory> <EntryDataSrc>02</EntryDataSrc> </CapMandatory> <CapOptional/> </Cap> </AC> </Request>
+
+July, 2003
+
+Orbital Gateway Message Templates
+
+9
+
+XML Response Template:
+<?xml version="1.0" encoding="UTF-8"?> <Response> <ACResponse> <CommonDataResponse> <CommonMandatoryResponse HcsTcsInd="T" LangInd="00" MessageType="A" TzCode="705" Version="2"> <MerchantID>123456789012</MerchantID> <TerminalID>001</TerminalID> <TxRefNum>128E6C6A4FC6D4119A3700D0B706C51EE26DF570</TxRefNum> <TxRefIdx>0</TxRefIdx> <OrderNumber>1234567890123456</OrderNumber> <RespTime>10012001120003</RespTime> <ProcStatus>0</ProcStatus> <ApprovalStatus>1</ApprovalStatus> <ResponseCodes> <AuthCode>tntC09</AuthCode> <RespCode>00</RespCode> <HostRespCode>00</HostRespCode> <CVV2RespCode>M</CVV2RespCode> <HostCVV2RespCode>M</HostCVV2RespCode> <AVSRespCode>H</AVSRespCode> <HostAVSRespCode>Y</HostAVSRespCode> </ResponseCodes> </CommonMandatoryResponse> <CommonOptionalResponse> <AccountNum>4012888888881</AccountNum> <RespDate>010801</RespDate> <CardType>VI</CardType> <ExpDate>200512</ExpDate> <CurrencyCd>840</CurrencyCd> </CommonOptionalResponse> </CommonDataResponse> <AuthResponse> <AuthMandatoryResponse/> <AuthOptionalResponse> <POSEntryMode>01</POSEntryMode> <MISCData> <ActualRespCd>00 </ActualRespCd> </MISCData> <NetworkData> <AuthNetwkID>01</AuthNetwkID> </NetworkData> <VisaCard> <CPSData> <AuthCharInd>V</AuthCharInd> <ValidationCd>JU9E</ValidationCd> </CPSData> <AuthSource AuthSrc="5"/> <VisaCommCard VCC="S"/> </VisaCard> </AuthOptionalResponse> </AuthResponse> </ACResponse> </Response>
+
+July, 2003
+
+Orbital Gateway Message Templates
+
+10
+
+2: Amex/MasterCard Credit card eCommerce
+XML Request Template:
+<?xml version="1.0" encoding="UTF-8"?> <Request> <AC> <CommonData> <CommonMandatory AuthOverrideInd="N" LangInd="00" CardHolderAttendanceInd="01" HcsTcsInd="T" TxCatg="7" MessageType="A" Version="2" TzCode="705"> <AccountNum AccountTypeInd="91">5454545454545454</AccountNum> <POSDetails POSEntryMode="01"/> <MerchantID>123456789012</MerchantID> <TerminalID TermEntCapInd="05" CATInfoInd="06" TermLocInd="01" CardPresentInd="N" POSConditionCode="59" AttendedTermDataInd="01">001</TerminalID> <BIN>000002</BIN> <OrderID>1234567890123456</OrderID> <AmountDetails> <Amount>000000005000</Amount> </AmountDetails> <TxTypeCommon TxTypeID="G"/> <Currency CurrencyCode="840" CurrencyExponent="2"/> <CardPresence> <CardNP> <Exp>1205</Exp> </CardNP> </CardPresence> <TxDateTime/> </CommonMandatory> <CommonOptional> <Comments>This is an AVS/CVV2 auth request</Comments> <ShippingRef>FEDEX WB12345678 Pri 1</ShippingRef> <CardSecVal>705</CardSecVal> <ECommerceData ECSecurityInd="07"> <ECOrderNum>1234567890123456</ECOrderNum> </ECommerceData> </CommonOptional> </CommonData> <Auth> <AuthMandatory FormatInd="H"/> <AuthOptional> <AVSextended> <AVSname>JOE SMITH</AVSname> <AVSaddress1>1234 WEST MAIN STREET</AVSaddress1> <AVSaddress2>SUITE 123</AVSaddress2> <AVScity>TAMPA</AVScity> <AVSstate>FL</AVSstate> <AVSzip>33123-1234</AVSzip> <AVScountryCode>US</AVScountryCode> </AVSextended> </AuthOptional> </Auth> <Cap> <CapMandatory> <EntryDataSrc>02</EntryDataSrc> </CapMandatory> <CapOptional/> </Cap> </AC> </Request>
+
+July, 2003
+
+Orbital Gateway Message Templates
+
+11
+
+3: Credit card Recurring transaction
+XML Recurring Request Template:
+<?xml version="1.0" encoding="UTF-8"?> <Request> <AC> <CommonData> <CommonMandatory AuthOverrideInd="N" LangInd="00" CardHolderAttendanceInd="02" HcsTcsInd="T" TxCatg="2" MessageType="AC" Version="2" TzCode="705"> <AccountNum AccountTypeInd="91">4012888888881</AccountNum> <POSDetails POSEntryMode="01"/> <MerchantID>123456789012</MerchantID> <TerminalID TermEntCapInd="05" CATInfoInd="00" TermLocInd="00" CardPresentInd="N" POSConditionCode="52" AttendedTermDataInd="02">001</TerminalID> <BIN>000002</BIN> <OrderID>1234567890123456</OrderID> <AmountDetails> <Amount>000000005000</Amount> </AmountDetails> <TxTypeCommon TxTypeID="G"/> <Currency CurrencyCode="840" CurrencyExponent="2"/> <CardPresence> <CardNP> <Exp>1205</Exp> </CardNP> </CardPresence> <TxDateTime/> </CommonMandatory> <CommonOptional> <Comments>This is a recurring billing request</Comments> <MailOrderData> <MailOrderNum MailOrderTypeInd="2">123456789</MailOrderNum> <AVSbase> <AVSzip></AVSzip> </AVSbase> </MailOrderData> </CommonOptional> </CommonData> <Auth> <AuthMandatory FormatInd="H"/> <AuthOptional> <AVSextended> <AVSname>JOE SMITH</AVSname> <AVSaddress1>1234 WEST MAIN STREET</AVSaddress1> <AVSaddress2>SUITE 123</AVSaddress2> <AVScity>TAMPA</AVScity> <AVSstate>FL</AVSstate> <AVSzip>33123-1234</AVSzip> <AVScountryCode>US</AVScountryCode> </AVSextended> </AuthOptional> </Auth> <Cap> <CapMandatory> <EntryDataSrc>02</EntryDataSrc> </CapMandatory> </Cap> </AC> </Request>
+
+July, 2003
+
+Orbital Gateway Message Templates
+
+12
+
+4: Credit card Mail Order transaction
+XML Request Template:
+<?xml version="1.0" encoding="UTF-8"?> <Request> <AC> <CommonData> <CommonMandatory AuthOverrideInd="N" LangInd="00" CardHolderAttendanceInd="01" HcsTcsInd="T" TxCatg="1" MessageType="A" Version="2" TzCode="705"> <AccountNum AccountTypeInd="91">4012888888881</AccountNum> <POSDetails POSEntryMode="01"/> <MerchantID>123456789012</MerchantID> <TerminalID TermEntCapInd="05" CATInfoInd="00" TermLocInd="00" CardPresentInd="N" POSConditionCode="08" AttendedTermDataInd="02">001</TerminalID> <BIN>000002</BIN> <OrderID>1234567890123456</OrderID> <AmountDetails> <Amount>0000000050</Amount> </AmountDetails> <TxTypeCommon TxTypeID="G"/> <Currency CurrencyCode="840" CurrencyExponent="2"/> <CardPresence> <CardNP> <Exp>1205</Exp> </CardNP> </CardPresence> <TxDateTime/> </CommonMandatory> <CommonOptional> <Comments>This is a Mail Order request</Comments> <MailOrderData> <MailOrderNum MailOrderTypeInd="1">123456789</MailOrderNum> <AVSbase> <AVSzip/> </AVSbase> </MailOrderData> </CommonOptional> </CommonData> <Auth> <AuthMandatory FormatInd="H"/> <AuthOptional> <AVSextended> <AVSname>JOE SMITH</AVSname> <AVSaddress1>1234 WEST MAIN STREET</AVSaddress1> <AVSaddress2>SUITE 123</AVSaddress2> <AVScity>TAMPA</AVScity> <AVSstate>FL</AVSstate> <AVSzip>33123-1234</AVSzip> <AVScountryCode>US</AVScountryCode> </AVSextended> </AuthOptional> </Auth> <Cap> <CapMandatory> <EntryDataSrc>02</EntryDataSrc> </CapMandatory> <CapOptional/> </Cap> </AC> </Request>
+
+July, 2003
+
+Orbital Gateway Message Templates
+
+13
+
+5: Purchasing Card II Data credit card eCommerce transaction
+XML Request Template:
+<?xml version="1.0" encoding="UTF-8"?> <Request> <AC> <CommonData> <CommonMandatory AuthOverrideInd="N" LangInd="00" CardHolderAttendanceInd="01" HcsTcsInd="T" TxCatg="7" MessageType="A" Version="2" TzCode="705"> <AccountNum AccountTypeInd="91">4012888888881</AccountNum> <POSDetails POSEntryMode="01"/> <MerchantID>123456789012</MerchantID> <TerminalID TermEntCapInd="05" CATInfoInd="06" TermLocInd="01" CardPresentInd="N" POSConditionCode="59" AttendedTermDataInd="01">001</TerminalID> <BIN>000002</BIN> <OrderID>1234567890123456</OrderID> <AmountDetails> <Amount>000000005000</Amount> <Tax TaxInd="1">000000000000</Tax> </AmountDetails> <TxTypeCommon TxTypeID="G"/> <Currency CurrencyCode="840" CurrencyExponent="2"/> <CardPresence> <CardNP> <Exp>1205</Exp> </CardNP> </CardPresence> <TxDateTime/> </CommonMandatory> <CommonOptional> <Comments>This is an AVS/CVV2 auth request</Comments> <ShippingRef>FEDEX WB12345678 Pri 1</ShippingRef> <PCCore> <PCOrderNum>12345678901234567</PCOrderNum> <PCDestZip>12345-1234</PCDestZip> </PCCore> <CardSecVal>705</CardSecVal> <ECommerceData ECSecurityInd="07"> <ECOrderNum>1234567890123456</ECOrderNum> </ECommerceData> </CommonOptional> </CommonData> <Auth> <AuthMandatory FormatInd="H"/> <AuthOptional> <AVSextended> <AVSname>JOE SMITH</AVSname> <AVSaddress1>1234 WEST MAIN STREET</AVSaddress1> <AVSaddress2>SUITE 123</AVSaddress2> <AVScity>TAMPA</AVScity> <AVSstate>FL</AVSstate> <AVSzip>33123-1234</AVSzip> <AVScountryCode>US</AVScountryCode> </AVSextended> </AuthOptional> </Auth> <Cap> <CapMandatory> <EntryDataSrc>02</EntryDataSrc> </CapMandatory> <CapOptional/> </Cap> </AC> </Request>
+
+July, 2003
+
+Orbital Gateway Message Templates
+
+14
+
+6: Amex Purchasing Card II Data credit card eCommerce txn
+XML Request Template:
+<?xml version="1.0" encoding="UTF-8"?> <Request> <AC> <CommonData> <CommonMandatory AuthOverrideInd="N" LangInd="00" CardHolderAttendanceInd="01" HcsTcsInd="T" TxCatg="7" MessageType="A" Version="2" TzCode="705"> <AccountNum AccountTypeInd="91">371449635398431</AccountNum> <POSDetails POSEntryMode="01"/> <MerchantID>123456789012</MerchantID> <TerminalID TermEntCapInd="05" CATInfoInd="06" TermLocInd="01" CardPresentInd="N" POSConditionCode="59" AttendedTermDataInd="01">001</TerminalID> <BIN>000002</BIN> <OrderID>1234567890123456</OrderID> <AmountDetails> <Amount>000000005000</Amount> <Tax TaxInd="1">000000000000</Tax> </AmountDetails> <TxTypeCommon TxTypeID="G"/> <Currency CurrencyCode="840" CurrencyExponent="2"/> <CardPresence> <CardNP> <Exp>1205</Exp> </CardNP> </CardPresence> <TxDateTime/> </CommonMandatory> <CommonOptional> <Comments>This is an AVS/CVV2 auth request</Comments> <ShippingRef>FEDEX WB12345678 Pri 1</ShippingRef> <PCCore> <PCOrderNum>12345678901234567</PCOrderNum> <PCDestZip>12345-1234</PCDestZip> <PCDestName>MARY SMITH</PCDestName> <PCDestAddress1>101 South Street</PCDestAddress1> <PCDestAddress2>Apt 2</PCDestAddress2> <PCDestCity>TAMPA</PCDestCity> <PCDestState>FL</PCDestState> </PCCore> <CardSecVal>705</CardSecVal> <ECommerceData ECSecurityInd="07"> <ECOrderNum>1234567890123456</ECOrderNum> </ECommerceData> </CommonOptional> </CommonData> <Auth> <AuthMandatory FormatInd="H"/> <AuthOptional> <AVSextended> <AVSname>JOE SMITH</AVSname> <AVSaddress1>1234 WEST MAIN STREET</AVSaddress1> <AVSaddress2>SUITE 123</AVSaddress2> <AVScity>TAMPA</AVScity> <AVSstate>FL</AVSstate> <AVSzip>33123-1234</AVSzip> <AVScountryCode>US</AVScountryCode> </AVSextended> </AuthOptional> </Auth> <Cap> <CapMandatory> <EntryDataSrc>02</EntryDataSrc> </CapMandatory> <CapOptional> <AMEXdata>
+
+July, 2003
+
+Orbital Gateway Message Templates
+
+15
+
+<AMEXTranAdvAddn1>Order Information 11111111111</AMEXTranAdvAddn1> <AMEXTranAdvAddn2>Order Information 22222222222</AMEXTranAdvAddn2> <AMEXTranAdvAddn3>Order Information 33333333333</AMEXTranAdvAddn3> <AMEXTranAdvAddn4>Order Information 44444444444</AMEXTranAdvAddn4> </AMEXdata> </CapOptional> </Cap> </AC> </Request>
+
+July, 2003
+
+Orbital Gateway Message Templates
+
+16
+
+7: Purchasing Card II Data credit card Recurring transaction
+XML Request Template:
+<?xml version="1.0" encoding="UTF-8"?> <Request> <AC> <CommonData> <CommonMandatory AuthOverrideInd="N" LangInd="00" CardHolderAttendanceInd="02" HcsTcsInd="T" TxCatg="2" MessageType="AC" Version="2" TzCode="705"> <AccountNum AccountTypeInd="91">4012888888881</AccountNum> <POSDetails POSEntryMode="01"/> <MerchantID>123456789012</MerchantID> <TerminalID TermEntCapInd="05" CATInfoInd="00" TermLocInd="00" CardPresentInd="N" POSConditionCode="52" AttendedTermDataInd="02">001</TerminalID> <BIN>000002</BIN> <OrderID>1234567890123456</OrderID> <AmountDetails> <Amount>000000005000</Amount> <Tax TaxInd="1">000000000175</Tax> </AmountDetails> <TxTypeCommon TxTypeID="G"/> <Currency CurrencyCode="840" CurrencyExponent="2"/> <CardPresence> <CardNP> <Exp>1205</Exp> </CardNP> </CardPresence> <TxDateTime/> </CommonMandatory> <CommonOptional> <Comments>This is a recurring billing request</Comments> <PCCore> <PCOrderNum>12345678901234567</PCOrderNum> <PCDestZip>12345-1234</PCDestZip> </PCCore> <MailOrderData> <MailOrderNum MailOrderTypeInd="2">123456789</MailOrderNum> <AVSbase> <AVSzip/> </AVSbase> </MailOrderData> </CommonOptional> </CommonData> <Auth> <AuthMandatory FormatInd="H"/> <AuthOptional> <AVSextended> <AVSname>JOE SMITH</AVSname> <AVSaddress1>1234 WEST MAIN STREET</AVSaddress1> <AVSaddress2>SUITE 123</AVSaddress2> <AVScity>TAMPA</AVScity> <AVSstate>FL</AVSstate> <AVSzip>33123-1234</AVSzip> <AVScountryCode>US</AVScountryCode> </AVSextended> </AuthOptional> </Auth> <Cap> <CapMandatory> <EntryDataSrc>02</EntryDataSrc> </CapMandatory> </Cap> </AC> </Request>
+
+July, 2003
+
+Orbital Gateway Message Templates
+
+17
+
+8: Credit Card eCommerce transaction with Soft Descriptor Data
+XML Request Template:
+<?xml version="1.0" encoding="UTF-8"?> <Request> <AC> <CommonData> <CommonMandatory AuthOverrideInd="N" LangInd="00" CardHolderAttendanceInd="01" HcsTcsInd="T" TxCatg="7" MessageType="A" Version="2" TzCode="705"> <AccountNum AccountTypeInd="91">4012888888881</AccountNum> <POSDetails POSEntryMode="01"/> <MerchantID>123456789012</MerchantID> <TerminalID TermEntCapInd="05" CATInfoInd="06" TermLocInd="01" CardPresentInd="N" POSConditionCode="59" AttendedTermDataInd="01">001</TerminalID> <BIN>000002</BIN> <OrderID>1234567890123456</OrderID> <AmountDetails> <Amount>000000005000</Amount> </AmountDetails> <TxTypeCommon TxTypeID="G"/> <Currency CurrencyCode="840" CurrencyExponent="2"/> <CardPresence> <CardNP> <Exp>1205</Exp> </CardNP> </CardPresence> <TxDateTime/> </CommonMandatory> <CommonOptional> <Comments>This is an AVS/CVV2 auth request</Comments> <ShippingRef>FEDEX WB12345678 Pri 1</ShippingRef> <CardSecVal CardSecInd="1">705</CardSecVal> <ECommerceData ECSecurityInd="07"> <ECOrderNum>1234567890123456</ECOrderNum> </ECommerceData> <SoftDescriptor> <SDMerchantName>XYZCOMPANY</SDMerchantName> <SDMerchantPhone></SDMerchantPhone> <SDMerchantURL></SDMerchantURL> <SDMerchantEmail>suppt@xyz.com</SDMerchantEmail> <SDProductDescription>PYMT1OF3</SDProductDescription> </SoftDescriptor> </CommonOptional> </CommonData> <Auth> <AuthMandatory FormatInd="H"/> <AuthOptional> <AVSextended> <AVSname>JOE SMITH</AVSname> <AVSaddress1>1234 WEST MAIN STREET</AVSaddress1> <AVSaddress2>SUITE 123</AVSaddress2> <AVScity>TAMPA</AVScity> <AVSstate>FL</AVSstate> <AVSzip>33123-1234</AVSzip> <AVScountryCode>US</AVScountryCode> </AVSextended> </AuthOptional> </Auth> <Cap> <CapMandatory> <EntryDataSrc>02</EntryDataSrc> </CapMandatory> <CapOptional/> </Cap> </AC> </Request>
+
+July, 2003
+
+Orbital Gateway Message Templates
+
+18
+
+9: Electronic Check transaction [BIN 000001]
+XML Request Template:
+<?xml version="1.0" encoding="UTF-8"?> <Request> <AC> <CommonData> <CommonMandatory AuthOverrideInd="N" LangInd="00" CardHolderAttendanceInd="01" HcsTcsInd="T" TxCatg="7" MessageType="AC" Version="2" TzCode="705"> <AccountNum AccountTypeInd="94"/> <POSDetails POSEntryMode="01"/> <MerchantID>123456</MerchantID> <TerminalID TermEntCapInd="05" CATInfoInd="06" TermLocInd="01" CardPresentInd="N" POSConditionCode="59" AttendedTermDataInd="01">001</TerminalID> <BIN>000001</BIN> <OrderID>1234567890123456</OrderID> <AmountDetails> <Amount>000000005000</Amount> </AmountDetails> <TxTypeCommon TxTypeID="G"/> <Currency CurrencyCode="840" CurrencyExponent="2"/> <TxDateTime/> </CommonMandatory> <CommonOptional> <Comments>This is an ECP Transaction</Comments> <CardType CardBrand="EC"/> <ECommerceData ECSecurityInd="07"> <ECOrderNum>1234567890123456</ECOrderNum> </ECommerceData> </CommonOptional> </CommonData> <Auth> <AuthMandatory FormatInd="K"/> <AuthOptional> <BankCheck BankPmtDelv="B" BankAccountType="C"> <CheckDDA>12345678901234567</CheckDDA> <BCRtNum>123456789</BCRtNum> </BankCheck> <AVSextended> <AVSname>JOE SMITH</AVSname> </AVSextended> </AuthOptional> </Auth> <Cap> <CapMandatory> <EntryDataSrc>02</EntryDataSrc> </CapMandatory> <CapOptional/> </Cap> </AC> </Request>
+
+July, 2003
+
+Orbital Gateway Message Templates
+
+19
+
+10: Electronic Check transaction with Soft Descriptor Data
+XML Request Template:
+<?xml version="1.0" encoding="UTF-8"?> <Request> <AC> <CommonData> <CommonMandatory AuthOverrideInd="N" LangInd="00" CardHolderAttendanceInd="01" HcsTcsInd="T" TxCatg="7" MessageType="AC" Version="2" TzCode="705"> <AccountNum AccountTypeInd="94"/> <POSDetails POSEntryMode="01"/> <MerchantID>123456</MerchantID> <TerminalID TermEntCapInd="05" CATInfoInd="06" TermLocInd="01" CardPresentInd="N" POSConditionCode="59" AttendedTermDataInd="01">001</TerminalID> <BIN>000001</BIN> <OrderID>1234567890123456</OrderID> <AmountDetails> <Amount>000000005000</Amount> </AmountDetails> <TxTypeCommon TxTypeID="G"/> <Currency CurrencyCode="840" CurrencyExponent="2"/> <TxDateTime/> </CommonMandatory> <CommonOptional> <Comments>This is an ECP Transaction</Comments> <CardType CardBrand="EC"/> <ECommerceData ECSecurityInd="07"> <ECOrderNum>1234567890123456</ECOrderNum> </ECommerceData> <SoftDescriptor> <SDMerchantName>XYZCOMPANY12345</SDMerchantName> <SDMerchantPhone/> <SDMerchantURL/> <SDMerchantEmail/> <SDProductDescription>PRODUCT123</SDProductDescription> </SoftDescriptor> </CommonOptional> </CommonData> <Auth> <AuthMandatory FormatInd="K"/> <AuthOptional> <BankCheck BankPmtDelv="B" BankAccountType="C"> <CheckDDA>12345678901234567</CheckDDA> <BCRtNum>123456789</BCRtNum> </BankCheck> <AVSextended> <AVSname>JOE SMITH</AVSname> </AVSextended> </AuthOptional> </Auth> <Cap> <CapMandatory> <EntryDataSrc>02</EntryDataSrc> </CapMandatory> <CapOptional/> </Cap> </AC> </Request>
+
+July, 2003
+
+Orbital Gateway Message Templates
+
+20
+
+11: Switch/Solo transaction [BIN 000001]
+XML Request Template:
+<?xml version="1.0" encoding="UTF-8"?> <Request> <AC> <CommonData> <CommonMandatory AuthOverrideInd="N" LangInd="00" CardHolderAttendanceInd="01" HcsTcsInd="T" TxCatg="7" MessageType="AC" Version="2" TzCode="705"> <AccountNum AccountTypeInd="92">6759509995000129553</AccountNum> <POSDetails POSEntryMode="01"/> <MerchantID>123456</MerchantID> <TerminalID TermEntCapInd="05" CATInfoInd="06" TermLocInd="01" CardPresentInd="N" POSConditionCode="59" AttendedTermDataInd="01">001</TerminalID> <BIN>000001</BIN> <OrderID>1234567890123456</OrderID> <AmountDetails> <Amount>000000005000</Amount> </AmountDetails> <TxTypeCommon TxTypeID="G"/> <Currency CurrencyCode="826" CurrencyExponent="2"/> <CardPresence> <CardNP> <Exp>1201</Exp> </CardNP> </CardPresence> <TxDateTime/> </CommonMandatory> <CommonOptional> <Comments>This is a Switch - Solo Transaction</Comments> <ShippingRef>FEDEX WB12345678 Pri 1</ShippingRef> <CardType CardBrand="SW"/> <ECommerceData ECSecurityInd="07"> <ECOrderNum>1234567890123456</ECOrderNum> </ECommerceData> </CommonOptional> </CommonData> <Auth> <AuthMandatory FormatInd="S"/> <AuthOptional> <DebitCard> <DebitCardStartDate>1200</DebitCardStartDate> <DebitCardIssueNum>1</DebitCardIssueNum> <CardType CardBrand="SW"></CardType> </DebitCard> </AuthOptional> </Auth> <Cap> <CapMandatory> <EntryDataSrc>02</EntryDataSrc> </CapMandatory> <CapOptional/> </Cap> </AC> </Request>
+
+July, 2003
+
+Orbital Gateway Message Templates
+
+21
+
+Prior Authorization (Force) Templates
+12: Credit card force transaction [prior authorization]
+XML Request Template:
+<?xml version="1.0" encoding="UTF-8"?> <Request> <AC> <CommonData> <CommonMandatory AuthOverrideInd="N" LangInd="00" CardHolderAttendanceInd="01" HcsTcsInd="T" TxCatg="7" MessageType="AC" Version="2" TzCode="705"> <AccountNum AccountTypeInd="91">4012888888881</AccountNum> <POSDetails POSEntryMode="01"/> <MerchantID>123456789012</MerchantID> <TerminalID TermEntCapInd="05" CATInfoInd="06" TermLocInd="01" CardPresentInd="N" POSConditionCode="59" AttendedTermDataInd="01">001</TerminalID> <BIN>000002</BIN> <OrderID>1234567890123456</OrderID> <AmountDetails> <Amount>000000005000</Amount> </AmountDetails> <TxTypeCommon TxTypeID="G"> <PriorAuthID/> </TxTypeCommon> <Currency CurrencyCode="840" CurrencyExponent="2"/> <CardPresence> <CardNP> <Exp>1205</Exp> </CardNP> </CardPresence> <TxDateTime/> </CommonMandatory> <CommonOptional> <Comments>This is a Force Request</Comments> <ShippingRef>FEDEX WB12345678 Pri 1</ShippingRef> <ECommerceData ECSecurityInd="07"> <ECOrderNum>1234567890123456</ECOrderNum> </ECommerceData> </CommonOptional> </CommonData> <Auth> <AuthMandatory FormatInd="H"/> <AuthOptional> <AuthCd AuthSrc="">123456</AuthCd> </AuthOptional> </Auth> <Cap> <CapMandatory> <EntryDataSrc>02</EntryDataSrc> </CapMandatory> <CapOptional/> </Cap> </AC> </Request>
+
+July, 2003
+
+Orbital Gateway Message Templates
+
+22
+
+XML Response Template:
+<?xml version="1.0" encoding="UTF-8"?> <Response> <ACResponse> <CommonDataResponse> <CommonMandatoryResponse HcsTcsInd="T" LangInd="00" MessageType="AC" TzCode="705" Version="2"> <MerchantID>123456789012</MerchantID> <TerminalID>001</TerminalID> <TxRefNum>51E0585FA62ED5119F6000508B94EDECC0336A3B</TxRefNum> <TxRefIdx>1</TxRefIdx> <OrderNumber>1234567890123456</OrderNumber> <RespTime>10012001120003</RespTime> <ProcStatus>0</ProcStatus> <StatusMsg StatusMsgLth="22">Approved and Completed</StatusMsg> <ApprovalStatus>1</ApprovalStatus> <ResponseCodes> <RespMsg>APPROVAL </RespMsg> <AuthCode>123456</AuthCode> <RespCode>00</RespCode> </ResponseCodes> </CommonMandatoryResponse> <CommonOptionalResponse> <AccountNum>4012888888881</AccountNum> <RespDate>010410</RespDate> <CardType>VI</CardType> <ExpDate>1205</ExpDate> <CurrencyCd>840</CurrencyCd> </CommonOptionalResponse> </CommonDataResponse> <AuthResponse> <AuthMandatoryResponse/> <AuthOptionalResponse> <POSEntryMode>01</POSEntryMode> <MISCData> <AuthID>1</AuthID> </MISCData> </AuthOptionalResponse> </AuthResponse> </ACResponse> </Response>
+
+July, 2003
+
+Orbital Gateway Message Templates
+
+23
+
+13: Electronic Check Force [BIN 000001]
+XML Request Template:
+<?xml version="1.0" encoding="UTF-8"?> <Request> <AC> <CommonData> <CommonMandatory AuthOverrideInd="N" LangInd="00" CardHolderAttendanceInd="01" HcsTcsInd="T" TxCatg="7" MessageType="AC" Version="2" TzCode="705"> <AccountNum AccountTypeInd="94"/> <POSDetails POSEntryMode="01"/> <MerchantID>123456</MerchantID> <TerminalID TermEntCapInd="05" CATInfoInd="06" TermLocInd="01" CardPresentInd="N" POSConditionCode="59" AttendedTermDataInd="01">001</TerminalID> <BIN>000001</BIN> <OrderID>1234567890123456</OrderID> <AmountDetails> <Amount>000000005000</Amount> </AmountDetails> <TxTypeCommon TxTypeID="G"> <PriorAuthID/> </TxTypeCommon> <Currency CurrencyCode="840" CurrencyExponent="2"/> <TxDateTime/> </CommonMandatory> <CommonOptional> <Comments>This is an ECP Deposit Only Request</Comments> <CardType CardBrand="EC"/> <ECommerceData ECSecurityInd="07"> <ECOrderNum>1234567890123456</ECOrderNum> </ECommerceData> </CommonOptional> </CommonData> <Auth> <AuthMandatory FormatInd="K"/> <AuthOptional> <AuthCd AuthSrc=""/> <BankCheck BankPmtDelv="B" BankAccountType="C"> <CheckDDA>12345678901234567</CheckDDA> <BCRtNum>123456789</BCRtNum> </BankCheck> <AVSextended> <AVSname>JOE SMITH</AVSname> </AVSextended> </AuthOptional> </Auth> <Cap> <CapMandatory> <EntryDataSrc>02</EntryDataSrc> </CapMandatory> <CapOptional/> </Cap> </AC> </Request>
+
+July, 2003
+
+Orbital Gateway Message Templates
+
+24
+
+Refund Templates
+14: Credit card eCommerce Refund transaction
+XML Request Template:
+<?xml version="1.0" encoding="UTF-8"?> <Request> <Refund POSEntryMode="01" AccountTypeInd="91" TermEntCapInd="05" CATInfoInd="06" TermLocInd="01" CardHolderAttendanceInd="01" CardPresentInd="N" POSConditionCode="59" AttendedTermDataInd="01" FormatInd="N" HcsTcsInd="T" TxCatg="7" MessageType="FR" Version="2" TzCode="705"> <Comments>Customer Refund</Comments> <AccountNum AccountTypeInd="91">4012888888881</AccountNum> <MerchantID>123456789012</MerchantID> <TerminalID TermEntCapInd="05" CATInfoInd="06" TermLocInd="01" CardPresentInd="N" POSConditionCode="59" AttendedTermDataInd="01">001</TerminalID> <BIN>000002</BIN> <OrderID>1234567890123456</OrderID> <Amount>000000005000</Amount> <Currency CurrencyCode="840" CurrencyExponent="2"/> <TxDateTime/> <CardPresence> <CardNP> <Exp>1205</Exp> </CardNP> </CardPresence> <POScardID>4</POScardID> <EntryDataSrc>02</EntryDataSrc> </Refund> </Request>
+
+XML Response Template:
+<?xml version="1.0" encoding="UTF-8"?> <Response> <RefundResponse CapStatus="1" HcsTcsInd="T" LangInd="00" MessageType="FR" TzCode="705" Version="2"> <TxRefIdx>1</TxRefIdx> <TxRefNum>EB847AD1B02AD5119F5F00508B94EDEC844FE27A</TxRefNum> <ProcStatus>0</ProcStatus> <ApprovalStatus>1</ApprovalStatus> <MerchantID>123456789012</MerchantID> <TerminalID>001</TerminalID> <OrderNumber>1234567890123456</OrderNumber> <AccountNum>4012888888881</AccountNum> <POSEntryMode>01</POSEntryMode> <RespDate>010410</RespDate> <RespTime>10012001120003</RespTime> <CardType1>VI</CardType1> <ExpDate1>1205</ExpDate1> <ResponseCodes> <RespCode/> </ResponseCodes> </RefundResponse> </Response>
+
+July, 2003
+
+Orbital Gateway Message Templates
+
+25
+
+15: Credit card Recurring Refund transaction
+XML Request Template:
+<?xml version="1.0" encoding="UTF-8"?> <Request> <Refund POSEntryMode="01" AccountTypeInd="91" TermEntCapInd="05" CATInfoInd="00" TermLocInd="00" CardHolderAttendanceInd="02" CardPresentInd="N" POSConditionCode="52" AttendedTermDataInd="02" FormatInd="N" HcsTcsInd="T" TxCatg="2" MessageType="FR" Version="2" TzCode="705"> <Comments>Customer Refund</Comments> <AccountNum AccountTypeInd="91">4012888888881</AccountNum> <MerchantID>123456789012</MerchantID> <TerminalID TermEntCapInd="05" CATInfoInd="00" TermLocInd="00" CardPresentInd="N" POSConditionCode="52" AttendedTermDataInd="02">001</TerminalID> <BIN>000002</BIN> <OrderID>1234567890123456</OrderID> <Amount>000000005000</Amount> <Currency CurrencyCode="840" CurrencyExponent="2"/> <TxDateTime/> <CardPresence> <CardNP> <Exp>1205</Exp> </CardNP> </CardPresence> <POScardID>4</POScardID> <EntryDataSrc>02</EntryDataSrc> </Refund> </Request>
+
+July, 2003
+
+Orbital Gateway Message Templates
+
+26
+
+16: Credit card Mail Order Refund transaction
+XML Request Template:
+<?xml version="1.0" encoding="UTF-8"?> <Request> <Refund POSEntryMode="01" AccountTypeInd="91" TermEntCapInd="05" CATInfoInd="00" TermLocInd="00" CardHolderAttendanceInd="01" CardPresentInd="N" POSConditionCode="08" AttendedTermDataInd="02" FormatInd="N" HcsTcsInd="T" TxCatg="1" MessageType="FR" Version="2" TzCode="705"> <Comments>Customer Refund</Comments> <AccountNum AccountTypeInd="91">5454545454545454</AccountNum> <MerchantID>123456789012</MerchantID> <TerminalID TermEntCapInd="05" CATInfoInd="00" TermLocInd="00" CardPresentInd="N" POSConditionCode="08" AttendedTermDataInd="02">001</TerminalID> <BIN>000002</BIN> <OrderID>1234567890123456</OrderID> <Amount>000000005000</Amount> <Currency CurrencyCode="840" CurrencyExponent="2"/> <TxDateTime/> <CardPresence> <CardNP> <Exp>1205</Exp> </CardNP> </CardPresence> <POScardID>4</POScardID> <EntryDataSrc>02</EntryDataSrc> </Refund> </Request>
+
+July, 2003
+
+Orbital Gateway Message Templates
+
+27
+
+17: Credit card eCommerce Refund transaction with Soft Descriptor Data
+XML Request Template:
+<?xml version="1.0" encoding="UTF-8"?> <Request> <Refund POSEntryMode="01" AccountTypeInd="91" TermEntCapInd="05" CATInfoInd="06" TermLocInd="01" CardHolderAttendanceInd="01" CardPresentInd="N" POSConditionCode="59" AttendedTermDataInd="01" FormatInd="N" HcsTcsInd="T" TxCatg="7" MessageType="FR" Version="2" TzCode="705"> <Comments>Customer Refund</Comments> <AccountNum AccountTypeInd="91">4012888888881</AccountNum> <MerchantID>123456789012</MerchantID> <TerminalID TermEntCapInd="05" CATInfoInd="06" TermLocInd="01" CardPresentInd="N" POSConditionCode="59" AttendedTermDataInd="01">001</TerminalID> <BIN>000002</BIN> <OrderID>1234567890123456</OrderID> <Amount>000000005000</Amount> <Currency CurrencyCode="840" CurrencyExponent="2"/> <TxDateTime/> <CardPresence> <CardNP> <Exp>1205</Exp> </CardNP> </CardPresence> <POScardID>4</POScardID> <EntryDataSrc>02</EntryDataSrc> <SoftDescriptor> <SDMerchantName>XYZCOMPANY</SDMerchantName> <SDMerchantPhone/> <SDMerchantURL/> <SDMerchantEmail>suppt@xyz.com</SDMerchantEmail> <SDProductDescription>PYMT1OF3</SDProductDescription> </SoftDescriptor> </Refund> </Request>
+
+July, 2003
+
+Orbital Gateway Message Templates
+
+28
+
+18: Electronic Check Refund transaction [BIN 000001]
+XML Request Template:
+<?xml version="1.0" encoding="UTF-8"?> <Request> <Refund POSEntryMode="01" AccountTypeInd="94" TermEntCapInd="05" CATInfoInd="06" TermLocInd="01" CardHolderAttendanceInd="01" CardPresentInd="N" POSConditionCode="59" AttendedTermDataInd="01" FormatInd="N" HcsTcsInd="T" TxCatg="7" MessageType="FR" Version="2" TzCode="705"> <Comments>ECP Refund</Comments> <AccountNum AccountTypeInd="94"/> <MerchantID>123456</MerchantID> <TerminalID TermEntCapInd="05" CATInfoInd="06" TermLocInd="01" CardPresentInd="N" POSConditionCode="59" AttendedTermDataInd="01">001</TerminalID> <BIN>000001</BIN> <OrderID>1234567890123456</OrderID> <Amount>000000005000</Amount> <Currency CurrencyCode="840" CurrencyExponent="2"/> <TxDateTime/> <CardType CardBrand="EC"/> <CardPresence> <CardNP> <Exp/> </CardNP> </CardPresence> <POScardID>4</POScardID> <EntryDataSrc>02</EntryDataSrc> <BankCheck BankPmtDelv="B" BankAccountType="C"> <CheckDDA>896523658745</CheckDDA> <BCRtNum>031200730</BCRtNum> </BankCheck> <AVSextended> <AVSname>JOE SMITH</AVSname> </AVSextended> </Refund> </Request>
+
+July, 2003
+
+Orbital Gateway Message Templates
+
+29
+
+19: Electronic Check Refund transaction with Soft Descriptor Data
+XML Request Template:
+<?xml version="1.0" encoding="UTF-8"?> <Request> <Refund POSEntryMode="01" AccountTypeInd="94" TermEntCapInd="05" CATInfoInd="06" TermLocInd="01" CardHolderAttendanceInd="01" CardPresentInd="N" POSConditionCode="59" AttendedTermDataInd="01" FormatInd="N" HcsTcsInd="T" TxCatg="7" MessageType="FR" Version="2" TzCode="705"> <Comments>ECP Refund</Comments> <AccountNum AccountTypeInd="94"/> <MerchantID>123456</MerchantID> <TerminalID TermEntCapInd="05" CATInfoInd="06" TermLocInd="01" CardPresentInd="N" POSConditionCode="59" AttendedTermDataInd="01">001</TerminalID> <BIN>000001</BIN> <OrderID>1234567890123456</OrderID> <Amount>000000005000</Amount> <Currency CurrencyCode="840" CurrencyExponent="2"/> <TxDateTime/> <CardType CardBrand="EC"/> <CardPresence> <CardNP> <Exp/> </CardNP> </CardPresence> <POScardID>4</POScardID> <EntryDataSrc>02</EntryDataSrc> <BankCheck BankPmtDelv="B" BankAccountType="C"> <CheckDDA>896523658745</CheckDDA> <BCRtNum>031200730</BCRtNum> </BankCheck> <AVSextended> <AVSname>JOE SMITH</AVSname> </AVSextended> <SoftDescriptor> <SDMerchantName>XYZCOMPANY</SDMerchantName> <SDMerchantPhone/> <SDMerchantURL/> <SDMerchantEmail>suppt@xyz.com</SDMerchantEmail> <SDProductDescription>PYMT1OF3</SDProductDescription> </SoftDescriptor> </Refund> </Request>
+
+July, 2003
+
+Orbital Gateway Message Templates
+
+30
+
+20: Switch/Solo Refund transaction [BIN 000001]
+XML Request Template:
+<?xml version="1.0" encoding="UTF-8"?> <Request> <Refund POSEntryMode="01" AccountTypeInd="92" TermEntCapInd="05" CATInfoInd="06" TermLocInd="01" CardHolderAttendanceInd="01" CardPresentInd="N" POSConditionCode="59" AttendedTermDataInd="01" FormatInd="N" HcsTcsInd="T" TxCatg="7" MessageType="FR" Version="2" TzCode="705"> <Comments>Switch - Solo Refund</Comments> <AccountNum AccountTypeInd="92">67595099950001</AccountNum> <MerchantID>123456</MerchantID> <TerminalID TermEntCapInd="05" CATInfoInd="06" TermLocInd="01" CardPresentInd="N" POSConditionCode="59" AttendedTermDataInd="01">001</TerminalID> <BIN>000001</BIN> <OrderID>1234567890123456</OrderID> <Amount>000000005000</Amount> <Currency CurrencyCode="826" CurrencyExponent="2"/> <TxDateTime/> <CardType CardBrand="SW"/> <CardPresence> <CardNP> <Exp>1205</Exp> </CardNP> </CardPresence> <POScardID>4</POScardID> <EntryDataSrc>02</EntryDataSrc> <DebitCard> <DebitCardStartDate>1200</DebitCardStartDate> <DebitCardIssueNum>1</DebitCardIssueNum> <CardType CardBrand="SW"></CardType> </DebitCard> </Refund> </Request>
+
+July, 2003
+
+Orbital Gateway Message Templates
+
+31
+
+Void Templates
+21: Full Void transaction (of a Previous Authorization)
+XML Request Template:
+<?xml version="1.0" encoding="UTF-8"?> <Request> <Void MessageType="V"> <MerchantID>123456789012</MerchantID> <TerminalID>001</TerminalID> <BIN>000002</BIN> <TxRefNum>128E6C6A4FC6D4119A3700D0B706C51EE26DF570</TxRefNum> <TxRefIdx>0</TxRefIdx> </Void> </Request>
+
+XML Response Template:
+<?xml version="1.0" encoding="UTF-8"?> <Response> <VoidResponse CapStatus="0" HcsTcsInd="T" LangInd="00" MessageType="V" TzCode="705" Version="2"> <TxRefIdx>2</TxRefIdx> <TxRefNum>128E6C6A4FC6D4119A3700D0B706C51EE26DF570</TxRefNum> <RespTime>10012001120003</RespTime> <ProcStatus>0</ProcStatus> <ApprovalStatus>1</ApprovalStatus> <MerchantID>123456789012</MerchantID> <TerminalID>001</TerminalID> <OrderNumber>1234567890123456</OrderNumber> <AccountNum>4012888888881</AccountNum> <OutstandingAmt/> <ResponseCodes> <RespCode/> </ResponseCodes> </VoidResponse> </Response>
+
+July, 2003
+
+Orbital Gateway Message Templates
+
+32
+
+22: Partial Void transaction (of a Previous Auth)
+XML Request Template:
+<?xml version="1.0" encoding="UTF-8"?> <Request> <Void MessageType="V"> <MerchantID>123456789012</MerchantID> <TerminalID>001</TerminalID> <BIN>000002</BIN> <TxRefNum>128E6C6A4FC6D4119A3700D0B706C51EE26DF570</TxRefNum> <TxRefIdx>0</TxRefIdx> <AdjustedAmt>000000001000</AdjustedAmt> </Void> </Request>
+
+July, 2003
+
+Orbital Gateway Message Templates
+
+33
+
+Mark for Capture Templates
+23: Mark for Capture (of a previous auth.)
+XML Request Template:
+<?xml version="1.0" encoding="UTF-8"?> <Request> <AC> <CommonData> <CommonMandatory MessageType="C"> <MerchantID>123456789012</MerchantID> <TerminalID>001</TerminalID> <BIN>000002</BIN> <OrderID>1234567890123456</OrderID> <AmountDetails> <Amount>000000005000</Amount> </AmountDetails> </CommonMandatory> <CommonOptional> <TxRefNum>128E6C6A4FC6D4119A3700D0B706C51EE26DF570</TxRefNum> </CommonOptional> </CommonData> </AC> </Request>
+
+July, 2003
+
+Orbital Gateway Message Templates
+
+34
+
+XML Response Template:
+<?xml version="1.0" encoding="UTF-8"?> <Response> <ACResponse> <CommonDataResponse> <CommonMandatoryResponse HcsTcsInd="T" LangInd="00" MessageType="C" TzCode="705" Version="2"> <MerchantID>123456789012</MerchantID> <TerminalID>001</TerminalID> <TxRefNum>128E6C6A4FC6D4119A3700D0B706C51EE26DF570</TxRefNum> <TxRefIdx>1</TxRefIdx> <OrderNumber>1234567890123456</OrderNumber> <RespTime>10022001120003</RespTime> <ProcStatus>0</ProcStatus> <ApprovalStatus>1</ApprovalStatus> <ResponseCodes> <RespCode>00</RespCode> <HostRespCode>00</HostRespCode> <CVV2RespCode>M</CVV2RespCode> <HostCVV2RespCode>M</HostCVV2RespCode> <AVSRespCode>H</AVSRespCode> <HostAVSRespCode>Y</HostAVSRespCode> </ResponseCodes> </CommonMandatoryResponse> <CommonOptionalResponse> <AccountNum>4012888888881</AccountNum> <RespDate>010901</RespDate> <CardType>VI</CardType> <ExpDate>1205</ExpDate> <CurrencyCd>840</CurrencyCd> </CommonOptionalResponse> </CommonDataResponse> <CapResponse> <CapMandatoryResponse CapStatus="1"/> <CapOptionalResponse> <Amount>000000005000</Amount> <FraudCardSecVal/> </CapOptionalResponse> </CapResponse> </ACResponse> </Response>
+
+July, 2003
+
+Orbital Gateway Message Templates
+
+35
+
+24: Mark for Capture with P-Card II data
+XML Request Template:
+<?xml version="1.0" encoding="UTF-8"?> <Request> <AC> <CommonData> <CommonMandatory MessageType="C"> <MerchantID>123456789012</MerchantID> <TerminalID>001</TerminalID> <BIN>000002</BIN> <OrderID>1234567890123456</OrderID> <AmountDetails> <Amount>000000005000</Amount> <Tax TaxInd="1">000000000000</Tax> </AmountDetails> </CommonMandatory> <CommonOptional> <PCCore> <PCOrderNum>12345678901234567</PCOrderNum> <PCDestZip>12345-1234</PCDestZip> </PCCore> <TxRefNum>128E6C6A4FC6D4119A3700D0B706C51EE26DF570</TxRefNum> </CommonOptional> </CommonData> </AC> </Request>
+
+July, 2003
+
+Orbital Gateway Message Templates
+
+36
+
+End of Day [Batch Settlement] Templates
+25: Batch settlement transaction
+All purchases that are marked for capture and refunds are batched for “end of day” settlement for clearing through the front-end host [Stratus or Tandem].
+
+XML Request Template:
+<?xml version="1.0" encoding="UTF-8"?> <Request> <Batch Version="2" MessageType="B"> <MerchantID>123456789012</MerchantID> <TerminalID TermEntCapInd="05" CATInfoInd="06" TermLocInd="01" CardPresentInd="N" POSConditionCode="59" AttendedTermDataInd="01">001</TerminalID> <BIN>000002</BIN> </Batch> </Request>
+
+XML Response Template:
+<?xml version="1.0" encoding="UTF-8"?> <Response> <BatchResponse MessageType="B" Version="2"> <MerchantID>123456789012</MerchantID> <TerminalID>001</TerminalID> <ProcStatus>0</ProcStatus> <RespTime/> </BatchResponse> </Response>
+
+End of Document
+
+July, 2003
+
+Orbital Gateway Message Templates
+
+37
+
+
