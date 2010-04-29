@@ -16,8 +16,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         return PaymentechOrbital
 
     def mock_webservice(self, response):
-
-        self.options['billing_address'] = {}  #  TODO  put something in there, throw an error if it ain't there
+        self.options['billing_address'] = {}
         self.mock_post_webservice(response)
 
     def assert_successful_authorization(self):
