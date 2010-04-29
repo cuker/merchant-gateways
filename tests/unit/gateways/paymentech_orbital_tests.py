@@ -25,11 +25,25 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         self.assert_equal('Approved', self.gateway.message)
         # CONSIDER stash it there self.gateway.response
         #print self.response.result   #  TODO  and make it the RAW result!!
+
+        # CONSIDER what be 'RespCode': '00'?
+        # CONSIDER stash HostCVV2RespCode in CvvResult; use 'CAVVRespCode': None
+        # CONSIDER what be 'TerminalID': '000',
+
+        # CONSIDER use 'RespMsg': None,
+        # CONSIDER what be 'CardBrand': 'MC', 'MerchantID': '000000', 'ProfileProcStatus': '0','RecurringAdviceCd': None  'CustomerRefNum
+        # TODO  uh... 'CustomerName': 'JOE SMITH', 'MessageType': 'AC',
+        #  CONSIDER stash the  'HostAVSRespCode': 'I3',
+        # CONSIDER  use the 'AuthCode': 'tst554', 'RespTime': '121825', 'ProcStatus': '0', , 'HostRespCode': '100'}
+
+
+
         self.assert_equal('B ', self.response.result['AVSRespCode'])  #  CONSIDER why 'B '?
         avs = self.response.avs_result
         self.assert_equal( 'B', avs.code )
         self.assert_equal( 'Y', avs.street_match )  #  TODO  why none? What wrong with B?
         self.assert_equal( None, avs.postal_match )
+        self.assert_equal('M', self.response.result['CVV2RespCode'])
 
         assert self.response.success
         # print self.gateway.post_webservice.call_args
