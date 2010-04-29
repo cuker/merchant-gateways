@@ -20,20 +20,15 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         self.mock_post_webservice(response)
 
     def assert_successful_authorization(self):
-        #  TODO  de-cybersource all this
         order_id = str(self.options['order_id'])  #  TODO  put something in options
-        # print self.gateway.__dict__.keys()
-        # print self.gateway.message
         self.assert_equal('4A785F5106CCDC41A936BFF628BF73036FEC5401', self.response.authorization)
         self.assert_equal('Approved', self.gateway.message)
         assert self.response.success
-#        print dir(self.gateway.post_webservice)
-        #print order_id
-        #print self.gateway.post_webservice.call_args
+        # print self.gateway.post_webservice.call_args
 
     def assert_failed_authorization(self):
         self.assert_none(self.response.params['TxRefNum'])
-         #  TODO  assert the message
+        self.assertFalse(self.response.success)
         self.assert_none(self.response.fraud_review)
 
         reference = { 'AVSRespCode': None,
