@@ -322,7 +322,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         self.options['billing_address'] = billing_address
         return billing_address
 
-    def assemble_another_address_too(self):
+    def assemble_billing_address_too(self):
         self.options = {
             'order_id': '1',
             'description': 'Time-Turner',
@@ -424,7 +424,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
     def test_build_authorization_request_without_street2(self):
         self.money = Money('2.00', 'USD')
 
-        self.assemble_another_address_too()
+        self.assemble_billing_address_too()
 
         message = self.gateway.build_authorization_request(self.money, self.credit_card, **self.options)
 
