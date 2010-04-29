@@ -9,7 +9,9 @@ from lxml.builder import ElementMaker
 XML = ElementMaker()
 from money import Money
 
-#  TODO  bow before http://www.userhelpguides.com/dotnetcharge/paymentechorbital.php
+#  TODO  bow before
+#  http://download.chasepaymentech.com/
+#  http://www.userhelpguides.com/dotnetcharge/paymentechorbital.php
 # http://doc.rhinonet.com/paymentech/Orbital%20Gateway%20Interface%20Specification%202.6.0.pdf
 # http://idotmind.com/chase-paymentech-orbital-gateway-phreebooks-payment-module-gotchas/
 
@@ -335,4 +337,3 @@ CREDIT_CARD_CODES = dict( v='001',  #  TODO  convert to Orbital
  #       :master => '002',
   #      :american_express => '003',
    #     :discover => '004'
-
