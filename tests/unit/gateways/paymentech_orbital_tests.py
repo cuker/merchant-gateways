@@ -88,6 +88,36 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
     def assert_successful_purchase(self):
         self.assert_equal('4A785F5106CCDC41A936BFF628BF73036FEC5401', self.response.params['TxRefNum'])
 
+        reference = { 'AVSRespCode': 'B ',
+                      'AccountNum': '5454545454545454',
+                      'ApprovalStatus': '1',
+                      'AuthCode': 'tst554',
+                      'CAVVRespCode': None,
+                      'CVV2RespCode': 'M',
+                      'CardBrand': 'MC',
+                      'CustomerName': 'JOE SMITH',
+                      'CustomerProfileMessage': 'Profile Created',
+                      'CustomerRefNum': '2145108',
+                      'HostAVSRespCode': 'I3',
+                      'HostCVV2RespCode': 'M',
+                      'HostRespCode': '100',
+                      'IndustryType': None,
+                      'MerchantID': '000000',
+                      'MessageType': 'AC',
+                      'OrderID': '1',
+                      'ProcStatus': '0',
+                      'ProfileProcStatus': '0',
+                      'RecurringAdviceCd': None,
+                      'RespCode': '00',
+                      'RespMsg': None,
+                      'RespTime': '121825',
+                      'StatusMsg': 'Approved',
+                      'TerminalID': '000',
+                      'TxRefIdx': '1',
+                      'TxRefNum': '4A785F5106CCDC41A936BFF628BF73036FEC5401'}
+
+        self.assert_match_hash(reference, self.response.params)
+
         '''TODO self.assert_equal( 'Successful transaction', self.response.message )'''
 
     def test_build_request(self):
@@ -194,21 +224,21 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
 
     def assemble_another_address_too(self):
         self.options = {
-        'order_id': '1',
-        'description': 'Time-Turner',
-        'email': 'hgranger@hogwarts.edu',
-        'customer': '947',
-        'ip': '192.168.1.1',
-        }
+            'order_id': '1',
+            'description': 'Time-Turner',
+            'email': 'hgranger@hogwarts.edu',
+            'customer': '947',
+            'ip': '192.168.1.1',
+            }
         billing_address = {
-        'address1': '444 Main St.',
-        'company': 'ACME Software',
-        'phone': '222-222-2222',
-        'zip': '77777',
-        'city': 'Dallas',
-        'country': 'USA',
-        'state': 'TX'
-        }
+            'address1': '444 Main St.',
+            'company': 'ACME Software',
+            'phone': '222-222-2222',
+            'zip': '77777',
+            'city': 'Dallas',
+            'country': 'USA',
+            'state': 'TX'
+            }
         self.options['billing_address'] = billing_address
 
     def test_build_authorization_request(self):
@@ -357,3 +387,15 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
 
 
 # ERGO  put us into the test report system and see what we look like!
+
+
+# TODO  comprehend this: Sample XML Auth Response with MIME Header
+
+#HTTP/1.1 200 OK Date: Fri, 14 Feb 2003 12:00:00 GMT MIME-Version: 1.0 Content-type: application/PTI26 Content-length: 646 Content-transfer-encoding: text Request-number: 1 Document-type: Response
+#<Response> <RefundResponse CapStatus="1" HcsTcsInd="T" LangInd="00" MessageType="FR"
+#TzCode="705" Version="2"> <TxRefIdx>1</TxRefIdx>
+#<TxRefNum>EB847AD1B02AD5119F5F00508B94EDEC844FE27A</TxRefNum> <ProcStatus>0</ProcStatus> <ApprovalStatus>1</ApprovalStatus> <MerchantID>123456789012</MerchantID>
+#<TerminalID>001</TerminalID> <OrderNumber>1234567890123456</OrderNumber> <AccountNum>4012888888881</AccountNum> <POSEntryMode>01</POSEntryMode> <RespDate>010410</RespDate> <RespTime>10012001120003</RespTime> <CardType1>VI</CardType1> <ExpDate1>1205</ExpDate1>
+#<ResponseCodes> <RespCode/>
+#</ResponseCodes> </RefundResponse>
+#</Response>

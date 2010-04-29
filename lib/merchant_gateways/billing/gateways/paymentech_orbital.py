@@ -152,7 +152,7 @@ class PaymentechOrbital(Gateway):
         fields.update(options['billing_address'])  #  TODO  what about address?
         fields.update(options)
 
-        exp_code = ( '%02i' % credit_card.month) + str(credit_card.year)[-2:] #  TODO  credit_card_format
+        exp_code = ( '%02i' % credit_card.month) + str(credit_card.year)[-2:] #  CONSIDER  credit_card_format
         x = XML
 
         from money.Money import CURRENCY
