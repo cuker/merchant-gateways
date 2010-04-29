@@ -91,7 +91,7 @@ class CybersourceTests(MerchantGatewaysTestSuite,
                 authorizedDateTime="2007-07-12T18:31:53Z",
                 avsCode="A",
                 avsCodeRaw="I7",
-                currency="USD",
+                currency="USD",  #  TODO  see self.money for this
                 cvCode=None,
                 cvCodeRaw=None,
                 decision="ACCEPT",
