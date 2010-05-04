@@ -295,6 +295,33 @@ class PayflowTests( MerchantGatewaysTestSuite,
         self.credit_card.issue_number = 9
         self.assert_equal('09', format(self.credit_card.issue_number, two_digits=True))
 
+    def test_build_reference_request(self):
+        xml = self.gateway.build_reference_request('void', None, 'nagini')
+
+        self.assert_xml(xml, lambda xml:
+            xml.Void(
+                xml.PNRef('nagini')
+                )
+            )
+
+    def test_build_reference_request_with_money(self):
+      ''' TODOdef build_reference_request(action, money, authorization, options)
+        xml = Builder::XmlMarkup.new
+        xml.tag! TRANSACTIONS[action] do
+          xml.tag! 'PNRef', authorization
+
+          unless money.nil?
+            xml.tag! 'Invoice' do
+              xml.tag! 'TotalAmt', amount(money), 'Currency' => options[:currency] || currency(money)
+            end
+          end
+        end
+
+        print 'build_reference_request:', action
+        IO.popen('tidy -i -xml -wrap 130', 'w').write(xml.target!)
+        xml.target!
+      end'''
+
 '''
 class PayflowTest < Test::Unit::TestCase
   def setup

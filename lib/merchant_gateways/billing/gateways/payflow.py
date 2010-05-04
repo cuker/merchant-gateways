@@ -201,6 +201,15 @@ xmlns="http://www.paypal.com/XMLPay">
         month = "%.2i" % credit_card.month
         return year + month
 
+    def build_reference_request(self, action, money, authorization):
+        xml = ElementMaker()
+
+        return xStr(
+            xml(TRANSACTIONS[action],
+                xml.PNRef(authorization)
+                )
+            )
+
 '''      include PayflowCommonAPI
 
       RECURRING_ACTIONS = Set.new([:add, :modify, :cancel, :inquiry, :reactivate, :payment])
