@@ -201,12 +201,23 @@ xmlns="http://www.paypal.com/XMLPay">
         month = "%.2i" % credit_card.month
         return year + month
 
+    def invoice_total_amt(self, money, xml):
+        if money:
+            return [
+                    xml.Invoice(
+                            xml.TotalAmt( '%.2f' % money.amount, #  TODO currency-specific template!
+                                          Currency=str(money.currency) ) )
+            ]
+        return []
+
     def build_reference_request(self, action, money, authorization):
         xml = ElementMaker()
+        also = self.invoice_total_amt(money, xml)
 
         return xStr(
             xml(TRANSACTIONS[action],
-                xml.PNRef(authorization)
+                xml.PNRef(authorization),
+                *also
                 )
             )
 

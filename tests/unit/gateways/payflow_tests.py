@@ -305,22 +305,18 @@ class PayflowTests( MerchantGatewaysTestSuite,
             )
 
     def test_build_reference_request_with_money(self):
-      ''' TODOdef build_reference_request(action, money, authorization, options)
-        xml = Builder::XmlMarkup.new
-        xml.tag! TRANSACTIONS[action] do
-          xml.tag! 'PNRef', authorization
+        money = Money('42.00', 'XPD')  #  Palladium
 
-          unless money.nil?
-            xml.tag! 'Invoice' do
-              xml.tag! 'TotalAmt', amount(money), 'Currency' => options[:currency] || currency(money)
-            end
-          end
-        end
+        xml = self.gateway.build_reference_request('void', money, 'O.W.L.')
 
-        print 'build_reference_request:', action
-        IO.popen('tidy -i -xml -wrap 130', 'w').write(xml.target!)
-        xml.target!
-      end'''
+        self.assert_xml(xml, lambda xml:
+            xml.Void(
+                xml.PNRef('O.W.L.'),
+                xml.Invoice(
+                    xml.TotalAmt( '42.00',
+                                  Currency=str(money.currency) )
+            ) ) )
+
 
 '''
 class PayflowTest < Test::Unit::TestCase
