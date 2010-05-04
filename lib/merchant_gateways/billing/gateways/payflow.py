@@ -247,6 +247,11 @@ xmlns="http://www.paypal.com/XMLPay">
         commit(request, :recurring)
       end
 
+      def void(authorization, options = {})
+        request = build_reference_request(:void, nil, authorization, options)
+        commit(request)
+      end
+
       def cancel_recurring(profile_id)
         request = build_recurring_request(:cancel, 0, :profile_id => profile_id)
         commit(request, :recurring)
