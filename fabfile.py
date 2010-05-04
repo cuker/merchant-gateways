@@ -63,9 +63,19 @@ def test():
 
 def pull():
     'git pull - for short command lines like "fab pull test"'
-    
+
     _sh('git pull')
 
 def _sh(cmd):
     local(cmd, capture=False)
 
+
+def docs():
+    'Build docs'
+
+    _sh("rm -rf ./docs/*")
+
+    _sh( "PYTHONPATH=`pwd`/lib:$PYTHONPATH " +
+         "epydoc --html --name 'Python Merchant Gateways' " +
+         "--graph=all --no-frames --css=doc/epydoc.css " +
+         "./tests ./lib/merchant_gateways -o ./docs/" )

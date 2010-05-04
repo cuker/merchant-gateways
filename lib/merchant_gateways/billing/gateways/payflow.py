@@ -44,7 +44,8 @@ class Payflow(Gateway):
 
     	self.response = Payflow.Response( passed, self.message, None, # TODO response[:result] == "0", response[:message], response,
     	    is_test=self.is_test,
-    	    authorization='VUJN1A6E11D9', # TODO > response[:pn_ref] || response[:rp_ref],
+    	    # authorization='VUJN1A6E11D9', # TODO > response[:pn_ref] || response[:rp_ref],
+    	    authorization=self.result.get('PnRef', self.result.get('RPRef', None)),  #  TODO  test the RPRef
     	    cvv_result = CVV_CODE[self.result['CvResult']],  #  TODO  .get()
     	    avs_result = self.result['AvsResult']
             )  #  TODO  stash the response in self.response

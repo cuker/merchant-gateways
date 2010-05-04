@@ -4,8 +4,8 @@ from merchant_gateways.billing.credit_card import CreditCard
 
 class CreditCardFormattingTest(MerchantGatewaysUtilitiesTestSuite):
 
-    def test_should_format_number_by_rule(self):
-        self.assert_equal 2005, format(2005, :steven_colbert)
+    def test_should_format_number_by_rule(self):  #  TODO  use or lose this stuff
+        self.assert_equal(2005, format(2005, 'steven_colbert'))
 
 '''require 'test_helper'
 
