@@ -54,7 +54,7 @@ class Payflow(Gateway):
     def purchase(self, money, credit_card_or_reference, **options):  #  TODO every purchase can work on a cc or ref!
         assert isinstance(money, Money), 'TODO  always pass in a Money object - no exceptions!'
         self.message = self.build_sale_or_authorization_request('purchase', money, credit_card_or_reference, **options)
-        self.commit(self.message)
+        return self.commit(self.message)  #  TODO  test we return something
 
     def build_headers(self, content_length):  #  TODO doesn't an HTTP library take care of this for us?
         return {
