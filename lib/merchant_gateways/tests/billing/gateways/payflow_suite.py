@@ -42,7 +42,12 @@ class MerchantGatewaysPayflowSuite:
         return '''<ResponseData><TODO/>
                   <Result>0</Result>
                   </ResponseData>'''  #  TODO  correct fault handling if ResponseData ain't there
-                  
+
+    def successful_credit_response(self):
+        return '''<ResponseData><TODO/>
+                  <Result>0</Result>
+                  </ResponseData>'''  #  TODO  correct fault handling if ResponseData ain't there
+
     def assert_webservice_called(self, mock, vendor, amount, currency, card_type, cc_number, exp_date, cv_num,
                                        first_name, last_name, username, password):
         #args = self.gateway.post_webservice.call_args[0]

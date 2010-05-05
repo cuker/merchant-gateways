@@ -62,6 +62,12 @@ class PayflowTests( MerchantGatewaysTestSuite,
         self.response = self.gateway.void(authorization)
         assert 'TODO' in self.response.result
 
+    def test_successful_credit(self):
+        self.mock_webservice(self.successful_credit_response())
+        authorization = 'Mobiliarbus'
+        self.response = self.gateway.credit(Money('42.00', 'MAD'), authorization)
+        assert 'TODO' in self.response.result
+
     def successful_purchase_response(self):  #  TODO  this is bogus! What does a real one look like???
         return '''<ResponseData>
                     <Result>0</Result>

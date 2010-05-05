@@ -223,6 +223,16 @@ xmlns="http://www.paypal.com/XMLPay">
                                       Currency=str(money.currency) ) )
         ]
 
+    def credit(self, money, identification_or_credit_card):
+        if True:  # TODO identification_or_credit_card.is_a?(String)
+          # Perform referenced credit
+          request = self.build_reference_request('credit', money, identification_or_credit_card)
+        else:
+          # Perform non-referenced credit
+          '# TODO request = build_credit_card_request(:credit, money, identification_or_credit_card, options)'
+
+        return self.commit(request)
+
 '''      include PayflowCommonAPI
 
       RECURRING_ACTIONS = Set.new([:add, :modify, :cancel, :inquiry, :reactivate, :payment])
