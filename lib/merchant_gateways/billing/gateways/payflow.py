@@ -46,9 +46,10 @@ class Payflow(Gateway):
     	    is_test=self.is_test,
     	    # authorization='VUJN1A6E11D9', # TODO > response[:pn_ref] || response[:rp_ref],
     	    authorization=self.result.get('PnRef', self.result.get('RPRef', None)),  #  TODO  test the RPRef
-    	    cvv_result = CVV_CODE[self.result['CvResult']],  #  TODO  .get()
-    	    avs_result = self.result['AvsResult']
+    	    cvv_result = CVV_CODE[self.result.get('CvResult', None)],  #  TODO  default_dict to the rescue!
+    	    avs_result = self.result.get('AvsResult', None)
             )  #  TODO  stash the response in self.response
+        self.response.result = self.result
         return self.response
 
     def purchase(self, money, credit_card_or_reference, **options):  #  TODO every purchase can work on a cc or ref!
@@ -208,6 +209,10 @@ xmlns="http://www.paypal.com/XMLPay">
                 *self.invoice_total_amt(money)
                 )
             )
+
+    def void(self, authorization):
+        self.request = self.build_reference_request('void', None, authorization)
+        return self.commit(self.request)
 
     def invoice_total_amt(self, money):
         if not money:  return []
@@ -451,7 +456,8 @@ CVV_CODE = {
         'Match'                 : 'M',
         'No Match'              : 'N',
         'Service Not Available' : 'U',
-        'Service not Requested' : 'P'
+        'Service not Requested' : 'P',
+        None: None
       }  #  TODO  test all these!
 
 def format(number, **options):  #  TODO  move to credit_card_formatting!

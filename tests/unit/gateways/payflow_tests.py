@@ -54,7 +54,18 @@ class PayflowTests( MerchantGatewaysTestSuite,
         assert self.response.is_test
 
     def test_successful_purchase(self):
-        pass
+        pass   #  TODO  make this work by simply returning a TODO string!
+
+    def test_successful_void(self):
+        self.mock_webservice(self.successful_void_response())
+        authorization = 'Mobiliarbus'
+        self.response = self.gateway.void(authorization)
+        assert 'TODO' in self.response.result
+
+    def successful_void_response(self):
+        return '''<ResponseData><TODO/>
+                  <Result>0</Result>
+                  </ResponseData>'''  #  TODO  correct fault handling if ResponseData ain't there
 
     def successful_purchase_response(self):  #  TODO  this is bogus! What does a real one look like???
         return '''<ResponseData>
@@ -305,8 +316,7 @@ class PayflowTests( MerchantGatewaysTestSuite,
             )
 
     def test_build_reference_request_with_money(self):
-        money = Money('42.00', 'XPD')  #  Palladium
-
+        money = Money('42.00', 'XPD')  #  Palladium!
         xml = self.gateway.build_reference_request('void', money, 'O.W.L.')
 
         self.assert_xml(xml, lambda xml:
@@ -316,7 +326,6 @@ class PayflowTests( MerchantGatewaysTestSuite,
                     xml.TotalAmt( '42.00',
                                   Currency=str(money.currency) )
             ) ) )
-
 
 '''
 class PayflowTest < Test::Unit::TestCase
