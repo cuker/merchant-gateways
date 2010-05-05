@@ -62,11 +62,6 @@ class PayflowTests( MerchantGatewaysTestSuite,
         self.response = self.gateway.void(authorization)
         assert 'TODO' in self.response.result
 
-    def successful_void_response(self):
-        return '''<ResponseData><TODO/>
-                  <Result>0</Result>
-                  </ResponseData>'''  #  TODO  correct fault handling if ResponseData ain't there
-
     def successful_purchase_response(self):  #  TODO  this is bogus! What does a real one look like???
         return '''<ResponseData>
                     <Result>0</Result>
