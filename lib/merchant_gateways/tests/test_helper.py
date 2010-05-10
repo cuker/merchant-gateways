@@ -146,6 +146,13 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
         diagnostic = diagnostic.strip()
         self.assert_equal( reference, sample, diagnostic )
 
+    def convert_xml_to_element_maker(self, thang):
+        'script that coverts XML to its ElementMaker notation'
+
+        from lxml import etree
+        doc = etree.XML(thang)
+        return self._convert_child_nodes(doc)
+
     def _convert_child_nodes(self, node, depth=0):
         code = '\n' + ' ' * depth * 2 + 'XML.' + node.tag + '('
         children = node.xpath('*')
@@ -165,13 +172,6 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
 
         code += ')'
         return code
-
-    def convert_xml_to_element_maker(self, thang):
-        'script that coverts XML to its ElementMaker notation'
-
-        from lxml import etree
-        doc = etree.XML(thang)
-        return self._convert_child_nodes(doc)
 
 
 class MerchantGatewaysWebserviceTestSuite(object):
