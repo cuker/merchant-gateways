@@ -18,6 +18,16 @@ class PayflowTests( MerchantGatewaysTestSuite,
         self.mock_post_webservice(response)
 
     def assert_successful_authorization(self):
+        '''
+        All gateways must pass the common test,
+        L{tests.test_helper.MerchantGatewaysTestSuite.CommonTests.test_successful_authorization}.
+
+        That calls this assertion, in each concrete test suite, to assert
+        this gateway's specific details.
+
+        See U{http://broadcast.oreilly.com/2010/05/abstract-tests.html} for more on the the
+        Abstract Test pattern
+        '''
 
         assert self.response.is_test
         self.assertEqual('Approved', self.response.message)
