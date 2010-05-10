@@ -55,6 +55,7 @@ def autotest(cmd='fab test', sleep=1):  #  CONSIDER  accept app,list,comma,delim
 
         time.sleep(sleep)
 
+        
 def test():
     'run the short test batch for this project'
 
@@ -66,16 +67,19 @@ def pull():
 
     _sh('git pull')
 
-def _sh(cmd):
-    local(cmd, capture=False)
 
-
-def docs():
+def document(output='./docs/'):
     'Build docs'
 
     _sh("rm -rf ./docs/*")
+    os.environ['PYTHONPATH'] = os.getcwd() + '/lib:' + os.environ['PYTHONPATH']
 
-    _sh( "PYTHONPATH=`pwd`/lib:$PYTHONPATH " +
-         "epydoc --html --name 'Python Merchant Gateways' " +
+    # ERGO  take add for WebCube out of nav bar?
+
+    _sh( "epydoc --config=doc/epydoc.config " +
          "--graph=all --no-frames --css=doc/epydoc.css " +
-         "./tests ./lib/merchant_gateways -o ./docs/" )
+         "./tests ./lib/merchant_gateways --output=" + output )
+
+def _sh(cmd):
+    local(cmd, capture=False)
+
