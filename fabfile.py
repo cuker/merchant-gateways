@@ -55,7 +55,7 @@ def autotest(cmd='fab test', sleep=1):  #  CONSIDER  accept app,list,comma,delim
 
         time.sleep(sleep)
 
-        
+
 def test():
     'run the short test batch for this project'
 
@@ -73,6 +73,7 @@ def document(output='./docs/'):
 
     _sh("rm -rf ./docs/*")
     os.environ['PYTHONPATH'] = os.getcwd() + '/lib:' + os.environ['PYTHONPATH']
+    os.environ['PATH'] = os.environ['HOME'] + '/bin:' + os.environ['PATH']  # 2 find rite epydoc
 
     # ERGO  take add for WebCube out of nav bar?
 
@@ -82,4 +83,3 @@ def document(output='./docs/'):
 
 def _sh(cmd):
     local(cmd, capture=False)
-

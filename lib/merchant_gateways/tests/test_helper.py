@@ -1,5 +1,4 @@
 
-
 from mock import Mock
 #  CONSIDER  django-test-extensions needs to work w/o django
 import unittest
@@ -8,6 +7,9 @@ from money import Money
 
 
 class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
+    '''
+    This contains copies of test utilities found in `django-test-extensions <http://github.com/cuker/django-test-extensions>`_.
+    '''
 
     def assert_success(self):
         #  TODO assert is_test
