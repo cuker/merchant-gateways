@@ -124,7 +124,7 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
         reference = { 'response_reason_code': '1', 'card_code': 'P', 'response_reason_text': 'This transaction was declined.',
                       'avs_result_code': 'Y', 'response_code': 2, 'transaction_id': '508141794' }
 
-        self.assert_match_hash(reference, self.gateway.parse(self.failed_authorization_response()))
+        self.assert_match_dict(reference, self.gateway.parse(self.failed_authorization_response()))
 
         reference = { 'card_code': 'P', 'response_reason_text': 'This transaction has been approved.', 'response_reason_code': '1',
                       'avs_result_code': 'Y', 'response_code': 1, 'transaction_id': '508141795' }

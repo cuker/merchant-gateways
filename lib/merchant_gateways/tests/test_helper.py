@@ -127,7 +127,11 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
 
         return self.assertEqual(*args, **kwargs)
 
+    #@deprecated
     def assert_match_hash(self, reference, sample, diagnostic=''):
+        self.assert_match_dict(reference, sample, diagnostic)
+
+    def assert_match_dict(self, reference, sample, diagnostic=''):
         if reference == sample:  return
         print dir(reference)
         reference = reference.copy()
