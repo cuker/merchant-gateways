@@ -18,6 +18,21 @@ class BraintreeTests( MerchantGatewaysTestSuite,
     def gateway_type(self):
         return Braintree
 
+#  TODO  trust nothing below this line
+
+    def test_post_data(self):
+        # TODO type=sale&lastname=Longsen&password=PASSWORD&username=LOGIN&orderid=&ccnumber=4242424242424242&cvv=123&ccexp=0911&currency=USD&amount=1.00&firstname=Longbob..type=sale&lastname=Longsen&password=PASSWORD&username=LOGIN&orderid=&ccnumber=4242424242424242&cvv=123&ccexp=0911&currency=USD&amount=1.00&firstname=Longbob.address1=1234+My+Street&company=Widgets+Inc&city=Ottawa&type=auth&lastname=Longsen&address2=Apt+1&zip=K1C2N6&country=CA&password=PASSWORD&username=LOGIN&orderid=&ccnumber=4242424242424242&phone=%28555%29555-5555&cvv=123&ccexp=0911&currency=USD&amount=1.00&firstname=Longbob&state=ON..address1=1234+My+Street&company=Widgets+Inc&city=Ottawa&type=auth&lastname=Longsen&address2=Apt+1&zip=K1C2N6&country=CA&password=PASSWORD&username=LOGIN&orderid=&ccnumber=4242424242424242&phone=%28555%29555-5555&cvv=123&ccexp=0911&currency=USD&amount=1.00&firstname=Longbob&state=ON
+        action = 'AUTH_ONLY'
+        return
+        parameters = {'first_name': 'Hermione', 'card_num': '4242424242424242', 'description': 'Chamber of Secrets', 'card_code': None, 'invoice_num': 1, 'test_request': 'TRUE', 'amount': '1.00', 'last_name': 'Granger', 'exp_date': '1290'}
+        reference = '?x_login=X&x_invoice_num=1&x_last_name=Granger&x_card_code=None&x_card_num=4242424242424242&x_amount=1.00&x_delim_char=%2C&x_tran_key=Y&x_encap_char=%24&x_version=3.1&x_first_name=Hermione&x_exp_date=1290&x_delim_data=TRUE&x_relay_response=FALSE&x_type=AUTH_ONLY&x_description=Chamber+of+Secrets&x_test_request=TRUE'
+        self.assert_equal(reference, self.gateway.post_data(action, parameters))
+        action = 'AUTH_CAPTURE'
+        parameters = {'first_name': 'Hermione', 'card_num': '4242424242424242', 'description': '', 'card_code': None, 'invoice_num': 1, 'test_request': 'TRUE', 'amount': '1.00', 'last_name': 'Granger', 'exp_date': '1290', 'login': 'X', 'trans_id': 'Y'}
+        reference = '?x_login=X&x_invoice_num=1&x_trans_id=Y&x_last_name=Granger&x_card_code=None&x_card_num=4242424242424242&x_amount=1.00&x_delim_char=%2C&x_tran_key=Y&x_encap_char=%24&x_version=3.1&x_first_name=Hermione&x_exp_date=1290&x_delim_data=TRUE&x_relay_response=FALSE&x_type=AUTH_CAPTURE&x_description=&x_test_request=TRUE'
+        self.assert_equal(reference, self.gateway.post_data(action, parameters))
+
+
     def mock_webservice(self, response):
         self.options['billing_address'] = {}
         self.mock_post_webservice(response)
@@ -543,17 +558,121 @@ class BraintreeTests( MerchantGatewaysTestSuite,
                         XML.SwitchSoloStartDate(),
                         XML.SwitchSoloIssueNum())))
 
+#  TODO  trust everything below this line:
 
-# ERGO  put us into the test report system and see what we look like!
-
-
-# TODO  comprehend this: Sample XML Auth Response with MIME Header
-
-#HTTP/1.1 200 OK Date: Fri, 14 Feb 2003 12:00:00 GMT MIME-Version: 1.0 Content-type: application/PTI26 Content-length: 646 Content-transfer-encoding: text Request-number: 1 Document-type: Response
-#<Response> <RefundResponse CapStatus="1" HcsTcsInd="T" LangInd="00" MessageType="FR"
-#TzCode="705" Version="2"> <TxRefIdx>1</TxRefIdx>
-#<TxRefNum>EB847AD1B02AD5119F5F00508B94EDEC844FE27A</TxRefNum> <ProcStatus>0</ProcStatus> <ApprovalStatus>1</ApprovalStatus> <MerchantID>123456789012</MerchantID>
-#<TerminalID>001</TerminalID> <OrderNumber>1234567890123456</OrderNumber> <AccountNum>4012888888881</AccountNum> <POSEntryMode>01</POSEntryMode> <RespDate>010410</RespDate> <RespTime>10012001120003</RespTime> <CardType1>VI</CardType1> <ExpDate1>1205</ExpDate1>
-#<ResponseCodes> <RespCode/>
-#</ResponseCodes> </RefundResponse>
-#</Response>
+#class BraintreeTest < Test::Unit::TestCase
+#
+#  def setup
+#    @gateway = BraintreeGateway.new(
+#      :login => 'LOGIN',
+#      :password => 'PASSWORD'
+#    )
+#
+#    @credit_card = credit_card
+#    @amount = 100
+#
+#    @options = { :billing_address => address }
+#  end
+#
+#  def test_successful_purchase
+#    @gateway.expects(:ssl_post).returns(successful_purchase_response)
+#
+#    assert response = @gateway.authorize(@amount, @credit_card, @options)
+#    assert_instance_of Response, response
+#    assert_success response
+#    assert_equal '510695343', response.authorization
+#  end
+#
+#  def test_failed_purchase
+#    @gateway.expects(:ssl_post).returns(failed_purchase_response)
+#
+#    assert response = @gateway.authorize(@amount, @credit_card, @options)
+#    assert_instance_of Response, response
+#    assert_failure response
+#  end
+#
+#  def test_add_address
+#    result = {}
+#
+#    @gateway.send(:add_address, result,   {:address1 => '164 Waverley Street', :country => 'US', :state => 'CO'} )
+#    assert_equal ["address1", "city", "company", "country", "phone", "state", "zip"], result.stringify_keys.keys.sort
+#    assert_equal 'CO', result["state"]
+#    assert_equal '164 Waverley Street', result["address1"]
+#    assert_equal 'US', result["country"]
+#
+#  end
+#  def test_add_shipping_address
+#    result = {}
+#
+#    @gateway.send(:add_address, result,   {:address1 => '164 Waverley Street', :country => 'US', :state => 'CO'},"shipping" )
+#    assert_equal ["shipping_address1", "shipping_city", "shipping_company", "shipping_country", "shipping_phone", "shipping_state", "shipping_zip"], result.stringify_keys.keys.sort
+#    assert_equal 'CO', result["shipping_state"]
+#    assert_equal '164 Waverley Street', result["shipping_address1"]
+#    assert_equal 'US', result["shipping_country"]
+#
+#  end
+#
+#  def test_supported_countries
+#    assert_equal ['US'], BraintreeGateway.supported_countries
+#  end
+#
+#  def test_supported_card_types
+#    assert_equal [:visa, :master, :american_express, :discover], BraintreeGateway.supported_cardtypes
+#  end
+#
+#  def test_adding_store_adds_vault_id_flag
+#    result = {}
+#
+#    @gateway.send(:add_creditcard, result, @credit_card, :store => true)
+#    assert_equal ["ccexp", "ccnumber", "customer_vault", "cvv", "firstname", "lastname"], result.stringify_keys.keys.sort
+#    assert_equal 'add_customer', result[:customer_vault]
+#  end
+#
+#  def test_blank_store_doesnt_add_vault_flag
+#    result = {}
+#
+#    @gateway.send(:add_creditcard, result, @credit_card, {} )
+#    assert_equal ["ccexp", "ccnumber", "cvv", "firstname", "lastname"], result.stringify_keys.keys.sort
+#    assert_nil result[:customer_vault]
+#  end
+#
+#  def test_accept_check
+#    post = {}
+#    check = Check.new(:name => 'Fred Bloggs',
+#                      :routing_number => '111000025',
+#                      :account_number => '123456789012',
+#                      :account_holder_type => 'personal',
+#                      :account_type => 'checking')
+#    @gateway.send(:add_check, post, check, {})
+#    assert_equal %w[account_holder_type account_type checkaba checkaccount checkname payment], post.stringify_keys.keys.sort
+#  end
+#
+#  def test_funding_source
+#    assert_equal :check, @gateway.send(:determine_funding_source, Check.new)
+#    assert_equal :credit_card, @gateway.send(:determine_funding_source, @credit_card)
+#    assert_equal :vault, @gateway.send(:determine_funding_source, '12345')
+#  end
+#
+#  def test_avs_result
+#    @gateway.expects(:ssl_post).returns(successful_purchase_response)
+#
+#    response = @gateway.purchase(@amount, @credit_card)
+#    assert_equal 'N', response.avs_result['code']
+#  end
+#
+#  def test_cvv_result
+#    @gateway.expects(:ssl_post).returns(successful_purchase_response)
+#
+#    response = @gateway.purchase(@amount, @credit_card)
+#    assert_equal 'N', response.cvv_result['code']
+#  end
+#
+#  private
+#  def successful_purchase_response
+#    'response=1&responsetext=SUCCESS&authcode=123456&transactionid=510695343&avsresponse=N&cvvresponse=N&orderid=ea1e0d50dcc8cfc6e4b55650c592097e&type=sale&response_code=100'
+#  end
+#
+#  def failed_purchase_response
+#    'response=2&responsetext=DECLINE&authcode=&transactionid=510695919&avsresponse=N&cvvresponse=N&orderid=50357660b0b3ef16f72a3d3b83c46983&type=sale&response_code=200'
+#  end
+#end
