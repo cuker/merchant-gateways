@@ -1,9 +1,11 @@
 
+import unittest
+
 from mock import Mock
 #  CONSIDER  django-test-extensions needs to work w/o django
-import unittest
 from pprint import pformat
 from money import Money
+import cgi
 
 
 class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
@@ -126,6 +128,20 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
         'Assert that two values are equal'
 
         return self.assertEqual(*args, **kwargs)
+
+    def assert_params(self, params, **dict):  #  ERGO  put me in django-test-extensions!
+        qsparams = cgi.parse_qs(params)
+
+        for k,v in qsparams.items():
+            if len(v) == 1:
+                qsparams[k] = v[0] # easier to manipulate, because most real-life params are singular
+
+        if dict:  self.assert_dict_contains(qsparams, **dict)  #  ERGO  better diagnostic, as usual!
+        return qsparams
+    
+    def assert_dict_contains(self, dict, **elements):  #  ERGO  promote me & merge with assert_match_dict
+        for k,v in elements.items():
+            self.assert_equal(v, dict.get(k, not v))
 
     #@deprecated
     def assert_match_hash(self, reference, sample, diagnostic=''):
