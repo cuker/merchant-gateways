@@ -31,28 +31,34 @@ class Braintree(Gateway):  # CONSIDER most of this belongs in a class SmartPs, w
         post = {}
         self.add_invoice(post, **options)
         self.add_payment_source(post, credit_card, **options)
-        self.add_address(post, '', options.get('billing_address', options.get('address', {})))  #  TODO  TDD all that nonsense!
-        self.add_address(post, "shipping", options.get('shipping_address', {}))  #  TODO  require the addresses?
+        self.add_address(post, '', **options.get('billing_address', options.get('address', {})))  #  TODO  TDD all that nonsense!
+        self.add_address(post, "shipping", **options.get('shipping_address', {}))  #  TODO  require the addresses?
         self.add_customer_data(post, **options)
-        self.add_currency(post, money, **options)
-        self.add_processor(post, **options)
-        self.commit('auth', money, post)
+        self.add_currency(post, money) # TODO, **options)
+        # TODO self.add_processor(post, **options)
+        return self.commit('auth', money, post)  #  TODO  rely on this return nowhere
 
-    def commit(action, money, parameters):  #  TODO  is it post or parameters?
+    def commit(self, action, money, parameters):  #  TODO  is it post or parameters?
         if money:  parameters['amount'] = money.amount
-        data = self.post_data(action, parameters)
-       # response = parse( ssl_post(api_url, post_data(action,parameters)) )
+        data         = self.post_data(action, **parameters)
+        string       = self.post_webservice(self.api_url(), data)
+        self.result  = self.parse( string )
+        self.success = self.result['response'] == '1'
+        self.message = self.message_from()
+
+        r = self.__class__.Response( self.success, self.message, self.result)
+
 #        Response.new(response["response"] == "1", message_from(response), response,
 #          :authorization => response["transactionid"],
 #          :test => test?,
 #          :cvv_result => response["cvvresponse"],
 #          :avs_result => { :code => response["avsresponse"] }
 #        )
-#      end
+       # TODO assert r == self.response
+        self.response = r
+        return r
 
     def commit_TODO_deprecate_me(self, request, **options):
-        url           = self.is_test and TEST_URL or LIVE_URL
-        self.request  = request  # CONSIDER  standardize this
         # request       = self.build_request(request, **options)
         self.result   = self.parse(self.post_webservice(url, request))  #  CONSIDER  no version of post_webservice needs options
         self.success  = self.result['ApprovalStatus'] == '1'
@@ -69,6 +75,17 @@ class Braintree(Gateway):  # CONSIDER most of this belongs in a class SmartPs, w
         r.result = self.result  #  TODO  use params for something else
         return r
 
+    def message_from(self):  #  TODO  better name
+        if self.result["responsetext"] in ("SUCCESS", "Approved", None): # This is dubious, but responses from UPDATE are nil.
+            return "This transaction has been approved"
+        elif self.result['responsetext'] == "DECLINE":
+            return "This transaction has been declined"
+        end
+
+        return self.result["responsetext"]
+
+    def api_url(self):  #  TODO  remote test uri !
+        return 'https://secure.braintreepaymentgateway.com/api/transact.php'
 
     def post_data(self, action, **parameters):
 
@@ -88,7 +105,7 @@ class Braintree(Gateway):  # CONSIDER most of this belongs in a class SmartPs, w
 # TODO        case determine_funding_source(source)
 #        when :vault       then add_customer_vault_id(params, source)
 #        when :credit_card then
-        self.add_creditcard(params, source, **options)
+        self.add_credit_card(params, source, **options)
 #        when :check       then add_check(params, source, options)
 #        end
 #      end
@@ -305,9 +322,6 @@ CREDIT_CARD_CODES = dict( v='001',  #  TODO  convert to Orbital
 #module ActiveMerchant #:nodoc:
 #  module Billing #:nodoc:
 #    class BraintreeGateway < SmartPs
-#      def api_url
-#        'https://secure.braintreepaymentgateway.com/api/transact.php'
-#      end
 #
 #      self.supported_countries = ['US']
 #      self.supported_cardtypes = [:visa, :master, :american_express, :discover]
@@ -505,18 +519,6 @@ CREDIT_CARD_CODES = dict( v='001',  #  TODO  convert to Orbital
 #        month = sprintf("%.02i", creditcard.month.to_i)
 #
 #        "#{month}#{year[-2..-1]}"
-#      end
-#
-#
-#      def message_from(response)
-#        case response["responsetext"]
-#        when "SUCCESS", "Approved", nil # This is dubious, but responses from UPDATE are nil.
-#          "This transaction has been approved"
-#        when "DECLINE"
-#          "This transaction has been declined"
-#        else
-#          response["responsetext"]
-#        end
 #      end
 #
 #      def determine_funding_source(source)

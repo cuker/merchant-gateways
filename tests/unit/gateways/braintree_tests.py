@@ -18,6 +18,49 @@ class BraintreeTests( MerchantGatewaysTestSuite,
     def gateway_type(self):
         return Braintree
 
+#  def successful_purchase_response
+#    'response=1&responsetext=SUCCESS&authcode=123456&transactionid=510695343&avsresponse=N&cvvresponse=N&orderid=ea1e0d50dcc8cfc6e4b55650c592097e&type=sale&response_code=100'
+#  end
+
+    def successful_authorization_response(self):
+        return 'response=1&responsetext=SUCCESS&authcode=123456&transactionid=510695343&avsresponse=N&cvvresponse=N&' + \
+               'orderid=ea1e0d50dcc8cfc6e4b55650c592097e&type=sale&response_code=100'
+         #  TODO  get a real one - that one is just a copy of successful_purchase_response
+
+    def assert_successful_authorization(self):
+        order_id = str(self.options['order_id'])  #  TODO  put something in options
+
+
+# TODO        authcode=123456&transactionid=510695343
+
+#     TODO   self.assert_equal('4A785F5106CCDC41A936BFF628BF73036FEC5401', self.response.authorization)
+#        self.assert_equal('Approved', self.gateway.message)
+#
+#        # CONSIDER stash it there self.gateway.response
+#        #print self.response.result   #  TODO  and make it the RAW result!!
+#
+#        # CONSIDER what be 'RespCode': '00'?
+#        # CONSIDER stash HostCVV2RespCode in CvvResult; use 'CAVVRespCode': None
+#        # CONSIDER what be 'TerminalID': '000',
+#
+#        # CONSIDER use 'RespMsg': None,
+#        # CONSIDER what be 'CardBrand': 'MC', 'MerchantID': '000000', 'ProfileProcStatus': '0','RecurringAdviceCd': None  'CustomerRefNum
+#        # TODO  uh... 'CustomerName': 'JOE SMITH', 'MessageType': 'AC',
+#        #  CONSIDER stash the  'HostAVSRespCode': 'I3',
+#        # CONSIDER  use the 'AuthCode': 'tst554', 'RespTime': '121825', 'ProcStatus': '0', , 'HostRespCode': '100'}
+#
+#        self.assert_equal('B ', self.response.result['AVSRespCode'])  #  CONSIDER why 'B '?
+#        avs = self.response.avs_result
+#        self.assert_equal( 'B', avs.code )
+#        self.assert_equal( 'Y', avs.street_match )  #  TODO  why none? What wrong with B?
+#        self.assert_equal( None, avs.postal_match )
+#        self.assert_equal('M', self.response.result['CVV2RespCode'])
+#        cvv = self.response.cvv_result
+#        cvv = self.response.cvv_result
+#        self.assert_equal( 'M', cvv.code )
+#        self.assert_equal( 'Match', cvv.message )  #  CONSIDER huh??
+        assert self.response.success
+
 
         # type=sale&lastname=Longsen&password=PASSWORD&username=LOGIN&orderid=&ccnumber=4242424242424242&cvv=123&
         # ccexp=0911&currency=USD&amount=1.00&firstname=Longbob.address1=1234+My+Street&company=Widgets+Inc&
@@ -125,8 +168,8 @@ class BraintreeTests( MerchantGatewaysTestSuite,
 
 #  TODO  trust nothing below this comment
 
-    def test_successful_authorization(self):
-        pass # run away!
+#    def test_successful_authorization(self):
+ #       pass # run away!
 
     def test_failed_authorization(self):
         pass # run away!
@@ -163,36 +206,6 @@ class BraintreeTests( MerchantGatewaysTestSuite,
     def mock_webservice(self, response):
         self.options['billing_address'] = {}
         self.mock_post_webservice(response)
-
-    def assert_successful_authorization(self):
-        order_id = str(self.options['order_id'])  #  TODO  put something in options
-        self.assert_equal('4A785F5106CCDC41A936BFF628BF73036FEC5401', self.response.authorization)
-        self.assert_equal('Approved', self.gateway.message)
-
-        # CONSIDER stash it there self.gateway.response
-        #print self.response.result   #  TODO  and make it the RAW result!!
-
-        # CONSIDER what be 'RespCode': '00'?
-        # CONSIDER stash HostCVV2RespCode in CvvResult; use 'CAVVRespCode': None
-        # CONSIDER what be 'TerminalID': '000',
-
-        # CONSIDER use 'RespMsg': None,
-        # CONSIDER what be 'CardBrand': 'MC', 'MerchantID': '000000', 'ProfileProcStatus': '0','RecurringAdviceCd': None  'CustomerRefNum
-        # TODO  uh... 'CustomerName': 'JOE SMITH', 'MessageType': 'AC',
-        #  CONSIDER stash the  'HostAVSRespCode': 'I3',
-        # CONSIDER  use the 'AuthCode': 'tst554', 'RespTime': '121825', 'ProcStatus': '0', , 'HostRespCode': '100'}
-
-        self.assert_equal('B ', self.response.result['AVSRespCode'])  #  CONSIDER why 'B '?
-        avs = self.response.avs_result
-        self.assert_equal( 'B', avs.code )
-        self.assert_equal( 'Y', avs.street_match )  #  TODO  why none? What wrong with B?
-        self.assert_equal( None, avs.postal_match )
-        self.assert_equal('M', self.response.result['CVV2RespCode'])
-        cvv = self.response.cvv_result
-        cvv = self.response.cvv_result
-        self.assert_equal( 'M', cvv.code )
-        self.assert_equal( 'Match', cvv.message )  #  CONSIDER huh??
-        assert self.response.success
 
     def assert_failed_authorization(self):
         self.assert_none(self.response.params['TxRefNum'])
@@ -424,7 +437,8 @@ class BraintreeTests( MerchantGatewaysTestSuite,
 
     def test_parse_purchase_response(self):
         return # TODO  drain me away!
-        soap = self.successful_purchase_response()
+#  def successful_purchase_response
+
         sample = self.gateway.parse(soap)
         reference = {'AVSRespCode': 'B ', 'RespCode': '00', 'HostCVV2RespCode': 'M', 'TerminalID': '000', 'CVV2RespCode': 'M', 'RespMsg': None, 'CardBrand': 'MC', 'MerchantID': '000000', 'AccountNum': '5454545454545454', 'ProfileProcStatus': '0', 'CustomerName': 'JOE SMITH', 'MessageType': 'AC', 'HostAVSRespCode': 'I3', 'RecurringAdviceCd': None, 'IndustryType': None, 'OrderID': '1', 'StatusMsg': 'Approved', 'ApprovalStatus': '1', 'TxRefIdx': '1', 'TxRefNum': '4A785F5106CCDC41A936BFF628BF73036FEC5401', 'CustomerRefNum': '2145108', 'CustomerProfileMessage': 'Profile Created', 'AuthCode': 'tst554', 'RespTime': '121825', 'ProcStatus': '0', 'CAVVRespCode': None, 'HostRespCode': '100'}
         self.assert_match_dict(reference, sample)
@@ -571,82 +585,6 @@ class BraintreeTests( MerchantGatewaysTestSuite,
     def successful_purchase_response(self):  #  TODO  get a real one!
         return self.successful_authorization_response()
 
-    def successful_authorization_response(self):
-
-#        response = '''<?xml version="1.0" encoding="UTF-8"?> <Response> <ACResponse> <CommonDataResponse> <CommonMandatoryResponse HcsTcsInd="T" LangInd="00" MessageType="A" TzCode="705" Version="2"> <MerchantID>123456789012</MerchantID> <TerminalID>001</TerminalID> <TxRefNum>128E6C6A4FC6D4119A3700D0B706C51EE26DF570</TxRefNum> <TxRefIdx>0</TxRefIdx> <OrderNumber>1234567890123456</OrderNumber> <RespTime>10012001120003</RespTime> <ProcStatus>0</ProcStatus> <ApprovalStatus>1</ApprovalStatus> <ResponseCodes> <AuthCode>tntC09</AuthCode> <RespCode>00</RespCode> <HostRespCode>00</HostRespCode> <CVV2RespCode>M</CVV2RespCode> <HostCVV2RespCode>M</HostCVV2RespCode> <AVSRespCode>H</AVSRespCode> <HostAVSRespCode>Y</HostAVSRespCode> </ResponseCodes> </CommonMandatoryResponse> <CommonOptionalResponse> <AccountNum>4012888888881</AccountNum> <RespDate>010801</RespDate> <CardType>VI</CardType> <ExpDate>200512</ExpDate> <CurrencyCd>840</CurrencyCd> </CommonOptionalResponse> </CommonDataResponse> <AuthResponse> <AuthMandatoryResponse/> <AuthOptionalResponse> <POSEntryMode>01</POSEntryMode> <MISCData> <ActualRespCd>00 </ActualRespCd> </MISCData> <NetworkData> <AuthNetwkID>01</AuthNetwkID> </NetworkData> <VisaCard> <CPSData> <AuthCharInd>V</AuthCharInd> <ValidationCd>JU9E</ValidationCd> </CPSData> <AuthSource AuthSrc="5"/> <VisaCommCard VCC="S"/> </VisaCard> </AuthOptionalResponse> </AuthResponse> </ACResponse> </Response>'''
-
-        #$print self.convert_xml_to_element_maker(response)
-
-        alternate_TODO = XML.Response(
-          XML.ACResponse(
-            XML.CommonDataResponse(
-              XML.CommonMandatoryResponse(
-                XML.MerchantID('123456789012'),
-                XML.TerminalID('001'),
-                XML.TxRefNum('128E6C6A4FC6D4119A3700D0B706C51EE26DF570'),
-                XML.TxRefIdx('0'),
-                XML.OrderNumber('1234567890123456'),
-                XML.RespTime('10012001120003'),
-                XML.ProcStatus('0'),
-                XML.ApprovalStatus('1'),
-                XML.ResponseCodes(
-                  XML.AuthCode('tntC09'),
-                  XML.RespCode('00'),
-                  XML.HostRespCode('00'),
-                  XML.CVV2RespCode('M'),
-                  XML.HostCVV2RespCode('M'),
-                  XML.AVSRespCode('H'),
-                  XML.HostAVSRespCode('Y')), HcsTcsInd='T', LangInd='00', MessageType='A', TzCode='705', Version='2'),
-              XML.CommonOptionalResponse(
-                XML.AccountNum('4012888888881'),
-                XML.RespDate('010801'),
-                XML.CardType('VI'),
-                XML.ExpDate('200512'),
-                XML.CurrencyCd('840'))),
-            XML.AuthResponse(
-              XML.AuthMandatoryResponse(),
-              XML.AuthOptionalResponse(
-                XML.POSEntryMode('01'),
-                XML.MISCData(
-                  XML.ActualRespCd('00 ')),
-                XML.NetworkData(
-                  XML.AuthNetwkID('01')),
-                XML.VisaCard(
-                  XML.CPSData(
-                    XML.AuthCharInd('V'),
-                    XML.ValidationCd('JU9E')),
-                  XML.AuthSource(AuthSrc='5'),
-                  XML.VisaCommCard(VCC='S'))))))
-
-        return xStr(XML.Response(
-                      XML.NewOrderResp(
-                        XML.IndustryType(),
-                        XML.MessageType('AC'),
-                        XML.MerchantID('000000'),
-                        XML.TerminalID('000'),
-                        XML.CardBrand('MC'),
-                        XML.AccountNum('5454545454545454'),
-                        XML.OrderID('1'),
-                        XML.TxRefNum('4A785F5106CCDC41A936BFF628BF73036FEC5401'),
-                        XML.TxRefIdx('1'),
-                        XML.ProcStatus('0'),
-                        XML.ApprovalStatus('1'),
-                        XML.RespCode('00'),
-                        XML.AVSRespCode('B '),
-                        XML.CVV2RespCode('M'),
-                        XML.AuthCode('tst554'),
-                        XML.RecurringAdviceCd(),
-                        XML.CAVVRespCode(),
-                        XML.StatusMsg('Approved'),
-                        XML.RespMsg(),
-                        XML.HostRespCode('100'),
-                        XML.HostAVSRespCode('I3'),
-                        XML.HostCVV2RespCode('M'),
-                        XML.CustomerRefNum('2145108'),
-                        XML.CustomerName('JOE SMITH'),
-                        XML.ProfileProcStatus('0'),
-                        XML.CustomerProfileMessage('Profile Created'),
-                        XML.RespTime('121825'))))
 
     def failed_authorization_response(self):
         return xStr(XML.Response(
@@ -780,9 +718,6 @@ class BraintreeTests( MerchantGatewaysTestSuite,
 #  end
 #
 #  private
-#  def successful_purchase_response
-#    'response=1&responsetext=SUCCESS&authcode=123456&transactionid=510695343&avsresponse=N&cvvresponse=N&orderid=ea1e0d50dcc8cfc6e4b55650c592097e&type=sale&response_code=100'
-#  end
 #
 #  def failed_purchase_response
 #    'response=2&responsetext=DECLINE&authcode=&transactionid=510695919&avsresponse=N&cvvresponse=N&orderid=50357660b0b3ef16f72a3d3b83c46983&type=sale&response_code=200'
