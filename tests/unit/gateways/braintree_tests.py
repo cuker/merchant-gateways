@@ -30,7 +30,6 @@ class BraintreeTests( MerchantGatewaysTestSuite,
         print qsparams
         action = 'AUTH_ONLY'
 
-
     def test_post_data(self):
         #  TODO  how similar is this to AuthorizeNet? merge with?
         #  TODO  why was the rumor that Braintree used an iframe? is this the alternate?

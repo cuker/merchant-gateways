@@ -129,6 +129,13 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
 
         return self.assertEqual(*args, **kwargs)
 
+    def assertEqual(self, first, second, message=''):
+        'NOTE Python 3 fixes this: http://docs.python.org/dev/py3k/library/unittest.html#unittest.TestCase.longMessage '
+
+        if first != second:
+            self.assertTrue( first == second,
+                          (message + ('\n%r != %r' % (first, second))).lstrip() )
+        
     def assert_params(self, params, **dict):  #  ERGO  put me in django-test-extensions!
         qsparams = cgi.parse_qs(params)
 
@@ -140,12 +147,12 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
             self.assert_dict_contains(qsparams, **dict)  #  ERGO  better diagnostic, as usual!
 
         return qsparams
-    
+
     def assert_dict_contains(self, dict, **elements):  #  ERGO  promote me & merge with assert_match_dict
         assert elements, 'assert_dict_contains works best with "kwargs"!'
 
         for k,v in elements.items():
-            self.assert_equal(v, dict.get(k, not v))
+            self.assert_equal(v, dict.get(k, not v), 'for key `%s`' % k)
 
     #@deprecated
     def assert_match_hash(self, reference, sample, diagnostic=''):
