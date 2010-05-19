@@ -14,18 +14,57 @@ LIVE_URL = 'https://orbital1.paymentech.net/authorize' # TODO point to Braintree
 
 class Braintree(Gateway):
 
-    def add_address(self, post, prefix, **options):
+    def add_address(self, post, prefix, **address):
 #      def add_address(post, address,prefix="")
         if prefix:  prefix +="_"
 #        unless address.blank? or address.values.blank? TODO
-        post[prefix+"address1"]    = None # address[:address1].to_s
-        post[prefix+"address2"]    = None # address[:address2].to_s unless address[:address2].blank?
-        post[prefix+"company"]    = None # [:company].to_s
-        post[prefix+"phone"]      = None # address[:phone].to_s
-        post[prefix+"zip"]        = None # address[:zip].to_s
-        post[prefix+"city"]       = None # address[:city].to_s
-        post[prefix+"country"]    = None # address[:country].to_s
-        post[prefix+"state"]      = None # address[:state].blank?  ? 'n/a' : address[:state]
+        post[prefix+"address1"]   = address.get('address1', '')
+        post[prefix+"address2"]   = address.get('address2', '')
+        post[prefix+"company"]    = address.get('company', '')
+        post[prefix+"phone"]      = address.get('phone', '')
+        post[prefix+"zip"]        = address.get('zip', '')
+        post[prefix+"city"]       = address.get('city', '')
+        post[prefix+"state"]      = address.get('state', 'n/a') or 'n/a'
+        post[prefix+"country"]    = address.get('country', '') # TODO .to_s? safe unicode??
+
+#      def authorize(money, creditcard, options = {})
+#        post = {}
+#        add_invoice(post, options)
+#        add_payment_source(post, creditcard,options)
+#        add_address(post, options[:billing_address] || options[:address])
+#        add_address(post, options[:shipping_address], "shipping")
+#        add_customer_data(post, options)
+#        add_currency(post, money, options)
+#        add_processor(post, options)
+#        commit('auth', money, post)
+#      end
+
+#      def commit(action, money, parameters)
+#        parameters[:amount]  = amount(money) if money
+#        response = parse( ssl_post(api_url, post_data(action,parameters)) )
+#        Response.new(response["response"] == "1", message_from(response), response,
+#          :authorization => response["transactionid"],
+#          :test => test?,
+#          :cvv_result => response["cvvresponse"],
+#          :avs_result => { :code => response["avsresponse"] }
+#        )
+#      end
+
+
+    def post_data(self, action, **parameters):
+
+        post = dict( username=self.options['login'],
+                     password=self.options['password'],
+                     type=action ) # TODO if action
+
+        post.update(parameters)
+        from urllib import urlencode  #  TODO use me more
+        print urlencode(post)
+        return urlencode(post)
+#        request = post.merge(parameters).map {|key,value| "#{key}=#{CGI.escape(value.to_s)}"}.join("&")
+#        request
+#      end
+
 
 #  TODO  trust nothing below this line
 
@@ -276,18 +315,6 @@ CREDIT_CARD_CODES = dict( v='001',  #  TODO  convert to Orbital
 #      # Pass :store => some_number_or_string to specify the
 #      # customer_vault_id the gateway should use (make sure it's
 #      # unique).
-#      def authorize(money, creditcard, options = {})
-#        post = {}
-#        add_invoice(post, options)
-#        add_payment_source(post, creditcard,options)
-#        add_address(post, options[:billing_address] || options[:address])
-#        add_address(post, options[:shipping_address], "shipping")
-#        add_customer_data(post, options)
-#        add_currency(post, money, options)
-#        add_processor(post, options)
-#        commit('auth', money, post)
-#      end
-#
 #      def purchase(money, payment_source, options = {})
 #        post = {}
 #        add_invoice(post, options)
@@ -467,18 +494,6 @@ CREDIT_CARD_CODES = dict( v='001',  #  TODO  convert to Orbital
 #        results
 #      end
 #
-#      def commit(action, money, parameters)
-#        parameters[:amount]  = amount(money) if money
-#        response = parse( ssl_post(api_url, post_data(action,parameters)) )
-#        Response.new(response["response"] == "1", message_from(response), response,
-#          :authorization => response["transactionid"],
-#          :test => test?,
-#          :cvv_result => response["cvvresponse"],
-#          :avs_result => { :code => response["avsresponse"] }
-#        )
-#
-#      end
-#
 #      def expdate(creditcard)
 #        year  = sprintf("%.04i", creditcard.year.to_i)
 #        month = sprintf("%.02i", creditcard.month.to_i)
@@ -496,16 +511,6 @@ CREDIT_CARD_CODES = dict( v='001',  #  TODO  convert to Orbital
 #        else
 #          response["responsetext"]
 #        end
-#      end
-#
-#      def post_data(action, parameters = {})
-#        post = {}
-#        post[:username]      = @options[:login]
-#        post[:password]   = @options[:password]
-#        post[:type]       = action if action
-#
-#        request = post.merge(parameters).map {|key,value| "#{key}=#{CGI.escape(value.to_s)}"}.join("&")
-#        request
 #      end
 #
 #      def determine_funding_source(source)

@@ -29,9 +29,36 @@ class BraintreeTests( MerchantGatewaysTestSuite,
 
         self.gateway.add_address(result, '', address1='164 Waverley Street', country='US', state='CO' )
         self.assert_equal(set(["address1", "address2", "city", "company", "country", "phone", "state", "zip"]), set(result.keys()))
-#        self.assert_equal 'CO', result["state"]
- #       self.assert_equal '164 Waverley Street', result["address1"]
-  #      self.assert_equal 'US', result["country"]
+        self.assert_equal('CO', result["state"])
+        self.assert_equal('164 Waverley Street', result["address1"])
+        self.assert_equal('US', result["country"])
+
+    def test_post_data(self):
+
+        params = dict( lastname="Longsen", orderid="",
+                       ccnumber="4242424242424242", amount="1.00", currency="USD",
+                      ccexp="0911", cvv="123", firstname="Longbob" )
+        self.gateway.options.update(login="LOGIN", password="PASSWORD", amount=Money('1.00'))
+        action = 'sale'
+
+        query = self.gateway.post_data(action, **params)
+
+        self.assert_params(query, amount="1.00",  #  TODO  currency?
+                                  ccexp="0911",
+                                  ccnumber="4242424242424242",
+                                  currency="USD",
+                                  cvv="123",
+                                  firstname="Longbob",
+                                  lastname="Longsen",
+                                  # orderid='',  #  TODO  order_id everywhere!! (and get assert_params to handle this correctly!!)
+                                  password="PASSWORD",
+                                  type=action,
+                                  username="LOGIN"
+                                  )
+
+    #type=sale&lastname=Longsen&password=PASSWORD&username=LOGIN&orderid=&ccnumber=4242424242424242&cvv=123&ccexp=0911&currency=USD&amount=1.00&firstname=Longbob
+
+        pass
 
 #  TODO  trust nothing below this line
 
@@ -60,7 +87,6 @@ class BraintreeTests( MerchantGatewaysTestSuite,
         parameters = {'first_name': 'Hermione', 'card_num': '4242424242424242', 'description': '', 'card_code': None, 'invoice_num': 1, 'test_request': 'TRUE', 'amount': '1.00', 'last_name': 'Granger', 'exp_date': '1290', 'login': 'X', 'trans_id': 'Y'}
         reference = '?x_login=X&x_invoice_num=1&x_trans_id=Y&x_last_name=Granger&x_card_code=None&x_card_num=4242424242424242&x_amount=1.00&x_delim_char=%2C&x_tran_key=Y&x_encap_char=%24&x_version=3.1&x_first_name=Hermione&x_exp_date=1290&x_delim_data=TRUE&x_relay_response=FALSE&x_type=AUTH_CAPTURE&x_description=&x_test_request=TRUE'
         self.assert_equal(reference, self.gateway.post_data(action, parameters))
-
 
     def mock_webservice(self, response):
         self.options['billing_address'] = {}
