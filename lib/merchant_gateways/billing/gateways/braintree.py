@@ -16,7 +16,7 @@ class Braintree(Gateway):  # CONSIDER most of this belongs in a class SmartPs, w
 
     def add_address(self, post, prefix, **address):
 #      def add_address(post, address,prefix="")
-        if prefix:  prefix +="_"
+        if prefix:  prefix += "_"
 #        unless address.blank? or address.values.blank? TODO
         post[prefix+"address1"]   = address.get('address1', '')
         post[prefix+"address2"]   = address.get('address2', '')
@@ -80,7 +80,6 @@ class Braintree(Gateway):  # CONSIDER most of this belongs in a class SmartPs, w
             return "This transaction has been approved"
         elif self.result['responsetext'] == "DECLINE":
             return "This transaction has been declined"
-        end
 
         return self.result["responsetext"]
 
