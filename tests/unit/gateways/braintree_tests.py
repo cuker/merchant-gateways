@@ -10,7 +10,6 @@ XML = ElementMaker()
 from money import Money
 import os
 
-#  TODO  trust nothing below this line
 
 class BraintreeTests( MerchantGatewaysTestSuite,
                       MerchantGatewaysTestSuite.CommonTests ):
@@ -41,7 +40,6 @@ class BraintreeTests( MerchantGatewaysTestSuite,
             "me"
         )
 
-
         result = Transaction.sale({
             "amount": "100",
             "credit_card": {
@@ -57,6 +55,13 @@ class BraintreeTests( MerchantGatewaysTestSuite,
 
         self.assertTrue(result.is_success)
         self.assertEquals(Transaction.Status.SubmittedForSettlement, result.transaction.status)
+
+
+#  TODO  trust nothing below this line
+#  TODO  trust nothing below this line
+#  TODO  trust nothing below this line
+#  TODO  trust nothing below this line
+#  TODO  trust nothing below THIS line!
 
 
     def _test_REMOTE_successful_authorization(self):
