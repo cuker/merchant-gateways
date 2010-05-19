@@ -98,6 +98,10 @@ class Braintree(Gateway):  # CONSIDER most of this belongs in a class SmartPs, w
         post['currency'] = str(money.currency)
             # TODO post[:currency] = options[:currency] || currency(money)
 
+#      def add_processor(post, options)  #  TODO  find anyone who gives a darn about this!
+#        post[:processor] = options[:processor] unless options[:processor].nil?
+#      end
+
 
 #  TODO  trust nothing below this comment
 
@@ -457,10 +461,6 @@ CREDIT_CARD_CODES = dict( v='001',  #  TODO  convert to Orbital
 #          post[prefix+"country"]    = address[:country].to_s
 #          post[prefix+"state"]      = address[:state].blank?  ? 'n/a' : address[:state]
 #        end
-#      end
-#
-#      def add_processor(post, options)
-#        post[:processor] = options[:processor] unless options[:processor].nil?
 #      end
 #
 #      def add_invoice(post, options)
