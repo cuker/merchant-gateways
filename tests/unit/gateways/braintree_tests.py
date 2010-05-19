@@ -105,6 +105,25 @@ class BraintreeTests( MerchantGatewaysTestSuite,
         self.assert_equal(dict(currency='GTQ'), post) #  TODO  assert match dict?
 
 
+    def test_parse(self):
+        message = "response=1&responsetext=SUCCESS&authcode=123456&transactionid=510695343&avsresponse=N&cvvresponse=N&orderid=ea1e0d50dcc8cfc6e4b55650c592097e&type=sale&response_code=100"
+        reference = {"avsresponse": "N", "authcode": "123456", "response": "1", "orderid": "ea1e0d50dcc8cfc6e4b55650c592097e", "responsetext": "SUCCESS", "response_code": "100", "transactionid": "510695343", "type": "sale", "cvvresponse": "N"}
+        sample = self.gateway.parse(message)
+        self.assert_match_dict(reference, sample)
+
+#"response=1&responsetext=SUCCESS&authcode=123456&transactionid=510695343&avsresponse=N&cvvresponse=N&orderid=ea1e0d50dcc8cfc6e4b55650c592097e&type=sale&response_code=100"
+#"results"
+#{"avsresponse"=>"N", "authcode"=>"123456", "response"=>"1", "orderid"=>"ea1e0d50dcc8cfc6e4b55650c592097e", "responsetext"=>"SUCCESS", "response_code"=>"100", "transactionid"=>"510695343", "type"=>"sale", "cvvresponse"=>"N"}
+#."body"
+#"response=2&responsetext=DECLINE&authcode=&transactionid=510695919&avsresponse=N&cvvresponse=N&orderid=50357660b0b3ef16f72a3d3b83c46983&type=sale&response_code=200"
+#"results"
+#{"avsresponse"=>"N", "authcode"=>nil, "response"=>"2", "orderid"=>"50357660b0b3ef16f72a3d3b83c46983", "responsetext"=>"DECLINE", "response_code"=>"200", "transactionid"=>"510695919", "type"=>"sale", "cvvresponse"=>"N"}
+#.."body"
+#"response=1&responsetext=SUCCESS&authcode=123456&transactionid=510695343&avsresponse=N&cvvresponse=N&orderid=ea1e0d50dcc8cfc6e4b55650c592097e&type=sale&response_code=100"
+#"results"
+#{"avsresponse"=>"N", "authcode"=>"123456", "response"=>"1", "orderid"=>"ea1e0d50dcc8cfc6e4b55650c592097e", "responsetext"=>"SUCCESS", "response_code"=>"100", "transactionid"=>"510695343", "type"=>"sale", "cvvresponse"=>"N"}
+
+
 #  TODO  trust nothing below this comment
 
     def test_successful_authorization(self):
@@ -404,13 +423,8 @@ class BraintreeTests( MerchantGatewaysTestSuite,
             TxRefNum='4A785F5106CCDC41A936BFF628BF73036FEC5401',
         )
 
-    def test_parse(self):
-        soap = self.successful_authorization_response()
-        sample = self.gateway.parse(soap)
-        reference = self.parsed_authentication_response()
-        self.assert_match_hash(reference, sample)
-
     def test_parse_purchase_response(self):
+        return # TODO  drain me away!
         soap = self.successful_purchase_response()
         sample = self.gateway.parse(soap)
         reference = {'AVSRespCode': 'B ', 'RespCode': '00', 'HostCVV2RespCode': 'M', 'TerminalID': '000', 'CVV2RespCode': 'M', 'RespMsg': None, 'CardBrand': 'MC', 'MerchantID': '000000', 'AccountNum': '5454545454545454', 'ProfileProcStatus': '0', 'CustomerName': 'JOE SMITH', 'MessageType': 'AC', 'HostAVSRespCode': 'I3', 'RecurringAdviceCd': None, 'IndustryType': None, 'OrderID': '1', 'StatusMsg': 'Approved', 'ApprovalStatus': '1', 'TxRefIdx': '1', 'TxRefNum': '4A785F5106CCDC41A936BFF628BF73036FEC5401', 'CustomerRefNum': '2145108', 'CustomerProfileMessage': 'Profile Created', 'AuthCode': 'tst554', 'RespTime': '121825', 'ProcStatus': '0', 'CAVVRespCode': None, 'HostRespCode': '100'}

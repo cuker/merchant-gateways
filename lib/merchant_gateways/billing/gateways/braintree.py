@@ -50,6 +50,17 @@ class Braintree(Gateway):  # CONSIDER most of this belongs in a class SmartPs, w
 #        )
 #      end
 
+    def parse(self, urlencoded):
+        import cgi
+        qsparams = cgi.parse_qs(urlencoded)
+
+        for k,v in qsparams.items():  #  TODO  have we seen this before..?
+            if len(v) == 1:
+                qsparams[k] = v[0] # easier to manipulate, because most real-life params are singular
+
+        return qsparams
+
+
     def commit_TODO_deprecate_me(self, request, **options):
         url           = self.is_test and TEST_URL or LIVE_URL
         self.request  = request  # CONSIDER  standardize this
@@ -78,7 +89,7 @@ class Braintree(Gateway):  # CONSIDER most of this belongs in a class SmartPs, w
 
         post.update(parameters)
         from urllib import urlencode  #  TODO use me more
-        print urlencode(post)
+
         return urlencode(post)
 
     def add_invoice(self, post, **options):
@@ -192,17 +203,6 @@ class Braintree(Gateway):  # CONSIDER most of this belongs in a class SmartPs, w
 #                      XML.cardType('001')  #  TODO
 
 # TODO  question fields in Cybersource        (template_p % fields) )
-
-    def parse(self, soap):
-        result = {}
-        keys  = self.soap_keys()
-        doc  = etree.XML(soap)
-
-        for key in keys:
-            nodes = doc.xpath('//' + key)
-            result[key] = len(nodes) and nodes[0].text or None
-
-        return result
 
     def soap_keys(self):  #   CONSIDER  better name coz it's not always about the SOAP
         return ( 'AccountNum',                'MerchantID',
@@ -499,16 +499,6 @@ CREDIT_CARD_CODES = dict( v='001',  #  TODO  convert to Orbital
 #
 #      def add_transaction(post, auth)
 #        post[:transactionid] = auth
-#      end
-#
-#      def parse(body)
-#        results = {}
-#        body.split(/&/).each do |pair|
-#          key,val = pair.split(/=/)
-#          results[key] = val
-#        end
-#
-#        results
 #      end
 #
 #      def expdate(creditcard)
