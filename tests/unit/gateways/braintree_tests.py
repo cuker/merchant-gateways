@@ -9,6 +9,8 @@ from lxml.builder import ElementMaker
 XML = ElementMaker()
 from money import Money
 import os
+import braintree
+from braintree import Transaction, Environment
 
 # TODO use this? XmlUtil.dict_from_xml(data)
 
@@ -18,12 +20,112 @@ class BraintreeTests( MerchantGatewaysTestSuite,
     def gateway_type(self):
         return Braintree
 
-    def _test_REMOTE_using_braintree_lib(self):  #  TODO  add braintree to our REQUIREMENTS
+    def test_mock_braintree(self):  #  TODO  then squeeze that mock into our common pattern!
+        import datetime
+        auth_response = {u'transaction': {u'amount': u'100.00',
+                  u'avs_error_response_code': None,
+                  u'avs_postal_code_response_code': u'I',
+                  u'avs_street_address_response_code': u'I',
+                  u'billing': {u'company': None,
+                               u'country_name': None,
+                               u'extended_address': None,
+                               u'first_name': None,
+                               u'id': None,
+                               u'last_name': None,
+                               u'locality': None,
+                               u'postal_code': None,
+                               u'region': None,
+                               u'street_address': None},
+                  u'created_at': datetime.datetime(2010, 5, 19, 22, 38, 42),
+                  u'credit_card': {u'bin': u'510510',
+                                   u'card_type': u'MasterCard',
+                                   u'cardholder_name': None,
+                                   u'customer_location': u'US',
+                                   u'expiration_month': u'05',
+                                   u'expiration_year': u'2012',
+                                   u'last_4': u'5100',
+                                   u'token': None},
+                  u'currency': u'USD',
+                  u'custom_fields': '',
+                  u'customer': {u'company': None,
+                                u'email': None,
+                                u'fax': None,
+                                u'first_name': None,
+                                u'id': None,
+                                u'last_name': None,
+                                u'phone': None,
+                                u'website': None},
+                  u'cvv_response_code': u'I',
+                  u'id': u'8y5jn6',
+                  u'merchant_account_id': u'CukerInteractive',  #  TODO  sterilize me!
+                  u'order_id': None,
+                  u'processor_authorization_code': u'54158',
+                  u'processor_response_code': u'1000',
+                  u'processor_response_text': u'Approved',
+                  u'refund_id': None,
+                  u'shipping': {u'company': None,
+                                u'country_name': None,
+                                u'extended_address': None,
+                                u'first_name': None,
+                                u'id': None,
+                                u'last_name': None,
+                                u'locality': None,
+                                u'postal_code': None,
+                                u'region': None,
+                                u'street_address': None},
+                  u'status': u'submitted_for_settlement',
+                  u'status_history': [{u'amount': u'100.00',
+                                       u'status': u'authorized',
+                                       u'timestamp': datetime.datetime(2010, 5, 19, 22, 38, 44),
+                                       u'transaction_source': u'API',
+                                       u'user': u'Phlip'},
+                                      {u'amount': u'100.00',
+                                       u'status': u'submitted_for_settlement',
+                                       u'timestamp': datetime.datetime(2010, 5, 19, 22, 38, 44),
+                                       u'transaction_source': u'API',
+                                       u'user': u'Mongo'}],
+                  u'type': u'sale',
+                  u'updated_at': datetime.datetime(2010, 5, 19, 22, 38, 44)}}
+
+        from mock import patch_object
+        from braintree.util.http import Http
+
+
+    #    got = self.__http_do("POST", path, params)  #  TODO  assert the params!
+
+        mock_do = Mock()
+        where_da_cert = Environment.braintree_root() + "/ssl/sandbox_braintreegateway_com.ca.crt"
+
+        Environment.Sandbox = Environment("sandbox.braintreegateway.com", "443", True, where_da_cert)
+
+        braintree.Configuration.configure(
+            braintree.Environment.Sandbox,  #  TODO the vaunted is_test should key this!!
+            "TODO",
+            "config",
+            "us"
+        )
+        return # we sure luv patch_object, huh?!
+        with patch_object(Http, '__http_do', mock_do) as mock_do:
+            mock_do.return_value = auth_response
+
+            result = Transaction.sale({
+                "amount": "100",
+                "credit_card": {
+                    "number": "5105105105105100",
+                    "expiration_date": "05/2012"
+                } #,
+    #            "options": {
+     #               "submit_for_settlement": True TODO  turn this on for sale (purchase) off for authorize
+               # }
+            })
+            print 'epic win'
+            print result
+
+
+    def _test_REMOTE_using_braintree_lib(self):  #  TODO  add braintree to our (optional!) REQUIREMENTS
         import sys, M2Crypto  #  TODO  document M2Crypto requires SWIG (and that it's a POS!) sudo aptitude install swig, and get python-mcrypto from your package mangler
 
-        sys.path.insert(0, '/home/phlip/tools/braintree-2.2.1')
-        import braintree
-        from braintree import Transaction, Environment
+        #sys.path.insert(0, '/home/phlip/tools/braintree-2.2.1')
         #print
         where_da_cert = Environment.braintree_root() + "/ssl/sandbox_braintreegateway_com.ca.crt"
 
@@ -47,7 +149,8 @@ class BraintreeTests( MerchantGatewaysTestSuite,
            # }
         })
 
-# TODO this is a raw response from the gateway 4 a sale:  {u'transaction': {u'merchant_account_id': u'CukerInteractive', u'updated_at': datetime.datetime(2010, 5, 19, 22, 38, 44), u'currency': u'USD', u'processor_response_code': u'1000', u'id': u'8y5jn6', u'custom_fields': '', u'billing': {u'first_name': None, u'last_name': None, u'extended_address': None, u'locality': None, u'company': None, u'postal_code': None, u'country_name': None, u'region': None, u'id': None, u'street_address': None}, u'refund_id': None, u'cvv_response_code': u'I', u'type': u'sale', u'status': u'submitted_for_settlement', u'avs_street_address_response_code': u'I', u'order_id': None, u'avs_error_response_code': None, u'credit_card': {u'bin': u'510510', u'expiration_month': u'05', u'expiration_year': u'2012', u'last_4': u'5100', u'card_type': u'MasterCard', u'cardholder_name': None, u'token': None, u'customer_location': u'US'}, u'processor_authorization_code': u'54158', u'customer': {u'website': None, u'first_name': None, u'last_name': None, u'company': None, u'fax': None, u'email': None, u'phone': None, u'id': None}, u'processor_response_text': u'Approved', u'created_at': datetime.datetime(2010, 5, 19, 22, 38, 42), u'avs_postal_code_response_code': u'I', u'shipping': {u'first_name': None, u'last_name': None, u'extended_address': None, u'locality': None, u'company': None, u'postal_code': None, u'country_name': None, u'region': None, u'id': None, u'street_address': None}, u'amount': u'100.00', u'status_history': [{u'status': u'authorized', u'timestamp': datetime.datetime(2010, 5, 19, 22, 38, 44), u'amount': u'100.00', u'user': u'Phlip', u'transaction_source': u'API'}, {u'status': u'submitted_for_settlement', u'timestamp': datetime.datetime(2010, 5, 19, 22, 38, 44), u'amount': u'100.00', u'user': u'Phlip', u'transaction_source': u'API'}]}}
+# TODO this is a raw response from the gateway 4 a sale:
+
 
 #  this is a raw response from the gateway 4 a auth: {u'transaction': {u'merchant_account_id': u'CukerInteractive', u'updated_at': datetime.datetime(2010, 5, 19, 23, 25, 47), u'currency': u'USD', u'processor_response_code': u'1000', u'id': u'fbyrfg', u'custom_fields': '', u'billing': {u'first_name': None, u'last_name': None, u'extended_address': None, u'locality': None, u'company': None, u'postal_code': None, u'country_name': None, u'region': None, u'id': None, u'street_address': None}, u'refund_id': None, u'cvv_response_code': u'I', u'type': u'sale', u'status': u'authorized', u'avs_street_address_response_code': u'I', u'order_id': None, u'avs_error_response_code': None, u'credit_card': {u'bin': u'510510', u'expiration_month': u'05', u'expiration_year': u'2012', u'last_4': u'5100', u'card_type': u'MasterCard', u'cardholder_name': None, u'token': None, u'customer_location': u'US'}, u'processor_authorization_code': u'54173', u'customer': {u'website': None, u'first_name': None, u'last_name': None, u'company': None, u'fax': None, u'email': None, u'phone': None, u'id': None}, u'processor_response_text': u'Approved', u'created_at': datetime.datetime(2010, 5, 19, 23, 25, 46), u'avs_postal_code_response_code': u'I', u'shipping': {u'first_name': None, u'last_name': None, u'extended_address': None, u'locality': None, u'company': None, u'postal_code': None, u'country_name': None, u'region': None, u'id': None, u'street_address': None}, u'amount': u'100.00', u'status_history': [{u'status': u'authorized', u'timestamp': datetime.datetime(2010, 5, 19, 23, 25, 47), u'amount': u'100.00', u'user': u'Phlip', u'transaction_source': u'API'}]}}
 
