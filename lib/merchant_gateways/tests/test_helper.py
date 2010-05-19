@@ -136,10 +136,14 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
             if len(v) == 1:
                 qsparams[k] = v[0] # easier to manipulate, because most real-life params are singular
 
-        if dict:  self.assert_dict_contains(qsparams, **dict)  #  ERGO  better diagnostic, as usual!
+        if dict:  #  assert_params optionally does not check any params
+            self.assert_dict_contains(qsparams, **dict)  #  ERGO  better diagnostic, as usual!
+
         return qsparams
     
     def assert_dict_contains(self, dict, **elements):  #  ERGO  promote me & merge with assert_match_dict
+        assert elements, 'assert_dict_contains works best with "kwargs"!'
+
         for k,v in elements.items():
             self.assert_equal(v, dict.get(k, not v))
 
