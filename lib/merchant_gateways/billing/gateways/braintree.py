@@ -27,21 +27,21 @@ class Braintree(Gateway):  # CONSIDER most of this belongs in a class SmartPs, w
         post[prefix+"state"]      = address.get('state', 'n/a') or 'n/a'
         post[prefix+"country"]    = address.get('country', '') # TODO .to_s? safe unicode??
 
-#      def authorize(money, creditcard, options = {})
-#        post = {}
-#        add_invoice(post, options)
-#        add_payment_source(post, creditcard,options)
-#        add_address(post, options[:billing_address] || options[:address])
-#        add_address(post, options[:shipping_address], "shipping")
-#        add_customer_data(post, options)
-#        add_currency(post, money, options)
-#        add_processor(post, options)
-#        commit('auth', money, post)
-#      end
+    def authorize(self, money, credit_card, **options):
+        post = {}
+        self.add_invoice(post, **options)
+        self.add_payment_source(post, credit_card, **options)
+        self.add_address(post, '', options.get('billing_address', options.get('address', {})))  #  TODO  TDD all that nonsense!
+        self.add_address(post, "shipping", options.get('shipping_address', {}))  #  TODO  require the addresses?
+        self.add_customer_data(post, **options)
+        self.add_currency(post, money, **options)
+        self.add_processor(post, **options)
+        self.commit('auth', money, post)
 
-#      def commit(action, money, parameters)
-#        parameters[:amount]  = amount(money) if money
-#        response = parse( ssl_post(api_url, post_data(action,parameters)) )
+    def commit(action, money, parameters):  #  TODO  is it post or parameters?
+        if money:  parameters['amount'] = money.amount
+        data = self.post_data(action, parameters)
+       # response = parse( ssl_post(api_url, post_data(action,parameters)) )
 #        Response.new(response["response"] == "1", message_from(response), response,
 #          :authorization => response["transactionid"],
 #          :test => test?,
@@ -49,6 +49,26 @@ class Braintree(Gateway):  # CONSIDER most of this belongs in a class SmartPs, w
 #          :avs_result => { :code => response["avsresponse"] }
 #        )
 #      end
+
+    def commit_TODO_deprecate_me(self, request, **options):
+        url           = self.is_test and TEST_URL or LIVE_URL
+        self.request  = request  # CONSIDER  standardize this
+        # request       = self.build_request(request, **options)
+        self.result   = self.parse(self.post_webservice(url, request))  #  CONSIDER  no version of post_webservice needs options
+        self.success  = self.result['ApprovalStatus'] == '1'
+        self.message  = self.result['StatusMsg']
+        authorization = self.result['TxRefNum']
+        avs_resp_code = self.result.get('AVSRespCode', '') or ''
+
+        r = self.__class__.Response( self.success, self.message, self.result,
+                                     is_test=self.is_test,
+                                     authorization=authorization,
+                                     avs_result=avs_resp_code.strip(),
+                                     cvv_result=self.result['CVV2RespCode']  #  CONSIDER  what about the 2?
+                                    )
+        r.result = self.result  #  TODO  use params for something else
+        return r
+
 
     def post_data(self, action, **parameters):
 
@@ -104,19 +124,6 @@ class Braintree(Gateway):  # CONSIDER most of this belongs in a class SmartPs, w
 
 
 #  TODO  trust nothing below this comment
-
-    def authorize(self, money, creditcard, **options):
-        '''
-        Request an authorization for an amount from CyberSource
-
-        You must supply an :order_id in the options hash  TODO  complain if it ain't there
-        '''
-
-        assert isinstance(money, Money), 'TODO  always pass in a Money object - no exceptions!'
-        self.options.update(options)
-
-        message = self.build_authorization_request(money, creditcard, **self.options)  #  TODO  _authorization_request, everywhere!!
-        return self.commit(message, **self.options)
 
     def purchase(self, money, credit_card, **options):
         '''Purchase is an auth followed by a capture
@@ -215,25 +222,6 @@ class Braintree(Gateway):  # CONSIDER most of this belongs in a class SmartPs, w
 
     class Response(response.Response):
         pass
-
-    def commit(self, request, **options):
-        url           = self.is_test and TEST_URL or LIVE_URL
-        self.request  = request  # CONSIDER  standardize this
-        # request       = self.build_request(request, **options)
-        self.result   = self.parse(self.post_webservice(url, request))  #  CONSIDER  no version of post_webservice needs options
-        self.success  = self.result['ApprovalStatus'] == '1'
-        self.message  = self.result['StatusMsg']
-        authorization = self.result['TxRefNum']
-        avs_resp_code = self.result.get('AVSRespCode', '') or ''
-
-        r = self.__class__.Response( self.success, self.message, self.result,
-                                     is_test=self.is_test,
-                                     authorization=authorization,
-                                     avs_result=avs_resp_code.strip(),
-                                     cvv_result=self.result['CVV2RespCode']  #  CONSIDER  what about the 2?
-                                    )
-        r.result = self.result  #  TODO  use params for something else
-        return r
 
     def build_authorization_request(self, money, credit_card, **options):
         from money.Money import CURRENCY

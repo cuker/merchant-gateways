@@ -234,7 +234,7 @@ class MerchantGatewaysTestSuite( MerchantGatewaysUtilitiesTestSuite,
 
         self.subscription_id = '100748'  #  TODO  use or lose this
 
-    class CommonTests:
+    class CommonTests:  #  CONSIDER  move us to gateway_test.py?
 
         def gateway_response_type(self):
             return self.gateway_type().Response
