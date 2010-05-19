@@ -50,17 +50,6 @@ class Braintree(Gateway):  # CONSIDER most of this belongs in a class SmartPs, w
 #        )
 #      end
 
-    def parse(self, urlencoded):
-        import cgi
-        qsparams = cgi.parse_qs(urlencoded)
-
-        for k,v in qsparams.items():  #  TODO  have we seen this before..?
-            if len(v) == 1:
-                qsparams[k] = v[0] # easier to manipulate, because most real-life params are singular
-
-        return qsparams
-
-
     def commit_TODO_deprecate_me(self, request, **options):
         url           = self.is_test and TEST_URL or LIVE_URL
         self.request  = request  # CONSIDER  standardize this
@@ -132,6 +121,16 @@ class Braintree(Gateway):  # CONSIDER most of this belongs in a class SmartPs, w
 #      def add_processor(post, options)  #  TODO  find anyone who gives a darn about this!
 #        post[:processor] = options[:processor] unless options[:processor].nil?
 #      end
+
+    def parse(self, urlencoded):
+        import cgi
+        qsparams = cgi.parse_qs(urlencoded)
+
+        for k,v in qsparams.items():  #  TODO  have we seen this before..?
+            if len(v) == 1:
+                qsparams[k] = v[0] # easier to manipulate, because most real-life params are singular
+
+        return qsparams
 
 
 #  TODO  trust nothing below this comment

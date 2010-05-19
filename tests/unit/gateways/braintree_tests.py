@@ -104,7 +104,6 @@ class BraintreeTests( MerchantGatewaysTestSuite,
         self.gateway.add_currency(post, Money('2.00', 'GTQ'))  # Guatemalan Quetzals!
         self.assert_equal(dict(currency='GTQ'), post) #  TODO  assert match dict?
 
-
     def test_parse(self):
         message = "response=1&responsetext=SUCCESS&authcode=123456&transactionid=510695343&avsresponse=N&cvvresponse=N&orderid=ea1e0d50dcc8cfc6e4b55650c592097e&type=sale&response_code=100"
         reference = {"avsresponse": "N", "authcode": "123456", "response": "1", "orderid": "ea1e0d50dcc8cfc6e4b55650c592097e", "responsetext": "SUCCESS", "response_code": "100", "transactionid": "510695343", "type": "sale", "cvvresponse": "N"}
