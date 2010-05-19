@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from gateway import Gateway, default_dict, xStr
+
+
 from merchant_gateways.billing import response
 from merchant_gateways.billing.avs_result import AVSResult
 from merchant_gateways.billing.cvv_result import CVVResult
@@ -16,6 +18,14 @@ TEST_URI = 'sandbox.braintreegateway.com'
 LIVE_URI = 'secure.braintreepaymentgateway.com'
 
 class Braintree(Gateway):  # CONSIDER most of this belongs in a class SmartPs, which is Braintree's actual implementation
+
+
+#  TODO  trust nothing below this line
+#  TODO  trust nothing below this line
+#  TODO  trust nothing below this line
+#  TODO  trust nothing below this line
+#  TODO  trust nothing below THIS line!
+
 
     def add_address(self, post, prefix, **address):
 #      def add_address(post, address,prefix="")
