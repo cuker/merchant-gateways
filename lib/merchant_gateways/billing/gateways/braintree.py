@@ -12,7 +12,7 @@ from money import Money
 TEST_URL = 'https://orbitalvar1.paymentech.net/authorize' # TODO point to Braintree!
 LIVE_URL = 'https://orbital1.paymentech.net/authorize' # TODO point to Braintree!
 
-class Braintree(Gateway):
+class Braintree(Gateway):  # CONSIDER most of this belongs in a class SmartPs, which is Braintree's actual implementation
 
     def add_address(self, post, prefix, **address):
 #      def add_address(post, address,prefix="")
@@ -88,6 +88,11 @@ class Braintree(Gateway):
     def expdate(self, credit_card):
         return '%02i%s' % (credit_card.month, str(credit_card.year)[-2:])
 
+    def add_customer_data(self, post, **options):
+        email = options.get('email', None)
+        if email:  post['email'] = email
+        ip = options.get('ip', None)
+        if ip:  post['ipaddress'] = ip
 
 #  TODO  trust nothing below this line
 

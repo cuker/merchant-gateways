@@ -88,6 +88,17 @@ class BraintreeTests( MerchantGatewaysTestSuite,
         self.credit_card.year = 90
         self.assert_equal('0990', self.gateway.expdate(self. credit_card))
 
+    def test_add_customer_data(self):
+        post = {}
+        self.gateway.add_customer_data(post, email='Lord.Hanuman@ArbudaDevi.org')
+        self.assert_equal(dict(email='Lord.Hanuman@ArbudaDevi.org'), post, 'must not contain ipaddress')
+        post = {}
+        self.gateway.add_customer_data(post, ip='72.55.146.179')
+        self.assert_equal(dict(ipaddress='72.55.146.179'), post, 'must not contain email')
+        post = {}
+        self.gateway.add_customer_data(post, email='Lord.Hanuman@ArbudaDevi.org', ip='72.55.146.179')
+        self.assert_equal(dict(email='Lord.Hanuman@ArbudaDevi.org', ipaddress='72.55.146.179'), post)
+
 #  TODO  trust nothing below this line
 
     def test_assert_params(self):
