@@ -135,7 +135,7 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
         if first != second:
             self.assertTrue( first == second,
                           (message + ('\n%r != %r' % (first, second))).lstrip() )
-        
+
     def assert_params(self, params, **dict):  #  ERGO  put me in django-test-extensions!
         qsparams = cgi.parse_qs(params)
 
@@ -160,7 +160,6 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
 
     def assert_match_dict(self, reference, sample, diagnostic=''):
         if reference == sample:  return
-        print dir(reference)
         reference = reference.copy()
         sample = sample.copy()
         from pprint import pformat
@@ -260,7 +259,6 @@ class MerchantGatewaysTestSuite( MerchantGatewaysUtilitiesTestSuite,
         def test_successful_purchase(self):
             self.mock_webservice(self.successful_purchase_response())
             self.response = self.gateway.purchase(self.amount, self.credit_card, **self.options)
-            print self.response
             self.assert_successful_purchase()
 
 nil = None # C-;

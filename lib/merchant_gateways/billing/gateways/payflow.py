@@ -132,7 +132,8 @@ xmlns="http://www.paypal.com/XMLPay">
 
     class Response(response.Response):
         def avs_result(self):
-            print self.__dict__
+            'TODO'
+          #  print self.__dict__
 
 # TODO      def profile_id
 #        @params['profile_id']
