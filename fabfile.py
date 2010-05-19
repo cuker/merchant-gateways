@@ -81,10 +81,12 @@ def document(output='./docs/'):
          "--graph=all --no-frames --css=doc/epydoc.css " +
          "./tests ./lib/merchant_gateways --output=" + output )
 
-def ci(whatfo='refactor'):
+
+def ci(whatfo='refactor'):  #  TODO  option to invoke an editor (yilk!)  
     test()
     _sh('git commit -am"%s"' % whatfo)
     _sh('git push')
+
 
 def _sh(cmd):
     local(cmd, capture=False)
