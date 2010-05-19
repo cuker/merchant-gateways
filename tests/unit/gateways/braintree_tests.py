@@ -33,11 +33,18 @@ class BraintreeTests( MerchantGatewaysTestSuite,
         self.assert_equal('164 Waverley Street', result["address1"])
         self.assert_equal('US', result["country"])
 
+    def test_add_billing_address(self):
+        result = {}  #  TODO  make this a member
+
+        self.gateway.add_invoice(result, order_id = 42)
+        self.assert_equal('42', result["orderid"])
+
     def test_post_data(self):
 
         params = dict( lastname="Longsen", orderid="",
                        ccnumber="4242424242424242", amount="1.00", currency="USD",
                       ccexp="0911", cvv="123", firstname="Longbob" )
+
         self.gateway.options.update(login="LOGIN", password="PASSWORD", amount=Money('1.00'))
         action = 'sale'
 
@@ -58,7 +65,28 @@ class BraintreeTests( MerchantGatewaysTestSuite,
 
     #type=sale&lastname=Longsen&password=PASSWORD&username=LOGIN&orderid=&ccnumber=4242424242424242&cvv=123&ccexp=0911&currency=USD&amount=1.00&firstname=Longbob
 
-        pass
+    def test_add_creditcard(self):
+#        if options[:store] TODO here's your cim (?)
+#          post[:customer_vault] = "add_customer"
+#          post[:customer_vault_id] = options[:store] unless options[:store] == true
+#        end
+        post = {}
+        self.gateway.add_credit_card(post, self.credit_card)
+
+        self.assert_dict_contains( post,
+                                   ccnumber=self.credit_card.number )
+#        post[:cvv] = creditcard.verification_value if creditcard.verification_value?
+                                   # ccexp=self.credit_card.ccexp )
+#        post[:firstname] = creditcard.first_name
+#        post[:lastname]  = creditcard.last_name
+
+    def test_expdate(self):
+        self.credit_card.month = 9
+        self.credit_card.year = 2090
+        self.assert_equal('0990', self.gateway.expdate(self. credit_card))
+        self.credit_card.month = 9
+        self.credit_card.year = 90
+        self.assert_equal('0990', self.gateway.expdate(self. credit_card))
 
 #  TODO  trust nothing below this line
 
@@ -69,7 +97,7 @@ class BraintreeTests( MerchantGatewaysTestSuite,
                                          password='PASSWORD',
                                          #orderid=False,  #  ERGO  uh, is this helpful??
                                          ccnumber='4242424242424242')
-        print qsparams
+   #     print qsparams
         action = 'AUTH_ONLY'
 
     def test_post_data_TODO_deprecate(self):
@@ -77,7 +105,7 @@ class BraintreeTests( MerchantGatewaysTestSuite,
         #  TODO  why was the rumor that Braintree used an iframe? is this the alternate?
         params = 'type=sale&lastname=Longsen&password=PASSWORD&username=LOGIN&orderid=&ccnumber=4242424242424242&cvv=123&ccexp=0911&currency=USD&amount=1.00&firstname=Longbob'
         # type=sale&lastname=Longsen&password=PASSWORD&username=LOGIN&orderid=&ccnumber=4242424242424242&cvv=123&ccexp=0911&currency=USD&amount=1.00&firstname=Longbob.address1=1234+My+Street&company=Widgets+Inc&city=Ottawa&type=auth&lastname=Longsen&address2=Apt+1&zip=K1C2N6&country=CA&password=PASSWORD&username=LOGIN&orderid=&ccnumber=4242424242424242&phone=%28555%29555-5555&cvv=123&ccexp=0911&currency=USD&amount=1.00&firstname=Longbob&state=ON..address1=1234+My+Street&company=Widgets+Inc&city=Ottawa&type=auth&lastname=Longsen&address2=Apt+1&zip=K1C2N6&country=CA&password=PASSWORD&username=LOGIN&orderid=&ccnumber=4242424242424242&phone=%28555%29555-5555&cvv=123&ccexp=0911&currency=USD&amount=1.00&firstname=Longbob&state=ON'
-        print self.assert_params(params)
+  #      print self.assert_params(params)
         action = 'AUTH_ONLY'
         return
         parameters = {'first_name': 'Hermione', 'card_num': '4242424242424242', 'description': 'Chamber of Secrets', 'card_code': None, 'invoice_num': 1, 'test_request': 'TRUE', 'amount': '1.00', 'last_name': 'Granger', 'exp_date': '1290'}

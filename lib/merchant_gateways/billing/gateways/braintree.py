@@ -50,7 +50,6 @@ class Braintree(Gateway):
 #        )
 #      end
 
-
     def post_data(self, action, **parameters):
 
         post = dict( username=self.options['login'],
@@ -61,9 +60,33 @@ class Braintree(Gateway):
         from urllib import urlencode  #  TODO use me more
         print urlencode(post)
         return urlencode(post)
-#        request = post.merge(parameters).map {|key,value| "#{key}=#{CGI.escape(value.to_s)}"}.join("&")
-#        request
+
+    def add_invoice(self, post, **options):
+        post['orderid'] = str(options.get('order_id', '')) # TODO .to_s.gsub(/[^\w.]/, '')
+
+    def add_payment_source(self, params, source, **options):  #  TODO  rename params to post
+# TODO        case determine_funding_source(source)
+#        when :vault       then add_customer_vault_id(params, source)
+#        when :credit_card then
+        self.add_creditcard(params, source, **options)
+#        when :check       then add_check(params, source, options)
+#        end
 #      end
+
+    def add_credit_card(self, post, credit_card, **options):
+#        if options[:store]
+#          post[:customer_vault] = "add_customer"
+#          post[:customer_vault_id] = options[:store] unless options[:store] == true
+#        end
+        post.update(ccnumber=credit_card.number)
+#        post[:cvv] = creditcard.verification_value if creditcard.verification_value?
+#        post[:ccexp]  = expdate(creditcard)
+#        post[:firstname] = creditcard.first_name
+#        post[:lastname]  = creditcard.last_name
+#      end
+
+    def expdate(self, credit_card):
+        return '%02i%s' % (credit_card.month, str(credit_card.year)[-2:])
 
 
 #  TODO  trust nothing below this line
