@@ -22,6 +22,54 @@ class BraintreeTests( MerchantGatewaysTestSuite,
 #    'response=1&responsetext=SUCCESS&authcode=123456&transactionid=510695343&avsresponse=N&cvvresponse=N&orderid=ea1e0d50dcc8cfc6e4b55650c592097e&type=sale&response_code=100'
 #  end
 
+    def _test_REMOTE_using_braintree_lib(self):  #  TODO  add braintree to our REQUIREMENTS
+        import sys, M2Crypto  #  TODO  document M2Crypto requires SWIG (and that it's a POS!) sudo aptitude install swig, and get python-mcrypto from your package mangler
+
+
+        sys.path.insert(0, '/home/phlip/tools/braintree-2.2.1')
+        import braintree
+        from braintree import Transaction, Environment
+        #print
+        where_da_cert = Environment.braintree_root() + "/ssl/sandbox_braintreegateway_com.ca.crt"
+
+        Environment.Sandbox = Environment("sandbox.braintreegateway.com", "443", True, where_da_cert)
+
+        braintree.Configuration.configure(
+            braintree.Environment.Sandbox,
+            "TODO",
+            "config",
+            "me"
+        )
+
+
+        result = Transaction.sale({
+            "amount": "100",
+            "credit_card": {
+                "number": "5105105105105100",
+                "expiration_date": "05/2012"
+            },
+            "options": {
+                "submit_for_settlement": True
+            }
+        })
+
+# TODO this is a raw response from the gateway:  {u'transaction': {u'merchant_account_id': u'CukerInteractive', u'updated_at': datetime.datetime(2010, 5, 19, 22, 38, 44), u'currency': u'USD', u'processor_response_code': u'1000', u'id': u'8y5jn6', u'custom_fields': '', u'billing': {u'first_name': None, u'last_name': None, u'extended_address': None, u'locality': None, u'company': None, u'postal_code': None, u'country_name': None, u'region': None, u'id': None, u'street_address': None}, u'refund_id': None, u'cvv_response_code': u'I', u'type': u'sale', u'status': u'submitted_for_settlement', u'avs_street_address_response_code': u'I', u'order_id': None, u'avs_error_response_code': None, u'credit_card': {u'bin': u'510510', u'expiration_month': u'05', u'expiration_year': u'2012', u'last_4': u'5100', u'card_type': u'MasterCard', u'cardholder_name': None, u'token': None, u'customer_location': u'US'}, u'processor_authorization_code': u'54158', u'customer': {u'website': None, u'first_name': None, u'last_name': None, u'company': None, u'fax': None, u'email': None, u'phone': None, u'id': None}, u'processor_response_text': u'Approved', u'created_at': datetime.datetime(2010, 5, 19, 22, 38, 42), u'avs_postal_code_response_code': u'I', u'shipping': {u'first_name': None, u'last_name': None, u'extended_address': None, u'locality': None, u'company': None, u'postal_code': None, u'country_name': None, u'region': None, u'id': None, u'street_address': None}, u'amount': u'100.00', u'status_history': [{u'status': u'authorized', u'timestamp': datetime.datetime(2010, 5, 19, 22, 38, 44), u'amount': u'100.00', u'user': u'Phlip', u'transaction_source': u'API'}, {u'status': u'submitted_for_settlement', u'timestamp': datetime.datetime(2010, 5, 19, 22, 38, 44), u'amount': u'100.00', u'user': u'Phlip', u'transaction_source': u'API'}]}}
+
+        self.assertTrue(result.is_success)
+        self.assertEquals(Transaction.Status.SubmittedForSettlement, result.transaction.status)
+
+
+    def _test_REMOTE_successful_authorization(self):
+        #self.mock_webservice(self.successful_authorization_response())
+        self.options['description'] = 'Chamber of Secrets'
+        self.response = self.gateway.authorize(self.amount, self.credit_card, **self.options)
+
+# TODO        assert self.response.is_test
+        self.assert_successful_authorization()
+        self.assert_success()
+        self.assert_equal(repr(True), repr(self.response.is_test))  #  TODO  why the repr?
+
+
     def successful_authorization_response(self):
         return 'response=1&responsetext=SUCCESS&authcode=123456&transactionid=510695343&avsresponse=N&cvvresponse=N&' + \
                'orderid=ea1e0d50dcc8cfc6e4b55650c592097e&type=sale&response_code=100'

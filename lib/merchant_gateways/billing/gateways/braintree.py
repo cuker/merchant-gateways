@@ -9,8 +9,11 @@ from lxml.builder import ElementMaker
 XML = ElementMaker()
 from money import Money
 
-TEST_URL = 'https://orbitalvar1.paymentech.net/authorize' # TODO point to Braintree!
-LIVE_URL = 'https://orbital1.paymentech.net/authorize' # TODO point to Braintree!
+TEST_URI = 'sandbox.braintreegateway.com'
+
+# TODO  what's with the cert? Environment.Sandbox = Environment("sandbox.braintreegateway.com", "443", True, Environment.braintree_root() + "/ssl/sandbox_braintreegateway_com.ca.crt")
+
+LIVE_URI = 'secure.braintreepaymentgateway.com'
 
 class Braintree(Gateway):  # CONSIDER most of this belongs in a class SmartPs, which is Braintree's actual implementation
 
@@ -46,7 +49,8 @@ class Braintree(Gateway):  # CONSIDER most of this belongs in a class SmartPs, w
         self.success = self.result['response'] == '1'
         self.message = self.message_from()
 
-        r = self.__class__.Response( self.success, self.message, self.result)
+        r = self.__class__.Response( self.success, self.message, self.result,
+                                     is_test=self.is_test )
 
 #        Response.new(response["response"] == "1", message_from(response), response,
 #          :authorization => response["transactionid"],
@@ -81,10 +85,15 @@ class Braintree(Gateway):  # CONSIDER most of this belongs in a class SmartPs, w
         elif self.result['responsetext'] == "DECLINE":
             return "This transaction has been declined"  #  TODO  test this
 
+#  TODO  if I move all a package's includes into its __init__.py, does everyone see them automatically?
+
         return self.result["responsetext"]
 
-    def api_url(self):  #  TODO  remote test uri !
-        return 'https://secure.braintreepaymentgateway.com/api/transact.php'
+    def api_url(self):  #  TODO  api_uri !!!
+        uri = self.is_test and TEST_URI or LIVE_URI
+        return 'https://%s/transactions' % uri
+        # return 'https://%s/api/transact.php' % uri
+
 
     def post_data(self, action, **parameters):
 

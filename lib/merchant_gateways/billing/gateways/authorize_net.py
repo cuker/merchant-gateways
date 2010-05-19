@@ -13,7 +13,6 @@ except ImportError:
     import elementtree.ElementTree as ET  #  CONSIDER  give a darn about this library??
 
 import re
-
 from merchant_gateways.lib.post import post  #  CONSIDER  move me to gateway.py
 from merchant_gateways.billing import response
 
