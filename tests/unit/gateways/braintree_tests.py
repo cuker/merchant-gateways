@@ -8,7 +8,7 @@ from pprint import pprint
 from lxml.builder import ElementMaker
 XML = ElementMaker()
 from money import Money
-import os
+import cgi, os
 
 #  TODO  trust nothing below this line
 
@@ -20,8 +20,29 @@ class BraintreeTests( MerchantGatewaysTestSuite,
 
 #  TODO  trust nothing below this line
 
+    def assert_params(self, params):  #  ERGO  put me in django-test-extensions!
+        qsparams = cgi.parse_qs(params)
+
+        for k,v in qsparams.items():
+            if len(v) == 1:
+                qsparams[k] = v[0] # easier to manipulate, because most real-life params are singular
+
+        return qsparams
+
+    def test_assert_params(self):
+        params = 'type=sale&lastname=Longsen&password=PASSWORD&username=LOGIN&orderid=&ccnumber=4242424242424242&cvv=123&ccexp=0911&currency=USD&amount=1.00&firstname=Longbob'
+        # type=sale&lastname=Longsen&password=PASSWORD&username=LOGIN&orderid=&ccnumber=4242424242424242&cvv=123&ccexp=0911&currency=USD&amount=1.00&firstname=Longbob.address1=1234+My+Street&company=Widgets+Inc&city=Ottawa&type=auth&lastname=Longsen&address2=Apt+1&zip=K1C2N6&country=CA&password=PASSWORD&username=LOGIN&orderid=&ccnumber=4242424242424242&phone=%28555%29555-5555&cvv=123&ccexp=0911&currency=USD&amount=1.00&firstname=Longbob&state=ON..address1=1234+My+Street&company=Widgets+Inc&city=Ottawa&type=auth&lastname=Longsen&address2=Apt+1&zip=K1C2N6&country=CA&password=PASSWORD&username=LOGIN&orderid=&ccnumber=4242424242424242&phone=%28555%29555-5555&cvv=123&ccexp=0911&currency=USD&amount=1.00&firstname=Longbob&state=ON'
+        qsparams = self.assert_params(params)
+        print qsparams
+        action = 'AUTH_ONLY'
+
+
     def test_post_data(self):
-        # TODO type=sale&lastname=Longsen&password=PASSWORD&username=LOGIN&orderid=&ccnumber=4242424242424242&cvv=123&ccexp=0911&currency=USD&amount=1.00&firstname=Longbob..type=sale&lastname=Longsen&password=PASSWORD&username=LOGIN&orderid=&ccnumber=4242424242424242&cvv=123&ccexp=0911&currency=USD&amount=1.00&firstname=Longbob.address1=1234+My+Street&company=Widgets+Inc&city=Ottawa&type=auth&lastname=Longsen&address2=Apt+1&zip=K1C2N6&country=CA&password=PASSWORD&username=LOGIN&orderid=&ccnumber=4242424242424242&phone=%28555%29555-5555&cvv=123&ccexp=0911&currency=USD&amount=1.00&firstname=Longbob&state=ON..address1=1234+My+Street&company=Widgets+Inc&city=Ottawa&type=auth&lastname=Longsen&address2=Apt+1&zip=K1C2N6&country=CA&password=PASSWORD&username=LOGIN&orderid=&ccnumber=4242424242424242&phone=%28555%29555-5555&cvv=123&ccexp=0911&currency=USD&amount=1.00&firstname=Longbob&state=ON
+        #  TODO  how similar is this to AuthorizeNet? merge with?
+        #  TODO  why was the rumor that Braintree used an iframe? is this the alternate?
+        params = 'type=sale&lastname=Longsen&password=PASSWORD&username=LOGIN&orderid=&ccnumber=4242424242424242&cvv=123&ccexp=0911&currency=USD&amount=1.00&firstname=Longbob'
+        # type=sale&lastname=Longsen&password=PASSWORD&username=LOGIN&orderid=&ccnumber=4242424242424242&cvv=123&ccexp=0911&currency=USD&amount=1.00&firstname=Longbob.address1=1234+My+Street&company=Widgets+Inc&city=Ottawa&type=auth&lastname=Longsen&address2=Apt+1&zip=K1C2N6&country=CA&password=PASSWORD&username=LOGIN&orderid=&ccnumber=4242424242424242&phone=%28555%29555-5555&cvv=123&ccexp=0911&currency=USD&amount=1.00&firstname=Longbob&state=ON..address1=1234+My+Street&company=Widgets+Inc&city=Ottawa&type=auth&lastname=Longsen&address2=Apt+1&zip=K1C2N6&country=CA&password=PASSWORD&username=LOGIN&orderid=&ccnumber=4242424242424242&phone=%28555%29555-5555&cvv=123&ccexp=0911&currency=USD&amount=1.00&firstname=Longbob&state=ON'
+     #   print self.assert_params(params)
         action = 'AUTH_ONLY'
         return
         parameters = {'first_name': 'Hermione', 'card_num': '4242424242424242', 'description': 'Chamber of Secrets', 'card_code': None, 'invoice_num': 1, 'test_request': 'TRUE', 'amount': '1.00', 'last_name': 'Granger', 'exp_date': '1290'}
