@@ -77,9 +77,9 @@ class Braintree(Gateway):  # CONSIDER most of this belongs in a class SmartPs, w
 
     def message_from(self):  #  TODO  better name
         if self.result["responsetext"] in ("SUCCESS", "Approved", None): # This is dubious, but responses from UPDATE are nil.
-            return "This transaction has been approved"
+            return "This transaction has been approved"  #  TODO  test this
         elif self.result['responsetext'] == "DECLINE":
-            return "This transaction has been declined"
+            return "This transaction has been declined"  #  TODO  test this
 
         return self.result["responsetext"]
 
