@@ -18,6 +18,21 @@ class BraintreeTests( MerchantGatewaysTestSuite,
     def gateway_type(self):
         return Braintree
 
+
+        # type=sale&lastname=Longsen&password=PASSWORD&username=LOGIN&orderid=&ccnumber=4242424242424242&cvv=123&
+        # ccexp=0911&currency=USD&amount=1.00&firstname=Longbob.address1=1234+My+Street&company=Widgets+Inc&
+        # city=Ottawa&type=auth&lastname=Longsen&address2=Apt+1&zip=K1C2N6&country=CA&password=PASSWORD&
+        # username=LOGIN&orderid=&ccnumber=4242424242424242&phone=%28555%29555-5555&cvv=123&ccexp=0911&currency=USD&amount=1.00&firstname=Longbob&state=ON..address1=1234+My+Street&company=Widgets+Inc&city=Ottawa&type=auth&lastname=Longsen&address2=Apt+1&zip=K1C2N6&country=CA&password=PASSWORD&username=LOGIN&orderid=&ccnumber=4242424242424242&phone=%28555%29555-5555&cvv=123&ccexp=0911&currency=USD&amount=1.00&firstname=Longbob&state=ON'
+
+    def test_add_billing_address(self):
+        result = {}  #  TODO  use or lose this
+
+        self.gateway.add_address(result, '', address1='164 Waverley Street', country='US', state='CO' )
+        self.assert_equal(set(["address1", "address2", "city", "company", "country", "phone", "state", "zip"]), set(result.keys()))
+#        self.assert_equal 'CO', result["state"]
+ #       self.assert_equal '164 Waverley Street', result["address1"]
+  #      self.assert_equal 'US', result["country"]
+
 #  TODO  trust nothing below this line
 
     def test_assert_params(self):
@@ -30,7 +45,7 @@ class BraintreeTests( MerchantGatewaysTestSuite,
         print qsparams
         action = 'AUTH_ONLY'
 
-    def test_post_data(self):
+    def test_post_data_TODO_deprecate(self):
         #  TODO  how similar is this to AuthorizeNet? merge with?
         #  TODO  why was the rumor that Braintree used an iframe? is this the alternate?
         params = 'type=sale&lastname=Longsen&password=PASSWORD&username=LOGIN&orderid=&ccnumber=4242424242424242&cvv=123&ccexp=0911&currency=USD&amount=1.00&firstname=Longbob'
@@ -605,16 +620,6 @@ class BraintreeTests( MerchantGatewaysTestSuite,
 #    assert_failure response
 #  end
 #
-#  def test_add_address
-#    result = {}
-#
-#    @gateway.send(:add_address, result,   {:address1 => '164 Waverley Street', :country => 'US', :state => 'CO'} )
-#    assert_equal ["address1", "city", "company", "country", "phone", "state", "zip"], result.stringify_keys.keys.sort
-#    assert_equal 'CO', result["state"]
-#    assert_equal '164 Waverley Street', result["address1"]
-#    assert_equal 'US', result["country"]
-#
-#  end
 #  def test_add_shipping_address
 #    result = {}
 #

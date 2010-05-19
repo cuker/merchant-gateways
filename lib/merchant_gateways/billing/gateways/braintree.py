@@ -9,12 +9,25 @@ from lxml.builder import ElementMaker
 XML = ElementMaker()
 from money import Money
 
-#  TODO  trust nothing below this line
-
-TEST_URL = 'https://orbitalvar1.paymentech.net/authorize'
-LIVE_URL = 'https://orbital1.paymentech.net/authorize'
+TEST_URL = 'https://orbitalvar1.paymentech.net/authorize' # TODO point to Braintree!
+LIVE_URL = 'https://orbital1.paymentech.net/authorize' # TODO point to Braintree!
 
 class Braintree(Gateway):
+
+    def add_address(self, post, prefix, **options):
+#      def add_address(post, address,prefix="")
+        if prefix:  prefix +="_"
+#        unless address.blank? or address.values.blank? TODO
+        post[prefix+"address1"]    = None # address[:address1].to_s
+        post[prefix+"address2"]    = None # address[:address2].to_s unless address[:address2].blank?
+        post[prefix+"company"]    = None # [:company].to_s
+        post[prefix+"phone"]      = None # address[:phone].to_s
+        post[prefix+"zip"]        = None # address[:zip].to_s
+        post[prefix+"city"]       = None # address[:city].to_s
+        post[prefix+"country"]    = None # address[:country].to_s
+        post[prefix+"state"]      = None # address[:state].blank?  ? 'n/a' : address[:state]
+
+#  TODO  trust nothing below this line
 
     def authorize(self, money, creditcard, **options):
         '''
