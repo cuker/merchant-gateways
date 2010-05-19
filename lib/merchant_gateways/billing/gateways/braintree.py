@@ -74,13 +74,13 @@ class Braintree(Gateway):  # CONSIDER most of this belongs in a class SmartPs, w
 #      end
 
     def add_credit_card(self, post, credit_card, **options):
-#        if options[:store]
+#        if options[:store]  #  TODO
 #          post[:customer_vault] = "add_customer"
 #          post[:customer_vault_id] = options[:store] unless options[:store] == true
 #        end
         post.update(ccnumber=credit_card.number)
 #        post[:cvv] = creditcard.verification_value if creditcard.verification_value?
-#        post[:ccexp]  = expdate(creditcard)
+#        post[:ccexp]  = expdate(creditcard)  #  TODO
 #        post[:firstname] = creditcard.first_name
 #        post[:lastname]  = creditcard.last_name
 #      end
@@ -94,7 +94,12 @@ class Braintree(Gateway):  # CONSIDER most of this belongs in a class SmartPs, w
         ip = options.get('ip', None)
         if ip:  post['ipaddress'] = ip
 
-#  TODO  trust nothing below this line
+    def add_currency(self, post, money):
+        post['currency'] = str(money.currency)
+            # TODO post[:currency] = options[:currency] || currency(money)
+
+
+#  TODO  trust nothing below this comment
 
     def authorize(self, money, creditcard, **options):
         '''
@@ -452,10 +457,6 @@ CREDIT_CARD_CODES = dict( v='001',  #  TODO  convert to Orbital
 #          post[prefix+"country"]    = address[:country].to_s
 #          post[prefix+"state"]      = address[:state].blank?  ? 'n/a' : address[:state]
 #        end
-#      end
-#
-#      def add_currency(post, money, options)
-#        post[:currency] = options[:currency] || currency(money)
 #      end
 #
 #      def add_processor(post, options)

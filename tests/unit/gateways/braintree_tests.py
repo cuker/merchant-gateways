@@ -99,7 +99,13 @@ class BraintreeTests( MerchantGatewaysTestSuite,
         self.gateway.add_customer_data(post, email='Lord.Hanuman@ArbudaDevi.org', ip='72.55.146.179')
         self.assert_equal(dict(email='Lord.Hanuman@ArbudaDevi.org', ipaddress='72.55.146.179'), post)
 
-#  TODO  trust nothing below this line
+    def test_add_currency(self):
+        post = {}
+        self.gateway.add_currency(post, Money('2.00', 'GTQ'))  # Guatemalan Quetzals!
+        self.assert_equal(dict(currency='GTQ'), post) #  TODO  assert match dict?
+
+
+#  TODO  trust nothing below this comment
 
     def test_assert_params(self):
         params = 'type=sale&lastname=Longsen&password=PASSWORD&username=LOGIN&orderid=&ccnumber=4242424242424242&cvv=123&ccexp=0911&currency=USD&amount=1.00&firstname=Longbob'
