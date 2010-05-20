@@ -183,7 +183,7 @@ class BraintreeGatewayTests( MerchantGatewaysTestSuite,
 #        self.response = self.gateway.authorize(self.amount, self.credit_card, **self.options)
 #
 #        assert self.response.is_test
-#        self.assert_successful_authorization()
+#        self.assert_successful_authorization()  #  TODO  move this down
 #        self.assert_success()
 #        self.assert_equal(True, self.response.is_test)
 
@@ -195,7 +195,7 @@ class BraintreeGatewayTests( MerchantGatewaysTestSuite,
 
         assert self.response.is_test
 #        self.assert_successful_authorization()
-#        self.assert_success()
+        self.assert_success()
 #        self.assert_equal(True, self.response.is_test)
 #
 #        assert self.response.is_test
@@ -209,11 +209,10 @@ class BraintreeGatewayTests( MerchantGatewaysTestSuite,
         self.mock_webservice( self.failed_authorization_response(),
             lambda:  self.gateway.authorize(self.amount, self.credit_card, **self.options) )
 
-#        self.response = self.gateway.response
-#        assert self.response.is_test
-#        self.assert_failure()
+        assert self.response.is_test
+        self.assert_failure()
 #        self.assert_failed_authorization()
-        
+
     def _test_REMOTE_using_braintree_lib(self):  #  TODO  add braintree to our (optional!) REQUIREMENTS
         import sys, M2Crypto  #  TODO  document M2Crypto requires SWIG (and that it's a POS!) sudo aptitude install swig, and get python-mcrypto from your package mangler
 
