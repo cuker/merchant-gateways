@@ -247,7 +247,7 @@ class MerchantGatewaysTestSuite( MerchantGatewaysUtilitiesTestSuite,
             assert self.response.is_test
             self.assert_successful_authorization()
             self.assert_success()
-            self.assert_equal(repr(True), repr(self.response.is_test))  #  TODO  why the repr?
+            self.assert_equal(True, self.response.is_test)
 
         def test_failed_authorization(self):
             self.mock_webservice(self.failed_authorization_response())
