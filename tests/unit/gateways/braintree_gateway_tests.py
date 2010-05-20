@@ -123,7 +123,12 @@ class BraintreeGatewayTests( MerchantGatewaysTestSuite,
         self.options['description'] = 'Chamber of Secrets'
 
         self.mock_webservice(self.successful_authorization_response(),
-                             lambda:  self.gateway.authorize(self.amount, self.credit_card, **self.options))
+            lambda: self.gateway.authorize(self.amount, self.credit_card, **self.options))
+
+#
+#        assert self.response.is_test
+#        self.assert_successful_authorization()
+#        self.assert_success()
 
         print self.gateway.result
         print self.gateway.response

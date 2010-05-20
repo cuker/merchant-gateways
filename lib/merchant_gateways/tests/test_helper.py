@@ -242,6 +242,8 @@ class MerchantGatewaysTestSuite( MerchantGatewaysUtilitiesTestSuite,
             return self.gateway_type().Response
 
         def test_successful_authorization(self):
+            '''All gateways authorize with these inputs and outputs'''
+            
             self.options['description'] = 'Chamber of Secrets'
             self.mock_webservice(self.successful_authorization_response(),
                 lambda: self.gateway.authorize(self.amount, self.credit_card, **self.options) )
@@ -250,21 +252,23 @@ class MerchantGatewaysTestSuite( MerchantGatewaysUtilitiesTestSuite,
             assert self.response.is_test
             self.assert_successful_authorization()
             self.assert_success()
-            self.assert_equal(True, self.response.is_test)
 
         def test_failed_authorization(self):
             self.mock_webservice( self.failed_authorization_response(),
-                                  lambda :  self.gateway.authorize(self.amount, self.credit_card, **self.options) )
+                lambda :  self.gateway.authorize(self.amount, self.credit_card, **self.options) )
 
             self.response = self.gateway.response
+            assert self.response.is_test
             self.assert_failure()
             self.assert_failed_authorization()
-            self.assert_equal(repr(True), repr(self.response.is_test))
+
 
         def test_successful_purchase(self):
             self.mock_webservice(self.successful_purchase_response(),
-                                 lambda: self.gateway.purchase(self.amount, self.credit_card, **self.options) )
+                lambda: self.gateway.purchase(self.amount, self.credit_card, **self.options) )
+
             self.response = self.gateway.response  #  CONSIDER move inside ??
+            assert self.response.is_test
             self.assert_successful_purchase()
 
 nil = None # C-;
