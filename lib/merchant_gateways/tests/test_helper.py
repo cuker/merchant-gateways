@@ -244,7 +244,7 @@ class MerchantGatewaysTestSuite( MerchantGatewaysUtilitiesTestSuite,
             self.options['description'] = 'Chamber of Secrets'
             self.response = self.gateway.authorize(self.amount, self.credit_card, **self.options)
 
-    # TODO        assert self.response.is_test
+            assert self.response.is_test
             self.assert_successful_authorization()
             self.assert_success()
             self.assert_equal(repr(True), repr(self.response.is_test))  #  TODO  why the repr?

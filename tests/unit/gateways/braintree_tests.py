@@ -120,7 +120,7 @@ class BraintreeTests( MerchantGatewaysTestSuite,
      #               "submit_for_settlement": True TODO  turn this on for sale (purchase) off for authorize
                # }
             })
-            print 'epic win'
+
             print result
 
 
