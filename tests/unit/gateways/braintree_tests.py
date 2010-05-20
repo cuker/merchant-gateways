@@ -6,11 +6,14 @@ from merchant_gateways.billing.credit_card import CreditCard
 from merchant_gateways.tests.test_helper import *
 from pprint import pprint
 from lxml.builder import ElementMaker
-XML = ElementMaker()
+XML = ElementMaker() # TODO this won't be needed here
 from money import Money
 import os
+#import sys
+#sys.path.insert(0, '/home/phlip/tools/braintree-2.2.1')
 import braintree
 from braintree import Transaction, Environment
+from mock import patch
 
 # TODO use this? XmlUtil.dict_from_xml(data)
 
@@ -87,13 +90,10 @@ class BraintreeTests( MerchantGatewaysTestSuite,
                   u'type': u'sale',
                   u'updated_at': datetime.datetime(2010, 5, 19, 22, 38, 44)}}
 
-        from mock import patch_object
-        from braintree.util.http import Http
-
 
     #    got = self.__http_do("POST", path, params)  #  TODO  assert the params!
 
-        mock_do = Mock()
+ #       mock_do = Mock()
         where_da_cert = Environment.braintree_root() + "/ssl/sandbox_braintreegateway_com.ca.crt"
 
         Environment.Sandbox = Environment("sandbox.braintreegateway.com", "443", True, where_da_cert)
@@ -104,8 +104,10 @@ class BraintreeTests( MerchantGatewaysTestSuite,
             "config",
             "us"
         )
-        return # we sure luv patch_object, huh?!
-        with patch_object(Http, '__http_do', mock_do) as mock_do:
+
+        with patch('braintree.util.http.Http.post') as mock_do:
+        #with patch_object(Http, '__http_do', mock_do) as mock_do:
+        #if True:
             mock_do.return_value = auth_response
 
             result = Transaction.sale({
