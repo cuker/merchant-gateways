@@ -16,6 +16,18 @@ from braintree import Transaction, Environment
 from mock import patch
 import datetime
 
+where_da_cert = Environment.braintree_root() + "/ssl/sandbox_braintreegateway_com.ca.crt"  #  TODO move us into braintree
+
+Environment.Sandbox = Environment("sandbox.braintreegateway.com", "443", True, where_da_cert)
+
+braintree.Configuration.configure(
+    braintree.Environment.Sandbox,  #  TODO the vaunted is_test should key this!!
+    "TODO",
+    "config",
+    "us"
+)
+
+
 # TODO use this? XmlUtil.dict_from_xml(data)
 
 class BraintreeTests( MerchantGatewaysTestSuite,
@@ -81,7 +93,7 @@ class BraintreeTests( MerchantGatewaysTestSuite,
                                        u'status': u'authorized',
                                        u'timestamp': datetime.datetime(2010, 5, 19, 22, 38, 44),
                                        u'transaction_source': u'API',
-                                       u'user': u'Phlip'},
+                                       u'user': u'Mongo'},
                                       {u'amount': u'100.00',
                                        u'status': u'submitted_for_settlement',
                                        u'timestamp': datetime.datetime(2010, 5, 19, 22, 38, 44),
@@ -90,15 +102,15 @@ class BraintreeTests( MerchantGatewaysTestSuite,
                   u'type': u'sale',
                   u'updated_at': datetime.datetime(2010, 5, 19, 22, 38, 44)}}
 
-    def test_successful_authorization(self):
-        self.mock_webservice(self.successful_authorization_response())
-        self.options['description'] = 'Chamber of Secrets'
-        self.response = self.gateway.authorize(self.amount, self.credit_card, **self.options)
-
-        assert self.response.is_test
-        self.assert_successful_authorization()
-        self.assert_success()
-        self.assert_equal(True, self.response.is_test)
+#    def test_successful_authorization(self):
+#        self.mock_webservice(self.successful_authorization_response())
+#        self.options['description'] = 'Chamber of Secrets'
+#        self.response = self.gateway.authorize(self.amount, self.credit_card, **self.options)
+#
+#        assert self.response.is_test
+#        self.assert_successful_authorization()
+#        self.assert_success()
+#        self.assert_equal(True, self.response.is_test)
 
     def test_successful_authorization(self):
         auth_response = self.successful_authorization_response()
@@ -106,16 +118,6 @@ class BraintreeTests( MerchantGatewaysTestSuite,
     #    got = self.__http_do("POST", path, params)  #  TODO  assert the params!
 
  #       mock_do = Mock()
-        where_da_cert = Environment.braintree_root() + "/ssl/sandbox_braintreegateway_com.ca.crt"
-
-        Environment.Sandbox = Environment("sandbox.braintreegateway.com", "443", True, where_da_cert)
-
-        braintree.Configuration.configure(
-            braintree.Environment.Sandbox,  #  TODO the vaunted is_test should key this!!
-            "TODO",
-            "config",
-            "us"
-        )
 
         with patch('braintree.util.http.Http.post') as mock_do:
         #with patch_object(Http, '__http_do', mock_do) as mock_do:

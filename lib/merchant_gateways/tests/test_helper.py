@@ -240,9 +240,10 @@ class MerchantGatewaysTestSuite( MerchantGatewaysUtilitiesTestSuite,
             return self.gateway_type().Response
 
         def test_successful_authorization(self):
-            self.mock_webservice(self.successful_authorization_response())
             self.options['description'] = 'Chamber of Secrets'
+            self.mock_webservice(self.successful_authorization_response())
             self.response = self.gateway.authorize(self.amount, self.credit_card, **self.options)
+            # TODO self.response = self.gateway.response
 
             assert self.response.is_test
             self.assert_successful_authorization()
