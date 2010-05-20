@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+import braintree
+#from braintree import Transaction, Environment
+
 from gateway import Gateway, default_dict, xStr
 
 
@@ -10,6 +13,8 @@ from lxml import etree
 from lxml.builder import ElementMaker
 XML = ElementMaker()
 from money import Money
+#import braintree
+#from braintree import Transaction, Environment
 
 TEST_URI = 'sandbox.braintreegateway.com'
 
@@ -17,7 +22,29 @@ TEST_URI = 'sandbox.braintreegateway.com'
 
 LIVE_URI = 'secure.braintreepaymentgateway.com'
 
-class Braintree(Gateway):  # CONSIDER most of this belongs in a class SmartPs, which is Braintree's actual implementation
+class BraintreeGateway(Gateway):  # CONSIDER most of this belongs in a class SmartPs, which is Braintree's actual implementation
+
+    class Response(response.Response):
+        pass
+
+    
+    def authorize(self, money, credit_card, **options):  #  TODO  self.amount -> self.money
+
+        from braintree import Transaction, Environment
+
+        self.result = Transaction.sale({
+                "amount": "100",
+                "credit_card": {
+                    "number": "5105105105105100",
+                    "expiration_date": "05/2012"
+                } #,
+    #            "options": {
+     #               "submit_for_settlement": True TODO  turn this on for sale (purchase) off for authorize
+               # }
+            })
+        self.response = self.__class__.Response('TODO', 'TODO', 'TODO')
+
+        return self.response
 
 
 #  TODO  trust nothing below this line
@@ -40,16 +67,16 @@ class Braintree(Gateway):  # CONSIDER most of this belongs in a class SmartPs, w
         post[prefix+"state"]      = address.get('state', 'n/a') or 'n/a'
         post[prefix+"country"]    = address.get('country', '') # TODO .to_s? safe unicode??
 
-    def authorize(self, money, credit_card, **options):
-        post = {}
-        self.add_invoice(post, **options)
-        self.add_payment_source(post, credit_card, **options)
-        self.add_address(post, '', **options.get('billing_address', options.get('address', {})))  #  TODO  TDD all that nonsense!
-        self.add_address(post, "shipping", **options.get('shipping_address', {}))  #  TODO  require the addresses?
-        self.add_customer_data(post, **options)
-        self.add_currency(post, money) # TODO, **options)
-        # TODO self.add_processor(post, **options)
-        return self.commit('auth', money, post)  #  TODO  rely on this return nowhere
+#    def authorize(self, money, credit_card, **options):
+#        post = {}
+#        self.add_invoice(post, **options)
+#        self.add_payment_source(post, credit_card, **options)
+#        self.add_address(post, '', **options.get('billing_address', options.get('address', {})))  #  TODO  TDD all that nonsense!
+#        self.add_address(post, "shipping", **options.get('shipping_address', {}))  #  TODO  require the addresses?
+#        self.add_customer_data(post, **options)
+#        self.add_currency(post, money) # TODO, **options)
+#        # TODO self.add_processor(post, **options)
+#        return self.commit('auth', money, post)  #  TODO  rely on this return nowhere
 
     def commit(self, action, money, parameters):  #  TODO  is it post or parameters?
         if money:  parameters['amount'] = money.amount
@@ -253,9 +280,6 @@ class Braintree(Gateway):  # CONSIDER most of this belongs in a class SmartPs, w
                  'HostCVV2RespCode',          'TxRefIdx',
                  'HostRespCode',              'TxRefNum',
                  'IndustryType', )
-
-    class Response(response.Response):
-        pass
 
     def build_authorization_request(self, money, credit_card, **options):
         from money.Money import CURRENCY
