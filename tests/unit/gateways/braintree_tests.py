@@ -14,6 +14,7 @@ import os
 import braintree
 from braintree import Transaction, Environment
 from mock import patch
+import datetime
 
 # TODO use this? XmlUtil.dict_from_xml(data)
 
@@ -23,9 +24,8 @@ class BraintreeTests( MerchantGatewaysTestSuite,
     def gateway_type(self):
         return Braintree
 
-    def test_mock_braintree(self):  #  TODO  then squeeze that mock into our common pattern!
-        import datetime
-        auth_response = {u'transaction': {u'amount': u'100.00',
+    def successful_authorization_response(self):
+        return {u'transaction': {u'amount': u'100.00',
                   u'avs_error_response_code': None,
                   u'avs_postal_code_response_code': u'I',
                   u'avs_street_address_response_code': u'I',
@@ -90,6 +90,18 @@ class BraintreeTests( MerchantGatewaysTestSuite,
                   u'type': u'sale',
                   u'updated_at': datetime.datetime(2010, 5, 19, 22, 38, 44)}}
 
+    def test_successful_authorization(self):
+        self.mock_webservice(self.successful_authorization_response())
+        self.options['description'] = 'Chamber of Secrets'
+        self.response = self.gateway.authorize(self.amount, self.credit_card, **self.options)
+
+        assert self.response.is_test
+        self.assert_successful_authorization()
+        self.assert_success()
+        self.assert_equal(True, self.response.is_test)
+
+    def test_successful_authorization(self):
+        auth_response = self.successful_authorization_response()
 
     #    got = self.__http_do("POST", path, params)  #  TODO  assert the params!
 
@@ -181,10 +193,7 @@ class BraintreeTests( MerchantGatewaysTestSuite,
         self.assert_equal(repr(True), repr(self.response.is_test))  #  TODO  why the repr?
 
 
-    def successful_authorization_response(self):
-        return 'response=1&responsetext=SUCCESS&authcode=123456&transactionid=510695343&avsresponse=N&cvvresponse=N&' + \
-               'orderid=ea1e0d50dcc8cfc6e4b55650c592097e&type=sale&response_code=100'
-         #  TODO  get a real one - that one is just a copy of successful_purchase_response
+
 
     def assert_successful_authorization(self):
         order_id = str(self.options['order_id'])  #  TODO  put something in options
