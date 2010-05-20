@@ -120,13 +120,10 @@ class BraintreeGatewayTests( MerchantGatewaysTestSuite,
             lamb()
 
     def test_successful_authorization(self):
-
-    #    got = self.__http_do("POST", path, params)  #  TODO  assert the params!
-
- #       mock_do = Mock()
+        self.options['description'] = 'Chamber of Secrets'
 
         self.mock_webservice(self.successful_authorization_response(),
-                             lambda:  self.gateway.authorize(self.amount, self.credit_card))
+                             lambda:  self.gateway.authorize(self.amount, self.credit_card, **self.options))
 
         print self.gateway.result
         print self.gateway.response
