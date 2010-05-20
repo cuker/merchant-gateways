@@ -29,8 +29,6 @@ class BraintreeGateway(Gateway):  # CONSIDER most of this belongs in a class Sma
 
     def authorize(self, money, credit_card, **options):  #  TODO  self.amount -> self.money
 
-
-
         self.result = Transaction.sale({
                 "amount": "100",
                 "credit_card": {
@@ -41,9 +39,12 @@ class BraintreeGateway(Gateway):  # CONSIDER most of this belongs in a class Sma
      #               "submit_for_settlement": True TODO  turn this on for sale (purchase) off for authorize
                # }
             })
+        #print dir(self.result.transaction)
         self.response = self.__class__.Response(self.result.is_success, 'TODO 2', 'TODO 3',
-                                                is_test = self.gateway_mode =='test')
-
+                                                is_test = self.gateway_mode =='test',
+                                                authorization = self.result.transaction.processor_authorization_code
+                                                )
+        self.response.result = self.result
         return self.response
 
 

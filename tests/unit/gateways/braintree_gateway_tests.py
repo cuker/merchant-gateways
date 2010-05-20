@@ -192,16 +192,17 @@ class BraintreeGatewayTests( MerchantGatewaysTestSuite,
             lambda: self.gateway.authorize(self.amount, self.credit_card, **self.options))
 
         assert self.response.is_test
-#        self.assert_successful_authorization()
-        self.assert_success()
-#        self.assert_equal(True, self.response.is_test)
-#
-#        assert self.response.is_test
-#        self.assert_successful_authorization()
-#        self.assert_success()
 
-        print self.gateway.result
-        print self.gateway.response
+        self.assert_success()
+        self.assert_successful_authorization()
+
+    def assert_successful_authorization(self):
+        self.assert_equal('8y5jn6', self.response.result.transaction.id)
+        #print self.response.__dict__
+        self.assert_equal('54158', self.response.authorization)
+    #                  u'processor_authorization_code': u'54158',
+#                  u'processor_response_code': u'1000',
+#                  u'processor_response_text': u'Approved',
 
     def test_failed_authorization(self):
         self.mock_webservice( self.failed_authorization_response(),
@@ -272,7 +273,7 @@ class BraintreeGatewayTests( MerchantGatewaysTestSuite,
 
 
 
-    def assert_successful_authorization(self):
+    def TODO_assert_successful_authorization(self):
         order_id = str(self.options['order_id'])  #  TODO  put something in options
 
 
