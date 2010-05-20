@@ -208,11 +208,13 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
 
 class MerchantGatewaysWebserviceTestSuite(object):
 
-    def mock_get_webservice(self, returns):
+    def mock_get_webservice(self, returns, lamb):
         self.gateway.get_webservice = Mock(return_value=returns)
+        lamb()
 
-    def mock_post_webservice(self, returns):
+    def mock_post_webservice(self, returns, lamb):
         self.gateway.post_webservice = Mock(return_value=returns)
+        lamb()
 
 
 class MerchantGatewaysTestSuite( MerchantGatewaysUtilitiesTestSuite,
@@ -241,9 +243,9 @@ class MerchantGatewaysTestSuite( MerchantGatewaysUtilitiesTestSuite,
 
         def test_successful_authorization(self):
             self.options['description'] = 'Chamber of Secrets'
-            self.mock_webservice(self.successful_authorization_response())
-            self.response = self.gateway.authorize(self.amount, self.credit_card, **self.options)
-            # TODO self.response = self.gateway.response
+            self.mock_webservice(self.successful_authorization_response(),
+                lambda: self.gateway.authorize(self.amount, self.credit_card, **self.options) )
+            self.response = self.gateway.response
 
             assert self.response.is_test
             self.assert_successful_authorization()
@@ -251,15 +253,18 @@ class MerchantGatewaysTestSuite( MerchantGatewaysUtilitiesTestSuite,
             self.assert_equal(True, self.response.is_test)
 
         def test_failed_authorization(self):
-            self.mock_webservice(self.failed_authorization_response())
-            self.response = self.gateway.authorize(self.amount, self.credit_card, **self.options)
+            self.mock_webservice( self.failed_authorization_response(),
+                                  lambda :  self.gateway.authorize(self.amount, self.credit_card, **self.options) )
+
+            self.response = self.gateway.response
             self.assert_failure()
             self.assert_failed_authorization()
             self.assert_equal(repr(True), repr(self.response.is_test))
 
         def test_successful_purchase(self):
-            self.mock_webservice(self.successful_purchase_response())
-            self.response = self.gateway.purchase(self.amount, self.credit_card, **self.options)
+            self.mock_webservice(self.successful_purchase_response(),
+                                 lambda: self.gateway.purchase(self.amount, self.credit_card, **self.options) )
+            self.response = self.gateway.response  #  CONSIDER move inside ??
             self.assert_successful_purchase()
 
 nil = None # C-;

@@ -14,8 +14,8 @@ class PayflowTests( MerchantGatewaysTestSuite,
     def gateway_type(self):
         return Payflow
 
-    def mock_webservice(self, response):
-        self.mock_post_webservice(response)
+    def mock_webservice(self, response, lamb):
+        self.mock_post_webservice(response, lamb)
 
     def assert_successful_authorization(self):
         '''
@@ -67,15 +67,20 @@ class PayflowTests( MerchantGatewaysTestSuite,
         pass   #  TODO  make this work by simply returning a TODO string!
 
     def test_successful_void(self):
-        self.mock_webservice(self.successful_void_response())
         authorization = 'Mobiliarbus'
-        self.response = self.gateway.void(authorization)
+
+
+        self.mock_webservice(self.successful_void_response(),
+                             lambda: self.gateway.void(authorization) )
+        self.response = self.gateway.response
         assert 'TODO' in self.response.result
 
     def test_successful_credit(self):
-        self.mock_webservice(self.successful_credit_response())
         authorization = 'Mobiliarbus'
-        self.response = self.gateway.credit(Money('42.00', 'MAD'), authorization)
+        
+        self.mock_webservice(self.successful_credit_response(),
+                             lambda: self.gateway.credit(Money('42.00', 'MAD'), authorization) )
+        self.response = self.gateway.response
         assert 'TODO' in self.response.result
 
     def successful_purchase_response(self):  #  TODO  this is bogus! What does a real one look like???

@@ -14,8 +14,8 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
     def gateway_type(self):
         return AuthorizeNet
 
-    def mock_webservice(self, response):
-        self.mock_get_webservice(response)  #  TODO  is this REALLY a "get"??
+    def mock_webservice(self, response, lamb):
+        self.mock_get_webservice(response, lamb)  #  TODO  is this REALLY a "get"??
 
     def assert_successful_authorization(self):
 
@@ -77,8 +77,9 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
         self.assert_equal( 'Y', avs.postal_match )
 
     def test_fraudulent_avs_result(self):
-        self.mock_webservice(self.fraud_review_response())  #  TODO  abstract test on this
-        self.response = self.gateway.authorize(self.amount, self.credit_card, **self.options)
+        self.mock_webservice(self.fraud_review_response(),  #  TODO  abstract test on this
+            lambda: self.gateway.authorize(self.amount, self.credit_card, **self.options) )
+        self.response = self.gateway.response
         avs = self.response.avs_result
         self.assert_equal( 'X', avs.code )
         self.assert_equal( 'Y', avs.street_match )
@@ -97,8 +98,9 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
         self.assert_equal( 'Not Processed', cvv.message )  #  TODO  huh?
 
     def test_fraudulent_cvv_result(self):
-        self.mock_webservice(self.fraud_review_response())
-        self.response = self.gateway.authorize(self.amount, self.credit_card, **self.options)
+        self.mock_webservice(self.fraud_review_response(),
+                             lambda: self.gateway.authorize(self.amount, self.credit_card, **self.options) )
+        self.response = self.gateway.response 
         cvv = self.response.cvv_result
         self.assert_equal( 'M', cvv.code )
         self.assert_equal( 'Match', cvv.message )  #  TODO  huh??

@@ -373,9 +373,9 @@ class BraintreeTests( MerchantGatewaysTestSuite,
         reference = '?x_login=X&x_invoice_num=1&x_trans_id=Y&x_last_name=Granger&x_card_code=None&x_card_num=4242424242424242&x_amount=1.00&x_delim_char=%2C&x_tran_key=Y&x_encap_char=%24&x_version=3.1&x_first_name=Hermione&x_exp_date=1290&x_delim_data=TRUE&x_relay_response=FALSE&x_type=AUTH_CAPTURE&x_description=&x_test_request=TRUE'
         self.assert_equal(reference, self.gateway.post_data(action, parameters))
 
-    def mock_webservice(self, response):
+    def mock_webservice(self, response, lamb):
         self.options['billing_address'] = {}
-        self.mock_post_webservice(response)
+        self.mock_post_webservice(response, lamb)
 
     def assert_failed_authorization(self):
         self.assert_none(self.response.params['TxRefNum'])
