@@ -41,7 +41,7 @@ class BraintreeGateway(Gateway):  # CONSIDER most of this belongs in a class Sma
      #               "submit_for_settlement": True TODO  turn this on for sale (purchase) off for authorize
                # }
             })
-        self.response = self.__class__.Response('TODO', 'TODO', 'TODO',
+        self.response = self.__class__.Response(self.result.is_success, 'TODO 2', 'TODO 3',
                                                 is_test = self.gateway_mode =='test')
 
         return self.response
