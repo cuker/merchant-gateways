@@ -119,12 +119,18 @@ class BraintreeGatewayTests( MerchantGatewaysTestSuite,
             mock_do.return_value = returns
             lamb()
 
+        self.response = self.gateway.response  #  TODO  all web service mockers do this
+
     def test_successful_authorization(self):
         self.options['description'] = 'Chamber of Secrets'
 
         self.mock_webservice(self.successful_authorization_response(),
             lambda: self.gateway.authorize(self.amount, self.credit_card, **self.options))
 
+        assert self.response.is_test
+#        self.assert_successful_authorization()
+#        self.assert_success()
+#        self.assert_equal(True, self.response.is_test)
 #
 #        assert self.response.is_test
 #        self.assert_successful_authorization()

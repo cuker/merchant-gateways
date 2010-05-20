@@ -243,7 +243,7 @@ class MerchantGatewaysTestSuite( MerchantGatewaysUtilitiesTestSuite,
 
         def test_successful_authorization(self):
             '''All gateways authorize with these inputs and outputs'''
-            
+
             self.options['description'] = 'Chamber of Secrets'
             self.mock_webservice(self.successful_authorization_response(),
                 lambda: self.gateway.authorize(self.amount, self.credit_card, **self.options) )
@@ -255,7 +255,7 @@ class MerchantGatewaysTestSuite( MerchantGatewaysUtilitiesTestSuite,
 
         def test_failed_authorization(self):
             self.mock_webservice( self.failed_authorization_response(),
-                lambda :  self.gateway.authorize(self.amount, self.credit_card, **self.options) )
+                lambda:  self.gateway.authorize(self.amount, self.credit_card, **self.options) )
 
             self.response = self.gateway.response
             assert self.response.is_test

@@ -27,7 +27,6 @@ class BraintreeGateway(Gateway):  # CONSIDER most of this belongs in a class Sma
     class Response(response.Response):
         pass
 
-    
     def authorize(self, money, credit_card, **options):  #  TODO  self.amount -> self.money
 
         from braintree import Transaction, Environment
@@ -42,7 +41,8 @@ class BraintreeGateway(Gateway):  # CONSIDER most of this belongs in a class Sma
      #               "submit_for_settlement": True TODO  turn this on for sale (purchase) off for authorize
                # }
             })
-        self.response = self.__class__.Response('TODO', 'TODO', 'TODO')
+        self.response = self.__class__.Response('TODO', 'TODO', 'TODO',
+                                                is_test = self.gateway_mode =='test')
 
         return self.response
 
