@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import braintree
-#from braintree import Transaction, Environment
 
 from gateway import Gateway, default_dict, xStr
 
@@ -13,8 +11,10 @@ from lxml import etree
 from lxml.builder import ElementMaker
 XML = ElementMaker()
 from money import Money
-#import braintree
-#from braintree import Transaction, Environment
+import sys
+sys.path.insert(0, '/home/phlip/tools/braintree-2.2.1')
+import braintree
+from braintree import Transaction, Environment
 
 TEST_URI = 'sandbox.braintreegateway.com'
 
@@ -29,12 +29,12 @@ class BraintreeGateway(Gateway):  # CONSIDER most of this belongs in a class Sma
 
     def authorize(self, money, credit_card, **options):  #  TODO  self.amount -> self.money
 
-        from braintree import Transaction, Environment
+
 
         self.result = Transaction.sale({
                 "amount": "100",
                 "credit_card": {
-                    "number": "5105105105105100",
+                    "number": "5105105105105101",
                     "expiration_date": "05/2012"
                 } #,
     #            "options": {

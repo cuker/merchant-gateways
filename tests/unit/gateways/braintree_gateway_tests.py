@@ -10,8 +10,8 @@ from lxml.builder import ElementMaker
 XML = ElementMaker() # TODO this won't be needed here
 from money import Money
 import os
-#import sys
-#sys.path.insert(0, '/home/phlip/tools/braintree-2.2.1')
+import sys
+sys.path.insert(0, '/home/phlip/tools/braintree-2.2.1')
 from mock import patch
 import datetime
 
@@ -37,6 +37,13 @@ class BraintreeGatewayTests( MerchantGatewaysTestSuite,
 
     def gateway_type(self):
         return BraintreeGateway
+
+    def mock_webservice(self, returns, lamb):
+        with patch('braintree.util.http.Http.post') as mock_do:
+            mock_do.return_value = returns
+            lamb()
+
+        self.response = self.gateway.response  #  TODO  all web service mockers do this
 
     def successful_authorization_response(self):
         return {u'transaction': {u'amount': u'100.00',
@@ -104,6 +111,72 @@ class BraintreeGatewayTests( MerchantGatewaysTestSuite,
                   u'type': u'sale',
                   u'updated_at': datetime.datetime(2010, 5, 19, 22, 38, 44)}}
 
+        def failed_authorization_response(self):
+            return {u'api_error_response': {u'errors': {u'errors': ''},
+                         u'params': {u'transaction': {u'amount': u'100',
+                                                      u'credit_card': {u'expiration_date': u'05/2012'},
+                                                      u'type': u'sale'}},
+                         u'transaction': {u'amount': u'100.00',
+                                          u'avs_error_response_code': None,
+                                          u'avs_postal_code_response_code': None,
+                                          u'avs_street_address_response_code': None,
+                                          u'billing': {u'company': None,
+                                                       u'country_name': None,
+                                                       u'extended_address': None,
+                                                       u'first_name': None,
+                                                       u'id': None,
+                                                       u'last_name': None,
+                                                       u'locality': None,
+                                                       u'postal_code': None,
+                                                       u'region': None,
+                                                       u'street_address': None},
+                                          u'created_at': datetime.datetime(2010, 5, 20, 21, 56, 41),
+                                          u'credit_card': {u'bin': u'510510',
+                                                           u'card_type': u'MasterCard',
+                                                           u'cardholder_name': None,
+                                                           u'customer_location': u'US',
+                                                           u'expiration_month': u'05',
+                                                           u'expiration_year': u'2012',
+                                                           u'last_4': u'5100',
+                                                           u'token': None},
+                                          u'currency': u'USD',
+                                          u'custom_fields': '',
+                                          u'customer': {u'company': None,
+                                                        u'email': None,
+                                                        u'fax': None,
+                                                        u'first_name': None,
+                                                        u'id': None,
+                                                        u'last_name': None,
+                                                        u'phone': None,
+                                                        u'website': None},
+                                          u'cvv_response_code': None,
+                                          u'id': u'kb3k4w',
+                                          u'merchant_account_id': u'CukerInteractive',
+                                          u'order_id': None,
+                                          u'processor_authorization_code': None,
+                                          u'processor_response_code': '',
+                                          u'processor_response_text': u'Unknown ()',
+                                          u'refund_id': None,
+                                          u'shipping': {u'company': None,
+                                                        u'country_name': None,
+                                                        u'extended_address': None,
+                                                        u'first_name': None,
+                                                        u'id': None,
+                                                        u'last_name': None,
+                                                        u'locality': None,
+                                                        u'postal_code': None,
+                                                        u'region': None,
+                                                        u'street_address': None},
+                                          u'status': u'gateway_rejected',
+                                          u'status_history': [{u'amount': u'100.00',
+                                                               u'status': u'gateway_rejected',
+                                                               u'timestamp': datetime.datetime(2010, 5, 20, 21, 56, 41),
+                                                               u'transaction_source': u'API',
+                                                               u'user': u'Phlip'}],
+                                          u'type': u'sale',
+                                          u'updated_at': datetime.datetime(2010, 5, 20, 21, 56, 41)}}}
+
+
 #    def test_successful_authorization(self):
 #        self.mock_webservice(self.successful_authorization_response())
 #        self.options['description'] = 'Chamber of Secrets'
@@ -113,13 +186,6 @@ class BraintreeGatewayTests( MerchantGatewaysTestSuite,
 #        self.assert_successful_authorization()
 #        self.assert_success()
 #        self.assert_equal(True, self.response.is_test)
-
-    def mock_webservice(self, returns, lamb):
-        with patch('braintree.util.http.Http.post') as mock_do:
-            mock_do.return_value = returns
-            lamb()
-
-        self.response = self.gateway.response  #  TODO  all web service mockers do this
 
     def test_successful_authorization(self):
         self.options['description'] = 'Chamber of Secrets'
@@ -139,6 +205,15 @@ class BraintreeGatewayTests( MerchantGatewaysTestSuite,
         print self.gateway.result
         print self.gateway.response
 
+    def test_failed_authorization(self):
+        self.mock_webservice( self.failed_authorization_response(),
+            lambda:  self.gateway.authorize(self.amount, self.credit_card, **self.options) )
+
+#        self.response = self.gateway.response
+#        assert self.response.is_test
+#        self.assert_failure()
+#        self.assert_failed_authorization()
+        
     def _test_REMOTE_using_braintree_lib(self):  #  TODO  add braintree to our (optional!) REQUIREMENTS
         import sys, M2Crypto  #  TODO  document M2Crypto requires SWIG (and that it's a POS!) sudo aptitude install swig, and get python-mcrypto from your package mangler
 
@@ -152,7 +227,7 @@ class BraintreeGatewayTests( MerchantGatewaysTestSuite,
             braintree.Environment.Sandbox,
             "TODO",
             "config",
-            "us"
+            "these"
         )
 
         result = Transaction.sale({
@@ -760,38 +835,6 @@ class BraintreeGatewayTests( MerchantGatewaysTestSuite,
     def successful_purchase_response(self):  #  TODO  get a real one!
         return self.successful_authorization_response()
 
-
-    def failed_authorization_response(self):
-        return xStr(XML.Response(
-                      XML.QuickResp(
-                        XML.ProcStatus('841'),
-                        XML.StatusMsg('Error validating card/account number range'),
-                        XML.CustomerBin(),
-                        XML.CustomerMerchantID(),
-                        XML.CustomerName(),
-                        XML.CustomerRefNum(),
-                        XML.CustomerProfileAction(),
-                        XML.ProfileProcStatus('9576'),
-                        XML.CustomerProfileMessage('Profile: Unable to Perform Profile Transaction. The Associated Transaction Failed. '),
-                        XML.CustomerAddress1(),
-                        XML.CustomerAddress2(),
-                        XML.CustomerCity(),
-                        XML.CustomerState(),
-                        XML.CustomerZIP(),
-                        XML.CustomerEmail(),
-                        XML.CustomerPhone(),
-                        XML.CustomerProfileOrderOverrideInd(),
-                        XML.OrderDefaultDescription(),
-                        XML.OrderDefaultAmount(),
-                        XML.CustomerAccountType(),
-                        XML.CCAccountNum(),
-                        XML.CCExpireDate(),
-                        XML.ECPAccountDDA(),
-                        XML.ECPAccountType(),
-                        XML.ECPAccountRT(),
-                        XML.ECPBankPmtDlv(),
-                        XML.SwitchSoloStartDate(),
-                        XML.SwitchSoloIssueNum())))
 
 #  TODO  trust everything below this line:
 

@@ -262,7 +262,6 @@ class MerchantGatewaysTestSuite( MerchantGatewaysUtilitiesTestSuite,
             self.assert_failure()
             self.assert_failed_authorization()
 
-
         def test_successful_purchase(self):
             self.mock_webservice(self.successful_purchase_response(),
                 lambda: self.gateway.purchase(self.amount, self.credit_card, **self.options) )
