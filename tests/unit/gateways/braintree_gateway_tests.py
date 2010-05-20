@@ -80,7 +80,7 @@ class BraintreeGatewayTests( MerchantGatewaysTestSuite,
                                 u'website': None},
                   u'cvv_response_code': u'I',
                   u'id': u'8y5jn6',
-                  u'merchant_account_id': u'CukerInteractive',  #  TODO  sterilize me!
+                  u'merchant_account_id': u'Crunchy Frog',
                   u'order_id': None,
                   u'processor_authorization_code': u'54158',
                   u'processor_response_code': u'1000',
@@ -150,7 +150,7 @@ class BraintreeGatewayTests( MerchantGatewaysTestSuite,
                                                     u'website': None},
                                       u'cvv_response_code': None,
                                       u'id': u'kb3k4w',
-                                      u'merchant_account_id': u'CukerInteractive',
+                                      u'merchant_account_id': u'Spring Surprise',
                                       u'order_id': None,
                                       u'processor_authorization_code': None,
                                       u'processor_response_code': '',
@@ -200,6 +200,7 @@ class BraintreeGatewayTests( MerchantGatewaysTestSuite,
         self.assert_equal('8y5jn6', self.response.result.transaction.id)
         #print self.response.__dict__
         self.assert_equal('54158', self.response.authorization)
+        self.assert_equal('Approved', self.response.message)
     #                  u'processor_authorization_code': u'54158',
 #                  u'processor_response_code': u'1000',
 #                  u'processor_response_text': u'Approved',

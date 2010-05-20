@@ -40,7 +40,7 @@ class BraintreeGateway(Gateway):  # CONSIDER most of this belongs in a class Sma
                # }
             })
         #print dir(self.result.transaction)
-        self.response = self.__class__.Response(self.result.is_success, 'TODO 2', 'TODO 3',
+        self.response = self.__class__.Response(self.result.is_success, self.result.transaction.processor_response_text, 'TODO 3',
                                                 is_test = self.gateway_mode =='test',
                                                 authorization = self.result.transaction.processor_authorization_code
                                                 )
