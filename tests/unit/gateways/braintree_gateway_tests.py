@@ -183,7 +183,7 @@ class BraintreeGatewayTests( MerchantGatewaysTestSuite,
 #        self.response = self.gateway.authorize(self.amount, self.credit_card, **self.options)
 #
 #        assert self.response.is_test
-#        self.assert_successful_authorization()  #  TODO  move this down
+#        self.assert_successful_authorization()
 #        self.assert_success()
 #        self.assert_equal(True, self.response.is_test)
 
@@ -269,10 +269,9 @@ class BraintreeGatewayTests( MerchantGatewaysTestSuite,
         self.response = self.gateway.authorize(self.amount, self.credit_card, **self.options)
 
 # TODO        assert self.response.is_test
-        self.assert_successful_authorization()
         self.assert_success()
         self.assert_equal(repr(True), repr(self.response.is_test))  #  TODO  why the repr?
-
+        self.assert_successful_authorization()
 
 
 
