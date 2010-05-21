@@ -13,15 +13,28 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
     This contains copies of test utilities found in `django-test-extensions <http://github.com/cuker/django-test-extensions>`_.
     '''
 
-    def assert_success(self):
-        #  TODO assert is_test
-        self.assertTrue(isinstance(self.response, self.gateway_response_type()))
-        self.assertTrue(self.response.success, 'Response should not fail: ' + pformat(self.response.__dict__))
+    def assert_contains(self, needle, haystack, diagnostic=''):
+        'Assert that one value (the hasystack) contains another value (the needle)'
+        diagnostic = diagnostic + "\nContent should contain `%s' but doesn't:\n%s" % (needle, haystack)
+        diagnostic = diagnostic.strip()
+        return self.assert_(needle in haystack, diagnostic)
 
-    def assert_failure(self):
-        self.assertTrue(isinstance(self.response, self.gateway_response_type()))
-            #~ clean_backtrace do
-        self.assertFalse(self.response.success, 'Response should fail: ' + pformat(self.response.__dict__))
+    def assert_none(self, *args, **kwargs):
+        "assert you ain't nothin'"
+
+        return self.assertEqual(None, *args, **kwargs)
+
+    def assert_equal(self, *args, **kwargs):
+        'Assert that two values are equal'
+
+        return self.assertEqual(*args, **kwargs)
+
+    def assertEqual(self, first, second, message=''):
+        'NOTE Python 3 fixes this: http://docs.python.org/dev/py3k/library/unittest.html#unittest.TestCase.longMessage '
+
+        if first != second:
+            self.assertTrue( first == second,
+                          (message + ('\n%r != %r' % (first, second))).lstrip() )
 
     def assert_raises_(self, except_cls, callable_, *args, **kw):  #  CONSIDER  merge with django-test-extensions' assert_raises?
         try:
@@ -118,23 +131,6 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
         reference = re.sub(r'\n\s*', '\n', reference).strip()
         sample = re.sub(r'\n\s*', '\n', sample).strip()
         self.assertEqual(reference, sample, "\n%s\nshould match:%s" % (reference, sample))  #  CONSIDER  use XPath to rotorouter the two samples!
-
-    def assert_none(self, *args, **kwargs):
-        "assert you ain't nothin'"
-
-        return self.assertEqual(None, *args, **kwargs)
-
-    def assert_equal(self, *args, **kwargs):
-        'Assert that two values are equal'
-
-        return self.assertEqual(*args, **kwargs)
-
-    def assertEqual(self, first, second, message=''):
-        'NOTE Python 3 fixes this: http://docs.python.org/dev/py3k/library/unittest.html#unittest.TestCase.longMessage '
-
-        if first != second:
-            self.assertTrue( first == second,
-                          (message + ('\n%r != %r' % (first, second))).lstrip() )
 
     def assert_params(self, params, **dict):  #  ERGO  put me in django-test-extensions!
         qsparams = cgi.parse_qs(params)
@@ -236,6 +232,17 @@ class MerchantGatewaysTestSuite( MerchantGatewaysUtilitiesTestSuite,
 
         self.subscription_id = '100748'  #  TODO  use or lose this
 
+    def assert_success(self):
+        #  TODO assert is_test
+        self.assertTrue(isinstance(self.response, self.gateway_response_type()))
+        self.assertTrue(self.response.success, 'Response should not fail: ' + pformat(self.response.__dict__))
+
+    def assert_failure(self):
+        self.assertTrue(isinstance(self.response, self.gateway_response_type()))
+            #~ clean_backtrace do
+        self.assertFalse(self.response.success, 'Response should fail: ' + pformat(self.response.__dict__))
+
+        
     class CommonTests:  #  CONSIDER  move us to gateway_test.py?
 
         def gateway_response_type(self):

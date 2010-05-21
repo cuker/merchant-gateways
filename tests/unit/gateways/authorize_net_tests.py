@@ -164,7 +164,6 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
         result = {}
 
         self.gateway.add_address( result, billing_address = {'address1': '164 Waverley Street', 'country': 'DE', 'state': ''} )
-        print result
 
         self.assert_equal(set(["address", "city", "company", "country", "phone", "state", "zip"]), set(result.keys()))  #  TODO  assert_sets_equal
         self.assert_equal('n/a', result['state'])
@@ -214,19 +213,23 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
                  'x_first_name=Hermione&x_version=3.1&x_login=X&x_last_name=Granger&x_tran_key=Y&x_relay_response=FALSE' +
                  '&x_delim_data=TRUE&x_delim_char=%2C&x_amount=1.01' )
 
+    def test_purchase_meets_minimum_requirements(self):  #  TODO  what was the point of this?
+        params = { 'amount': "1.01" }
+
+        self.gateway.add_creditcard(params, self.credit_card)
+        data = self.gateway.post_data('AUTH_ONLY', params)  #  TODO  should the ? be there?
+        sample = self.assert_params(re.sub(r'^\?', '', data))
+        print sample  #  TODO  where's the 1.01 ??
+
+#        assert data = self.gateway.send(:post_data, 'AUTH_ONLY', params)
+        for key in self.minimum_requirements():
+            self.assert_contains('x_' + key, sample.keys())
+
+    def minimum_requirements(self):
+        return ['version', 'delim_data', 'relay_response', 'login', 'tran_key', 'amount', 'card_num', 'exp_date', 'type']
+
+
     '''
-      def test_purchase_meets_minimum_requirements
-        params = {
-          :amount => "1.01",
-        }
-
-        self.gateway.send(:add_creditcard, params, self.credit_card)
-
-        assert data = self.gateway.send(:post_data, 'AUTH_ONLY', params)
-        minimum_requirements.each do |key|
-          assert_not_nil(data =~ /x_#{key}=/)
-        end
-      end
 
       def test_successful_credit
         self.gateway.expects(:ssl_post).returns(successful_purchase_response)
