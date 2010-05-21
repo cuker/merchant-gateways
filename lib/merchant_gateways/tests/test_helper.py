@@ -207,10 +207,12 @@ class MerchantGatewaysWebserviceTestSuite(object):
     def mock_get_webservice(self, returns, lamb):
         self.gateway.get_webservice = Mock(return_value=returns)
         lamb()
+        self.response = self.gateway.response  #  TODO  take out redundant occurences of this
 
     def mock_post_webservice(self, returns, lamb):
         self.gateway.post_webservice = Mock(return_value=returns)
         lamb()
+        self.response = self.gateway.response  #  TODO  take out redundant occurences of this
 
 
 class MerchantGatewaysTestSuite( MerchantGatewaysUtilitiesTestSuite,
@@ -242,7 +244,7 @@ class MerchantGatewaysTestSuite( MerchantGatewaysUtilitiesTestSuite,
             #~ clean_backtrace do
         self.assertFalse(self.response.success, 'Response should fail: ' + pformat(self.response.__dict__))
 
-        
+
     class CommonTests:  #  CONSIDER  move us to gateway_test.py?
 
         def gateway_response_type(self):

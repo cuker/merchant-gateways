@@ -13,8 +13,6 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
         return AuthorizeNet
 
     def mock_webservice(self, response, lamb):
-
-
         self.mock_get_webservice(response, lamb)  #  TODO  is this REALLY a "get"??
 
     def assert_successful_authorization(self):
@@ -219,7 +217,7 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
         self.gateway.add_creditcard(params, self.credit_card)
         data = self.gateway.post_data('AUTH_ONLY', params)  #  TODO  should the ? be there?
         sample = self.assert_params(re.sub(r'^\?', '', data))
-        print sample  #  TODO  where's the 1.01 ??
+    #    print sample  #  TODO  where's the 1.01 ??
 
 #        assert data = self.gateway.send(:post_data, 'AUTH_ONLY', params)
         for key in self.minimum_requirements():
@@ -228,16 +226,13 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
     def minimum_requirements(self):
         return ['version', 'delim_data', 'relay_response', 'login', 'tran_key', 'amount', 'card_num', 'exp_date', 'type']
 
+    def test_successful_credit(self):
+        self.mock_webservice( self.successful_purchase_response(),  #  TODO  shouldn't that be a successful_credit_response()?
+                              lambda: self.gateway.credit(self.amount, '123456789', card_number=self.credit_card.number) )
+        self.assert_success()
+        self.assert_equal('This transaction has been approved', self.response.message)
 
     '''
-
-      def test_successful_credit
-        self.gateway.expects(:ssl_post).returns(successful_purchase_response)
-        assert response = self.gateway.credit(self.amount, '123456789', :card_number => self.credit_card.number)
-        assert_success response
-        assert_equal 'This transaction has been approved', response.message
-      end
-
       def test_failed_credit
         self.gateway.expects(:ssl_post).returns(failed_credit_response)
 

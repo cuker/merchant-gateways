@@ -158,15 +158,14 @@ class AuthorizeNet(Gateway):
       # ==== Options
       #
       # * <tt>:card_number</tt> -- The credit card number the credit is being issued to. (REQUIRED)
-    def credit(self, money, identification, options = {}):
+    def credit(self, money, identification, **options):
         #requires!(options, :card_number)
-        assert('card_number' in options)
+        assert('card_number' in options)  #  CONSIDER  how to credit a transaction?
 
         post = dict( trans_id= identification,
                      card_num= options['card_number'] )
 
         self.add_invoice(post, **options)
-
         self.commit('CREDIT', money, post)
 
     def commit(self, action, money, parameters):

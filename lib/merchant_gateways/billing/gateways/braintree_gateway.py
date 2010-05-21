@@ -134,7 +134,6 @@ class BraintreeGateway(Gateway):  # CONSIDER most of this belongs in a class Sma
         return 'https://%s/transactions' % uri
         # return 'https://%s/api/transact.php' % uri
 
-
     def post_data(self, action, **parameters):
 
         post = dict( username=self.options['login'],
