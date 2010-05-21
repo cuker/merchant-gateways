@@ -15,6 +15,7 @@ except ImportError:
 import re
 from merchant_gateways.lib.post import post  #  CONSIDER  move me to gateway.py
 from merchant_gateways.billing import response
+from merchant_gateways.billing.gateways.gateway import default_dict
 
 # For more information on the Authorize.Net Gateway please visit their {Integration Center}[http://developer.authorize.net/]
 
@@ -91,7 +92,7 @@ class AuthorizeNet(Gateway):
         # TODO self.options = options
         self.add_invoice(post, options)
         self.add_creditcard(post, creditcard)
-        self.add_address(post, options)
+        self.add_address(post, **options)
         self.add_customer_data(post,options)
         #  TODO  merge passed options & self.options
 
@@ -116,7 +117,7 @@ class AuthorizeNet(Gateway):
 
         self.add_invoice(post, options)
         self.add_creditcard(post, creditcard)
-        self.add_address(post, options)
+        self.add_address(post, **options)
         self.add_customer_data(post, options)
 
         return self.commit('AUTH_CAPTURE', money, post)
@@ -273,13 +274,14 @@ class AuthorizeNet(Gateway):
         if 'ip' in options:
             post['customer_ip'] = options['ip']
 
-    def add_address(self, post, options):
+    def add_address(self, post, **options):
         address = None
-        if 'billing_address' in options:
+        if 'billing_address' in options:  #  TODO  use get
             address = options['billing_address']
         elif 'address' in options:
             address = options['address']
         if address:
+            address = default_dict(address)
             post['address'] = str(address['address1'])
             post['company'] = str(address['company'])
             post['phone'] = str(address['phone'])

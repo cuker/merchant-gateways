@@ -160,18 +160,18 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
 #      def successful_update_recurring_response
 #      def successful_cancel_recurring_response
 
-    '''  def test_add_address_outsite_north_america
+    def test_add_address_outsite_north_america(self):
         result = {}
 
-        self.gateway.send(:add_address, result, :billing_address => {:address1 => '164 Waverley Street', :country => 'DE', :state => ''} )
+        self.gateway.add_address(result, billing_address = {'address1': '164 Waverley Street', 'country': 'DE', 'state': ''} )
+        print result
 
-        assert_equal ["address", "city", "company", "country", "phone", "state", "zip"], result.stringify_keys.keys.sort
-        assert_equal 'n/a', result[:state]
-        assert_equal '164 Waverley Street', result[:address]
-        assert_equal 'DE', result[:country]
-      end
+        self.assert_equal( set(["address", "city", "company", "country", "phone", "state", "zip"]), set(result.keys()))  #  TODO  assert_sets_equal
+        #self.assert_equal 'n/a', result[:state]
+        #self.assert_equal '164 Waverley Street', result[:address]
+        #self.assert_equal 'DE', result[:country]
 
-      def test_add_address
+    '''  def test_add_address
         result = {}
 
         self.gateway.send(:add_address, result, :billing_address => {:address1 => '164 Waverley Street', :country => 'US', :state => 'CO'} )
