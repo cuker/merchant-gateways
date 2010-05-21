@@ -171,7 +171,7 @@ class BraintreeGatewayTests( MerchantGatewaysTestSuite,
                                                            u'status': u'gateway_rejected',
                                                            u'timestamp': datetime.datetime(2010, 5, 20, 21, 56, 41),
                                                            u'transaction_source': u'API',
-                                                           u'user': u'Phlip'}],
+                                                           u'user': u'Mongo'}],
                                       u'type': u'sale',
                                       u'updated_at': datetime.datetime(2010, 5, 20, 21, 56, 41)}}}
 
@@ -184,17 +184,6 @@ class BraintreeGatewayTests( MerchantGatewaysTestSuite,
 #        self.assert_successful_authorization()
 #        self.assert_success()
 #        self.assert_equal(True, self.response.is_test)
-
-    def test_successful_authorization(self):
-        self.options['description'] = 'Chamber of Secrets'
-
-        self.mock_webservice(self.successful_authorization_response(),
-            lambda: self.gateway.authorize(self.amount, self.credit_card, **self.options))
-
-        assert self.response.is_test
-
-        self.assert_success()
-        self.assert_successful_authorization()
 
     def assert_successful_authorization(self):
         self.assert_equal('8y5jn6', self.response.result.transaction.id)
