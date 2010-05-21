@@ -7,8 +7,6 @@ from merchant_gateways.tests.test_helper import *
 
 #  TODO  require all required parameters
 
-#  TODO  rename MerchantGatewaysTestSuite
-
 class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.CommonTests):
 
     def gateway_type(self):
@@ -100,7 +98,7 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
     def test_fraudulent_cvv_result(self):
         self.mock_webservice(self.fraud_review_response(),
                              lambda: self.gateway.authorize(self.amount, self.credit_card, **self.options) )
-        self.response = self.gateway.response 
+        self.response = self.gateway.response
         cvv = self.response.cvv_result
         self.assert_equal( 'M', cvv.code )
         self.assert_equal( 'Match', cvv.message )  #  TODO  huh??
