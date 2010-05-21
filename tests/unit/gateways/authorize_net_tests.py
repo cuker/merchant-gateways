@@ -232,22 +232,25 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
         self.assert_success()
         self.assert_equal('This transaction has been approved', self.response.message)
 
+    def test_failed_credit(self):
+        self.mock_webservice( self.failed_credit_response(),  #  TODO  shouldn't that be a successful_credit_response()?
+                              lambda: self.gateway.credit(self.amount, '123456789', card_number=self.credit_card.number) )
+        self.assert_failure()
+        self.assert_equal('The referenced transaction does not meet the criteria for issuing a credit', self.response.message)
+
+    def failed_credit_response(self):
+        return '$3$,$2$,$54$,$The referenced transaction does not meet the criteria for issuing a credit.$,$$,$P$,$0$,$$,$$,$1.00$,$CC$,$credit$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$39265D8BA0CDD4F045B5F4129B2AAA01$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$'
+
+    def test_supported_card_types(self):
+        '''Consider: This kind of test should put its money where its mouth is and loop thru them!'''
+
+        self.assert_equal(['visa', 'master', 'american_express', 'discover'], AuthorizeNet.supported_cardtypes())
+
     '''
-      def test_failed_credit
-        self.gateway.expects(:ssl_post).returns(failed_credit_response)
-
-        assert response = self.gateway.credit(self.amount, '123456789', :card_number => self.credit_card.number)
-        assert_failure response
-        assert_equal 'The referenced transaction does not meet the criteria for issuing a credit', response.message
-      end
-
       def test_supported_countries
         assert_equal ['US'], AuthorizeNetGateway.supported_countries
       end
 
-      def test_supported_card_types
-        assert_equal [:visa, :master, :american_express, :discover], AuthorizeNetGateway.supported_cardtypes
-      end
 
       def test_failure_without_response_reason_text
         assert_nothing_raised do
@@ -321,9 +324,6 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
         %w(version delim_data relay_response login tran_key amount card_num exp_date type)
       end
 
-      def failed_credit_response
-        '$3$,$2$,$54$,$The referenced transaction does not meet the criteria for issuing a credit.$,$$,$P$,$0$,$$,$$,$1.00$,$CC$,$credit$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$39265D8BA0CDD4F045B5F4129B2AAA01$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$'
-      end
 
       def successful_recurring_response
         <<-XML

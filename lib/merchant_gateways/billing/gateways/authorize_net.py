@@ -60,7 +60,12 @@ class AuthorizeNet(Gateway):
 #    arb_live_url = 'https://api.authorize.net/xml/v1/request.api'
 
     supported_countries = ['US']
-    supported_cardtypes = ['visa', 'master', 'american_express', 'discover']
+    supported_cardtypes = ['visa', 'master', 'american_express', 'discover'] # TODO  deprecate this for that
+
+    @staticmethod
+    def supported_cardtypes():
+        return ['visa', 'master', 'american_express', 'discover']
+
     homepage_url = 'http://www.authorize.net/'
     display_name = u'Authorize.Net'
 
