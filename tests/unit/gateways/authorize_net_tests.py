@@ -242,9 +242,10 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
         return '$3$,$2$,$54$,$The referenced transaction does not meet the criteria for issuing a credit.$,$$,$P$,$0$,$$,$$,$1.00$,$CC$,$credit$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$39265D8BA0CDD4F045B5F4129B2AAA01$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$'
 
     def test_supported_card_types(self):
-        '''Consider: This kind of test should put its money where its mouth is and loop thru them!'''
+        '''Consider: These trivial kinds of test should put their money where their mouths are and loop thru them!'''
 
-        self.assert_equal(['visa', 'master', 'american_express', 'discover'], AuthorizeNet.supported_cardtypes())
+        self.assert_equal(['visa', 'master', 'american_express', 'discover'], AuthorizeNet.supported_cardtypes)
+        self.assert_equal(['US'], AuthorizeNet.supported_countries)
 
     '''
       def test_supported_countries
