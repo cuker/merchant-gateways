@@ -29,6 +29,11 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
 
         return self.assertEqual(*args, **kwargs)
 
+    def assert_equal_set(self, reference, sample, *args, **kwargs):
+        'Assert that two values are equal'
+
+        return self.assertEqual(set(reference), set(sample), *args, **kwargs)
+
     def assertEqual(self, first, second, message=''):
         'NOTE Python 3 fixes this: http://docs.python.org/dev/py3k/library/unittest.html#unittest.TestCase.longMessage '
 

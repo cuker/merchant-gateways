@@ -163,7 +163,7 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
 
         self.gateway.add_address( result, billing_address = {'address1': '164 Waverley Street', 'country': 'DE', 'state': ''} )
 
-        self.assert_equal(set(["address", "city", "company", "country", "phone", "state", "zip"]), set(result.keys()))  #  TODO  assert_sets_equal
+        self.assert_equal_set(["address", "city", "company", "country", "phone", "state", "zip"], result.keys())
         self.assert_equal('n/a', result['state'])
         self.assert_equal('164 Waverley Street', result['address'])
         self.assert_equal('DE', result['country'])
@@ -173,7 +173,7 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
 
         self.gateway.add_address( result, billing_address= { 'address1': '164 Waverley Street', 'country': 'US', 'state': 'CO' } )
 
-        self.assert_equal( set(["address", "city", "company", "country", "phone", "state", "zip"]), set(result.keys()))  #  TODO  assert_sets_equal
+        self.assert_equal_set(["address", "city", "company", "country", "phone", "state", "zip"], result.keys())
         self.assert_equal('CO', result['state'])
         self.assert_equal('164 Waverley Street', result['address'])
         self.assert_equal('US', result['country'])

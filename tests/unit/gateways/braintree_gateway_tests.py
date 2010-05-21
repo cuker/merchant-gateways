@@ -307,7 +307,7 @@ class BraintreeGatewayTests( MerchantGatewaysTestSuite,
         result = {}  #  TODO  use or lose this
 
         self.gateway.add_address(result, '', address1='164 Waverley Street', country='US', state='CO' )
-        self.assert_equal(set(["address1", "address2", "city", "company", "country", "phone", "state", "zip"]), set(result.keys()))
+        self.assert_equal_set(["address1", "address2", "city", "company", "country", "phone", "state", "zip"], result.keys())
         self.assert_equal('CO', result["state"])
         self.assert_equal('164 Waverley Street', result["address1"])
         self.assert_equal('US', result["country"])
