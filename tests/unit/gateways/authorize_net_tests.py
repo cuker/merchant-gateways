@@ -28,7 +28,10 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
 
         #~ assert response = self.gateway.authorize(self.amount, self.credit_card)
 
-        # TODO  test these        print self.response.params
+        reference = { 'response_reason_code': '1', 'card_code': 'P', 'response_reason_text': 'This transaction has been approved.',
+                      'avs_result_code': 'Y', 'response_code': 1, 'transaction_id': '508141794' }
+
+        self.assert_match_dict(reference, self.response.params)
         #        self.assertEqual('508141794', self.response.params['authorization'])  #  TODO  also self.response.authorization
         self.assertEqual('508141794', self.response.authorization)
 
