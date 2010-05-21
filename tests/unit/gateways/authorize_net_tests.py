@@ -314,11 +314,6 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
 
       private
 
-      def minimum_requirements
-        %w(version delim_data relay_response login tran_key amount card_num exp_date type)
-      end
-
-
       def successful_recurring_response
         <<-XML
     <ARBCreateSubscriptionResponse xmlns="AnetApi/xml/v1/schema/AnetApiSchema.xsd">
