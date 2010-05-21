@@ -13,9 +13,9 @@ class CybersourceTests(MerchantGatewaysTestSuite,
     def gateway_type(self):
         return Cybersource
 
-    def mock_webservice(self, response, lamb):
-        self.options['billing_address'] = {}  #  TODO  put something in there, throw an error if it ain't there
-        self.mock_post_webservice(response, lamb)
+    #def mock_webservice(self, response, lamb):  #  TODO  take this out!
+     #   self.options['billing_address'] = {}  #  TODO  put something in there, throw an error if it ain't there
+      #  self.mock_post_webservice(response, lamb)
 
     def test_successful_purchase(self):        return # TODO
 

@@ -17,9 +17,9 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
     def gateway_type(self):
         return PaymentechOrbital
 
-    def mock_webservice(self, response, lamb):
-        self.options['billing_address'] = {}
-        self.mock_post_webservice(response, lamb)
+  #  def mock_webservice(self, response, lamb):  #  TODO  take this out!
+#        self.options['billing_address'] = {}
+ #       self.mock_post_webservice(response, lamb)
 
     def assert_successful_authorization(self):
         order_id = str(self.options['order_id'])  #  TODO  put something in options

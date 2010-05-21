@@ -12,14 +12,11 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
     def gateway_type(self):
         return AuthorizeNet
 
-    def mock_webservice(self, response, lamb):
-        self.mock_get_webservice(response, lamb)  #  TODO  is this REALLY a "get"??
-
     def assert_successful_authorization(self):
 
         # TODO  assert the response is None if we epic-fail (oh, and trap exceptions)
 
-        self.gateway.get_webservice.assert_called_with(
+        self.gateway.post_webservice.assert_called_with(
                 ('https://test.authorize.net/gateway/transact.dll?x_login=X&x_invoice_num=%i&' % self.options['order_id']) +
                 'x_last_name=Granger&x_card_code=456&x_card_num=4242424242424242&x_amount=100.00&x_delim_char=%2C&x_tran_key=Y&' +
                 'x_encap_char=%24&x_version=3.1&x_first_name=Hermione&x_exp_date=1290&x_delim_data=TRUE&x_relay_response=FALSE&' +
@@ -53,7 +50,7 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
 
         #  CONSIDER  test u can vary the x_amount
 
-        self.gateway.get_webservice.assert_called_with(
+        self.gateway.post_webservice.assert_called_with(
                 ('https://test.authorize.net/gateway/transact.dll?x_login=X&x_invoice_num=%i&x_trans_id=Y&' % self.options['order_id']) + \
                   'x_last_name=Granger&x_card_code=456&x_card_num=4242424242424242&x_amount=100.00&' + \
                   'x_delim_char=%2C&x_tran_key=Y&x_encap_char=%24&x_version=3.1&x_first_name=Hermione&' + \

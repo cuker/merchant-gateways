@@ -48,21 +48,19 @@ class AuthorizeNet(Gateway):
     APPROVED, DECLINED, ERROR, FRAUD_REVIEW = 1, 2, 3, 4
     RESPONSE_CODE, RESPONSE_REASON_CODE, RESPONSE_REASON_TEXT = 0, 2, 3
     AVS_RESULT_CODE, TRANSACTION_ID, CARD_CODE_RESPONSE_CODE = 5, 6, 38
-#    RECURRING_ACTIONS = {  TODO
-#      u'create': 'ARBCreateSubscription',
-#      u'update': 'ARBUpdateSubscription',
-#      u'cancel': 'ARBCancelSubscription'
-#    }
     test_url = "https://test.authorize.net/gateway/transact.dll"
     live_url = "https://secure.authorize.net/gateway/transact.dll"
 
 #    arb_test_url = 'https://apitest.authorize.net/xml/v1/request.api'
 #    arb_live_url = 'https://api.authorize.net/xml/v1/request.api'
+#    RECURRING_ACTIONS = {  CONSIDER
+#      u'create': 'ARBCreateSubscription',
+#      u'update': 'ARBUpdateSubscription',
+#      u'cancel': 'ARBCancelSubscription'
+#    }
 
     supported_countries = ['US']
     supported_cardtypes = ['visa', 'master', 'american_express', 'discover']
- 
-
     homepage_url = 'http://www.authorize.net/'
     display_name = u'Authorize.Net'
 
@@ -178,15 +176,12 @@ class AuthorizeNet(Gateway):
         parameters['test_request'] = self.is_test and 'TRUE' or 'FALSE'
 
         #url = test? ? self.test_url : self.live_url
-        if self.is_test:
-            url = self.test_url
-        else:
-            url = self.live_url
+        url = self.is_test and self.test_url or self.live_url  #  TODO  api_uri()
 
         url = url + self.post_data(action, parameters)
 
         # data = post(url, {})
-        self.result = self.get_webservice(url, {})
+        self.result = self.post_webservice(url, {})  #  TODO  post or get?
         self.response = self.parse(self.result)
         self.message = self.message_from(self.response)
 

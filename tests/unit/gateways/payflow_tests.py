@@ -14,9 +14,6 @@ class PayflowTests( MerchantGatewaysTestSuite,
     def gateway_type(self):
         return Payflow
 
-    def mock_webservice(self, response, lamb):
-        self.mock_post_webservice(response, lamb)
-
     def assert_successful_authorization(self):
         '''
         All gateways must pass the common test,
@@ -77,7 +74,7 @@ class PayflowTests( MerchantGatewaysTestSuite,
 
     def test_successful_credit(self):
         authorization = 'Mobiliarbus'
-        
+
         self.mock_webservice(self.successful_credit_response(),
                              lambda: self.gateway.credit(Money('42.00', 'MAD'), authorization) )
         self.response = self.gateway.response

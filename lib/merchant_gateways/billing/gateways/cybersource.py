@@ -54,7 +54,7 @@ class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
         #name='',
                        # TODO merge more _where_to=_where_to )
         grandTotalAmount = str(money.amount)  #  TODO  pass the currency thru
-        fields.update(options['billing_address'])
+        fields.update(options.get('billing_address', {}))
         fields.update(options)  #  TODO  options should override credit card - everywhere, and doc that!
 
         # TODO fields.update(address).update(options)
