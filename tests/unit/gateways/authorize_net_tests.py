@@ -66,7 +66,7 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
     def test_add_description(self):
         result = {}
         self.gateway.order_id = 42
-        self.gateway.add_invoice(result, { 'description': 'Cornish Pixies' })
+        self.gateway.add_invoice(result, description='Cornish Pixies')
         self.assertEqual('Cornish Pixies', result['description'])
 
     def successful_authorization_response(self):
@@ -181,13 +181,12 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
         self.assert_equal('164 Waverley Street', result['address'])
         self.assert_equal('US', result['country'])
 
-    '''
-      def test_add_invoice
+    def test_add_invoice(self):
         result = {}
-        self.gateway.send(:add_invoice, result, :order_id => '#1001')
-        assert_equal '#1001', result[:invoice_num]
-      end
+        self.gateway.add_invoice(result, order_id='#1001')
+        self.assert_equal('#1001', result['invoice_num'])  #  TODO  now test it actually goes out the wire!
 
+    '''
       def test_add_duplicate_window_without_duplicate_window
         result = {}
         ActiveMerchant::Billing::AuthorizeNetGateway.duplicate_window = nil

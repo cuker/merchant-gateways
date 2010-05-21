@@ -315,7 +315,7 @@ class BraintreeGatewayTests( MerchantGatewaysTestSuite,
     def test_add_billing_address(self):
         result = {}  #  TODO  make this a member
 
-        self.gateway.add_invoice(result, order_id = 42)
+        self.gateway.add_invoice(result, order_id=42)
         self.assert_equal('42', result["orderid"])
 
     def test_post_data(self):

@@ -90,7 +90,7 @@ class AuthorizeNet(Gateway):
         post = {}
         self.options.update(options)  #  TODO  everyone does it like this
         # TODO self.options = options
-        self.add_invoice(post, options)
+        self.add_invoice(post, **options)
         self.add_creditcard(post, creditcard)
         self.add_address(post, **options)
         self.add_customer_data(post,options)
@@ -115,7 +115,7 @@ class AuthorizeNet(Gateway):
           'trans_id': self.options['password']
         }
 
-        self.add_invoice(post, options)
+        self.add_invoice(post, **options)
         self.add_creditcard(post, creditcard)
         self.add_address(post, **options)
         self.add_customer_data(post, options)
@@ -165,7 +165,7 @@ class AuthorizeNet(Gateway):
         post = dict( trans_id= identification,
                      card_num= options['card_number'] )
 
-        self.add_invoice(post, options)
+        self.add_invoice(post, **options)
 
         self.commit('CREDIT', money, post)
 
@@ -251,7 +251,7 @@ class AuthorizeNet(Gateway):
         #print '?' + urlencode(request)
         return '?' + urlencode(request)
 
-    def add_invoice(self, post, options):
+    def add_invoice(self, post, **options):
         post['invoice_num'] = options.get('order_id', '')
         post['description'] = options.get('description', '')
 
