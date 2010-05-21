@@ -200,16 +200,21 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
 #        assert_equal 0, result[:duplicate_window]
 #      end
 
+    def test_purchase_is_valid_csv(self):
+       params = { 'amount': '1.01' }
+
+       self.gateway.add_creditcard(params, self.credit_card)
+       data = self.gateway.post_data('AUTH_ONLY', params)
+       sample = self.assert_params(re.sub(r'^\?', '', data))
+       reference = self.assert_params(self.post_data_fixture())
+       self.assert_match_dict(reference, sample)
+
+    def post_data_fixture(self):
+        return ( 'x_encap_char=%24&x_card_num=4242424242424242&x_exp_date=1290&x_card_code=456&x_type=AUTH_ONLY&' +
+                 'x_first_name=Hermione&x_version=3.1&x_login=X&x_last_name=Granger&x_tran_key=Y&x_relay_response=FALSE' +
+                 '&x_delim_data=TRUE&x_delim_char=%2C&x_amount=1.01' )
+
     '''
-      def test_purchase_is_valid_csv
-       params = { :amount => '1.01' }
-
-       self.gateway.send(:add_creditcard, params, self.credit_card)
-
-       assert data = self.gateway.send(:post_data, 'AUTH_ONLY', params)
-       assert_equal post_data_fixture.size, data.size
-      end
-
       def test_purchase_meets_minimum_requirements
         params = {
           :amount => "1.01",
@@ -313,9 +318,6 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
       end
 
       private
-      def post_data_fixture
-        'x_encap_char=%24&x_card_num=4242424242424242&x_exp_date=0806&x_card_code=123&x_type=AUTH_ONLY&x_first_name=Longbob&x_version=3.1&x_login=X&x_last_name=Longsen&x_tran_key=Y&x_relay_response=FALSE&x_delim_data=TRUE&x_delim_char=%2C&x_amount=1.01'
-      end
 
       def minimum_requirements
         %w(version delim_data relay_response login tran_key amount card_num exp_date type)
