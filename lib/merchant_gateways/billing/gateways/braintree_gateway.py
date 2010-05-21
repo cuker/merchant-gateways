@@ -20,6 +20,8 @@ TEST_URI = 'sandbox.braintreegateway.com'
 
 # TODO  what's with the cert? Environment.Sandbox = Environment("sandbox.braintreegateway.com", "443", True, Environment.braintree_root() + "/ssl/sandbox_braintreegateway_com.ca.crt")
 
+#  TODO  clone the Bogus active_gateway module! (tip: configure its auto-responses to match Braintrees?;)
+
 LIVE_URI = 'secure.braintreepaymentgateway.com'
 
 class BraintreeGateway(Gateway):  # CONSIDER most of this belongs in a class SmartPs, which is Braintree's actual implementation
