@@ -247,29 +247,22 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
         self.assert_equal(['visa', 'master', 'american_express', 'discover'], AuthorizeNet.supported_cardtypes)
         self.assert_equal(['US'], AuthorizeNet.supported_countries)
 
+#      def test_failure_without_response_reason_text  CONSIDER wat?
+#        assert_nothing_raised do
+#          assert_equal '', self.gateway.send(:message_from, {})
+#        end
+#      end
+
+    def test_response_under_review_by_fraud_service(self):
+        self.mock_webservice( self.fraud_review_response(),
+                              lambda: self.gateway.purchase(self.amount, self.credit_card) )
+        self.assert_failure()
+        self.assert_(self.response.fraud_review)
+        self.assert_equal("Thank you! For security reasons your order is currently being reviewed", self.response.message)
+
     '''
-      def test_supported_countries
-        assert_equal ['US'], AuthorizeNetGateway.supported_countries
-      end
 
-
-      def test_failure_without_response_reason_text
-        assert_nothing_raised do
-          assert_equal '', self.gateway.send(:message_from, {})
-        end
-      end
-
-      def test_response_under_review_by_fraud_service
-        self.gateway.expects(:ssl_post).returns(fraud_review_response)
-
-        response = self.gateway.purchase(self.amount, self.credit_card)
-        assert_failure response
-        assert response.fraud_review?
-        assert_equal "Thank you! For security reasons your order is currently being reviewed", response.message
-      end
-
-
-      # ARB Unit Tests
+      # ARB Unit Tests CONSIDER  we have no mandate for recurrence yet (right?)
 
       def test_successful_recurring
         self.gateway.expects(:ssl_post).returns(successful_recurring_response)
