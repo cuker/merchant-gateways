@@ -186,21 +186,21 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
         self.gateway.add_invoice(result, order_id='#1001')
         self.assert_equal('#1001', result['invoice_num'])  #  TODO  now test it actually goes out the wire!
 
+#      def test_add_duplicate_window_without_duplicate_window  CONSIDER  whut?
+#        result = {}
+#        ActiveMerchant::Billing::AuthorizeNetGateway.duplicate_window = nil
+#        self.gateway.send(:add_duplicate_window, result)
+#        assert_nil result[:duplicate_window]
+#      end
+#
+#      def test_add_duplicate_window_with_duplicate_window
+#        result = {}
+#        ActiveMerchant::Billing::AuthorizeNetGateway.duplicate_window = 0
+#        self.gateway.send(:add_duplicate_window, result)
+#        assert_equal 0, result[:duplicate_window]
+#      end
+
     '''
-      def test_add_duplicate_window_without_duplicate_window
-        result = {}
-        ActiveMerchant::Billing::AuthorizeNetGateway.duplicate_window = nil
-        self.gateway.send(:add_duplicate_window, result)
-        assert_nil result[:duplicate_window]
-      end
-
-      def test_add_duplicate_window_with_duplicate_window
-        result = {}
-        ActiveMerchant::Billing::AuthorizeNetGateway.duplicate_window = 0
-        self.gateway.send(:add_duplicate_window, result)
-        assert_equal 0, result[:duplicate_window]
-      end
-
       def test_purchase_is_valid_csv
        params = { :amount => '1.01' }
 
