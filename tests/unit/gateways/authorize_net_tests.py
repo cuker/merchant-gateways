@@ -13,6 +13,8 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
         return AuthorizeNet
 
     def mock_webservice(self, response, lamb):
+
+
         self.mock_get_webservice(response, lamb)  #  TODO  is this REALLY a "get"??
 
     def assert_successful_authorization(self):
@@ -33,16 +35,25 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
 
         self.assert_match_dict(reference, self.response.params)
         #        self.assertEqual('508141794', self.response.params['authorization'])  #  TODO  also self.response.authorization
-        self.assertEqual('508141794', self.response.authorization)
+        self.assert_equal('This transaction has been approved', self.response.message)
+        self.assert_equal('508141794', self.response.authorization)
 
     def assert_failed_authorization(self):
-        self.assertEqual('508141794', self.response.authorization)  # uh, we authorize failure around here?
+        reference = { 'response_reason_code': '1', 'card_code': 'P', 'response_reason_text': 'This transaction was declined.',
+                      'avs_result_code': 'Y', 'response_code': 2, 'transaction_id': '508141794' }
+        self.assert_match_dict(reference, self.response.params)
+        self.assert_equal('This transaction was declined', self.response.message)
+        self.assert_equal('508141794', self.response.authorization)  # uh, we authorize failure around here?
 
     def assert_successful_purchase(self):
+        reference = { 'response_reason_code': '1', 'card_code': 'P', 'response_reason_text': 'This transaction has been approved.',
+                      'avs_result_code': 'Y', 'response_code': 1, 'transaction_id': '508141795' }
 
-        self.assert_success()  #  TODO  what's in the response? and why a PayflowRequest inherits Request but a AuthorizeNet Response IS a Response?
+        self.assert_match_dict(reference, self.response.params)
 
-          #  TODO  who set the amount? Why ain't it 42.95?
+         #  TODO  what's in the response? and why a PayflowRequest inherits Request but a AuthorizeNet Response IS a Response?
+
+        #  CONSIDER  test u can vary the x_amount
 
         self.gateway.get_webservice.assert_called_with(
                 ('https://test.authorize.net/gateway/transact.dll?x_login=X&x_invoice_num=%i&x_trans_id=Y&' % self.options['order_id']) + \
