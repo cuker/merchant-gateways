@@ -7,9 +7,9 @@ from merchant_gateways.tests.billing.gateways.payflow_suite import MerchantGatew
 from pprint import pprint
 from money import Money
 
-class PayflowTests( MerchantGatewaysTestSuite,
-                    MerchantGatewaysTestSuite.CommonTests,
-                    MerchantGatewaysPayflowSuite ):
+class PayflowTests( MerchantGatewaysPayflowSuite,
+                    MerchantGatewaysTestSuite,
+                    MerchantGatewaysTestSuite.CommonTests ):
 
     def gateway_type(self):
         return Payflow

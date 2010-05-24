@@ -17,21 +17,11 @@ from braintree import Transaction
 
 # TODO use this? XmlUtil.dict_from_xml(data)
 
-class BraintreeGatewayTests( MerchantGatewaysTestSuite,
-                      MerchantGatewaysTestSuite.CommonTests,
-                      MerchantGatewaysBraintreeGatewaySuite ):
+class BraintreeGatewayTests( MerchantGatewaysBraintreeGatewaySuite, MerchantGatewaysTestSuite,
+                              MerchantGatewaysTestSuite.CommonTests ):
 
     def gateway_type(self):
         return BraintreeGateway
-
-    def mock_webservice(self, returns, lamb):
-        from mock import patch
-
-        with patch('braintree.util.http.Http.post') as mock_do:
-            mock_do.return_value = returns
-            lamb()
-
-        self.response = self.gateway.response  #  TODO  all web service mockers do this
 
 #    def test_successful_authorization(self):
 #        self.mock_webservice(self.successful_authorization_response())
