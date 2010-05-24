@@ -15,6 +15,7 @@ import sys
 sys.path.insert(0, '/home/phlip/tools/braintree-2.2.1')
 import braintree
 from braintree import Transaction, Environment
+from pprint import pprint
 
 TEST_URI = 'sandbox.braintreegateway.com'
 
@@ -56,8 +57,9 @@ class BraintreeGateway(Gateway):  # CONSIDER most of this belongs in a class Sma
      #               "submit_for_settlement": True TODO  turn this on for sale (purchase) off for authorize
                # }
             })
-        #print dir(self.result.transaction)
-        self.response = self.__class__.Response(self.result.is_success, self.result.transaction.processor_response_text, 'TODO 3',
+        params = self.result.transaction.__dict__
+
+        self.response = self.__class__.Response(self.result.is_success, self.result.transaction.processor_response_text, params,
                                                 is_test = self.gateway_mode =='test',
                                                 authorization = self.result.transaction.processor_authorization_code
                                                 )

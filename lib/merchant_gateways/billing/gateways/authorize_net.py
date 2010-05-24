@@ -198,7 +198,7 @@ class AuthorizeNet(Gateway):
 
         #test_mode = test? || message =~ /TESTMODE/
 
-        r = AuthorizeNet.Response(self.is_success(self.response), self.message, self.response,
+        r = AuthorizeNet.Response(self.is_success(self.response), self.message, self.response,  #  TODO -> result!!!
                 is_test=self.is_test,
                 authorization=self.response['transaction_id'],
                 fraud_review=self.is_fraud_review(self.response),

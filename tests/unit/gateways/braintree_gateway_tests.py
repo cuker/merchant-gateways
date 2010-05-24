@@ -23,24 +23,11 @@ class BraintreeGatewayTests( MerchantGatewaysBraintreeGatewaySuite, MerchantGate
     def gateway_type(self):
         return BraintreeGateway
 
-#    def test_successful_authorization(self):
-#        self.mock_webservice(self.successful_authorization_response())
-#        self.options['description'] = 'Chamber of Secrets'
-#        self.response = self.gateway.authorize(self.amount, self.credit_card, **self.options)
-#
-#        assert self.response.is_test
-#        self.assert_successful_authorization()
-#        self.assert_success()
-#        self.assert_equal(True, self.response.is_test)
-
     def assert_successful_authorization(self):
-        self.assert_equal('8y5jn6', self.response.result.transaction.id)
-        #print self.response.__dict__
-        self.assert_equal('54158', self.response.authorization)
+        self.assert_equal('8y5jn6',   self.response.result.transaction.id)
+        self.assert_equal('54158',    self.response.authorization)
         self.assert_equal('Approved', self.response.message)
-    #                  u'processor_authorization_code': u'54158',
-#                  u'processor_response_code': u'1000',
-#                  u'processor_response_text': u'Approved',
+        self.assert_equal('1000',     self.response.params['processor_response_code'])
 
     def test_failed_authorization(self):
         self.mock_webservice( self.failed_authorization_response(),
