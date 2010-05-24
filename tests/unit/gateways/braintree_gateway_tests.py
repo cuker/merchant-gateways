@@ -24,8 +24,8 @@ class BraintreeGatewayTests( MerchantGatewaysBraintreeGatewaySuite, MerchantGate
         return BraintreeGateway
 
     def assert_successful_authorization(self):
-        self.assert_equal('8y5jn6',   self.response.result.transaction.id)
-        self.assert_equal('54158',    self.response.authorization)
+        self.assert_equal('fbyrfg',   self.response.result.transaction.id)
+        self.assert_equal('54173',    self.response.authorization)
         self.assert_equal('Approved', self.response.message)
         self.assert_equal('1000',     self.response.result.transaction.processor_response_code)
 
@@ -34,6 +34,12 @@ class BraintreeGatewayTests( MerchantGatewaysBraintreeGatewaySuite, MerchantGate
         self.assert_none(self.response.fraud_review)
         self.assert_none(self.response.authorization)
         self.assert_equal('Unknown ()', self.response.message)  #  CONSIDER  what the heck is that??
+
+    def assert_successful_purchase(self):  #  TODO  need this now!
+        self.assert_equal('8y5jn6',   self.response.result.transaction.id)
+        self.assert_equal('54158',    self.response.authorization)
+        self.assert_equal('Approved', self.response.message)
+        self.assert_equal('1000',     self.response.result.transaction.processor_response_code)
 
     def _test_REMOTE_using_braintree_lib(self):  #  TODO  add braintree to our (optional!) REQUIREMENTS
         import sys, M2Crypto  #  TODO  document M2Crypto requires SWIG (and that it's a POS!) sudo aptitude install swig, and get python-mcrypto from your package mangler
@@ -61,11 +67,6 @@ class BraintreeGatewayTests( MerchantGatewaysBraintreeGatewaySuite, MerchantGate
  #               "submit_for_settlement": True TODO  turn this on for sale (purchase) off for authorize
            # }
         })
-
-# TODO this is a raw response from the gateway 4 a sale:
-
-
-#  this is a raw response from the gateway 4 a auth: {u'transaction': {u'merchant_account_id': u'CukerInteractive', u'updated_at': datetime.datetime(2010, 5, 19, 23, 25, 47), u'currency': u'USD', u'processor_response_code': u'1000', u'id': u'fbyrfg', u'custom_fields': '', u'billing': {u'first_name': None, u'last_name': None, u'extended_address': None, u'locality': None, u'company': None, u'postal_code': None, u'country_name': None, u'region': None, u'id': None, u'street_address': None}, u'refund_id': None, u'cvv_response_code': u'I', u'type': u'sale', u'status': u'authorized', u'avs_street_address_response_code': u'I', u'order_id': None, u'avs_error_response_code': None, u'credit_card': {u'bin': u'510510', u'expiration_month': u'05', u'expiration_year': u'2012', u'last_4': u'5100', u'card_type': u'MasterCard', u'cardholder_name': None, u'token': None, u'customer_location': u'US'}, u'processor_authorization_code': u'54173', u'customer': {u'website': None, u'first_name': None, u'last_name': None, u'company': None, u'fax': None, u'email': None, u'phone': None, u'id': None}, u'processor_response_text': u'Approved', u'created_at': datetime.datetime(2010, 5, 19, 23, 25, 46), u'avs_postal_code_response_code': u'I', u'shipping': {u'first_name': None, u'last_name': None, u'extended_address': None, u'locality': None, u'company': None, u'postal_code': None, u'country_name': None, u'region': None, u'id': None, u'street_address': None}, u'amount': u'100.00', u'status_history': [{u'status': u'authorized', u'timestamp': datetime.datetime(2010, 5, 19, 23, 25, 47), u'amount': u'100.00', u'user': u'Phlip', u'transaction_source': u'API'}]}}
 
         self.assertTrue(result.is_success)
         self.assertEquals(Transaction.Status.SubmittedForSettlement, result.transaction.status)
