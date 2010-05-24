@@ -396,7 +396,6 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         Nuevo_Sol = 'PEN'
         Nuevo_Sol_numeric = '604'
         self.money = Money('200.00', Nuevo_Sol)
-        billing_address = self.assemble_billing_address()
         message = self.gateway.build_authorization_request(self.money, self.credit_card, **self.options)
 
         self.assert_xml(message, lambda x:
