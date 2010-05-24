@@ -26,10 +26,25 @@ LIVE_URI = 'secure.braintreepaymentgateway.com'
 
 class BraintreeGateway(Gateway):  # CONSIDER most of this belongs in a class SmartPs, which is Braintree's actual implementation
 
+    def _configure(self):
+        if getattr(self, 'configured', False):  return
+        where_da_cert = Environment.braintree_root() + "/ssl/sandbox_braintreegateway_com.ca.crt"  #  TODO move us into braintree
+
+        Environment.Sandbox = Environment("sandbox.braintreegateway.com", "443", True, where_da_cert)
+
+        braintree.Configuration.configure(
+            braintree.Environment.Sandbox,  #  TODO the vaunted is_test should key this!!
+            "TODO",
+            "config",
+            "us"
+        )
+
     class Response(response.Response):
         pass
 
     def authorize(self, money, credit_card, **options):  #  TODO  self.amount -> self.money
+
+        self._configure()
 
         self.result = Transaction.sale({
                 "amount": "100",

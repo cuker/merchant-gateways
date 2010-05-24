@@ -18,16 +18,6 @@ import datetime
 import braintree
 from braintree import Transaction, Environment
 
-where_da_cert = Environment.braintree_root() + "/ssl/sandbox_braintreegateway_com.ca.crt"  #  TODO move us into braintree
-
-Environment.Sandbox = Environment("sandbox.braintreegateway.com", "443", True, where_da_cert)
-
-braintree.Configuration.configure(
-    braintree.Environment.Sandbox,  #  TODO the vaunted is_test should key this!!
-    "TODO",
-    "config",
-    "us"
-)
 
 
 # TODO use this? XmlUtil.dict_from_xml(data)
