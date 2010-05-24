@@ -12,12 +12,9 @@ from money import Money
 import os
 import sys
 sys.path.insert(0, '/home/phlip/tools/braintree-2.2.1')
-from mock import patch
 import datetime
-
 import braintree
-from braintree import Transaction, Environment
-
+from braintree import Transaction
 
 
 # TODO use this? XmlUtil.dict_from_xml(data)
@@ -30,6 +27,8 @@ class BraintreeGatewayTests( MerchantGatewaysTestSuite,
         return BraintreeGateway
 
     def mock_webservice(self, returns, lamb):
+        from mock import patch
+
         with patch('braintree.util.http.Http.post') as mock_do:
             mock_do.return_value = returns
             lamb()
