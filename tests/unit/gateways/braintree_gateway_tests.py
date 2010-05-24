@@ -9,13 +9,11 @@ from pprint import pprint
 from lxml.builder import ElementMaker
 XML = ElementMaker() # TODO this won't be needed here
 from money import Money
-import os
-import sys
+import os, sys
 sys.path.insert(0, '/home/phlip/tools/braintree-2.2.1')
 import datetime
 import braintree
 from braintree import Transaction
-
 
 # TODO use this? XmlUtil.dict_from_xml(data)
 

@@ -4,6 +4,15 @@ import datetime
 
 class MerchantGatewaysBraintreeGatewaySuite:
 
+    def mock_webservice(self, returns, lamb):
+        from mock import patch
+
+        with patch('braintree.util.http.Http.post') as mock_do:
+            mock_do.return_value = returns
+            lamb()
+
+        self.response = self.gateway.response  #  TODO  all web service mockers do this
+
     def successful_authorization_response(self):
         return {u'transaction': {u'amount': u'100.00',
                   u'avs_error_response_code': None,
