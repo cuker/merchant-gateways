@@ -29,13 +29,11 @@ class BraintreeGatewayTests( MerchantGatewaysBraintreeGatewaySuite, MerchantGate
         self.assert_equal('Approved', self.response.message)
         self.assert_equal('1000',     self.response.result.transaction.processor_response_code)
 
-    def test_failed_authorization(self):
-        self.mock_webservice( self.failed_authorization_response(),
-            lambda:  self.gateway.authorize(self.amount, self.credit_card, **self.options) )
-
-        assert self.response.is_test
-        self.assert_failure()
-#        self.assert_failed_authorization()
+    def assert_failed_authorization(self):
+        self.assert_equal('kb3k4w', self.response.result.transaction.id)
+        self.assert_none(self.response.fraud_review)
+        self.assert_none(self.response.authorization)
+        self.assert_equal('Unknown ()', self.response.message)  #  CONSIDER  what the heck is that??
 
     def _test_REMOTE_using_braintree_lib(self):  #  TODO  add braintree to our (optional!) REQUIREMENTS
         import sys, M2Crypto  #  TODO  document M2Crypto requires SWIG (and that it's a POS!) sudo aptitude install swig, and get python-mcrypto from your package mangler
@@ -272,41 +270,6 @@ class BraintreeGatewayTests( MerchantGatewaysBraintreeGatewaySuite, MerchantGate
 #        self.options['billing_address'] = {}
 #        self.mock_post_webservice(response, lamb)
 
-#    def assert_failed_authorization(self):
-#        self.assert_none(self.response.params['TxRefNum'])
-#        self.assertFalse(self.response.success)
-#        self.assert_none(self.response.fraud_review)
-#
-#        reference = { 'AVSRespCode': None,
-#                      'AccountNum': None,
-#                      'ApprovalStatus': None,
-#                      'AuthCode': None,
-#                      'CAVVRespCode': None,
-#                      'CVV2RespCode': None,
-#                      'CardBrand': None,
-#                      'CustomerName': None,
-#                      'CustomerProfileMessage': 'Profile: Unable to Perform Profile Transaction. The Associated Transaction Failed. ',
-#                      'CustomerRefNum': None,
-#                      'HostAVSRespCode': None,
-#                      'HostCVV2RespCode': None,
-#                      'HostRespCode': None,
-#                      'IndustryType': None,
-#                      'MerchantID': None,
-#                      'MessageType': None,
-#                      'OrderID': None,
-#                      'ProcStatus': '841',
-#                      'ProfileProcStatus': '9576',
-#                      'RecurringAdviceCd': None,
-#                      'RespCode': None,
-#                      'RespMsg': None,
-#                      'RespTime': None,
-#                      'StatusMsg': 'Error validating card/account number range',
-#                      'TerminalID': None,
-#                      'TxRefIdx': None,
-#                      'TxRefNum': None }
-#
-#        self.assert_match_hash(self.response.params, reference)
-#        self.assert_equal('Error validating card/account number range', self.response.message)
 #
 #    def assert_successful_purchase(self):
 #        self.assert_equal('4A785F5106CCDC41A936BFF628BF73036FEC5401', self.response.params['TxRefNum'])

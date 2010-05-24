@@ -53,7 +53,6 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
 
     def assert_failed_authorization(self):
         self.assert_none(self.response.result['TxRefNum'])
-        self.assertFalse(self.response.success)
         self.assert_none(self.response.fraud_review)
 
         reference = { 'AVSRespCode': None,
