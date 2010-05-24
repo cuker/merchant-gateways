@@ -28,7 +28,7 @@ class CybersourceTests(MerchantGatewaysTestSuite,
         assert self.response.success
 
     def assert_failed_authorization(self):
-        self.assert_none(self.response.params['authorizationCode'])
+        self.assert_none(self.response.result['authorizationCode'])
         self.assert_none(self.response.fraud_review)
 
         reference = { 'authorizationCode': None, 'avsCodeRaw': None, 'currency': None,
@@ -41,7 +41,7 @@ class CybersourceTests(MerchantGatewaysTestSuite,
                       'decision': 'REJECT',
                       'requestToken': 'Afvvj7KfIgU12gooCFE2/DanQIApt+G1OgTSA+R9PTnyhFTb0KRjgFY+ynyIFNdoKKAghwgx'}
 
-        self.assert_match_hash(self.response.params, reference)
+        self.assert_match_hash(self.response.result, reference)
 
         # TODO retire for is_test: 'test': False,
         # 'message': 'TODO',

@@ -52,7 +52,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         assert self.response.success
 
     def assert_failed_authorization(self):
-        self.assert_none(self.response.params['TxRefNum'])
+        self.assert_none(self.response.result['TxRefNum'])
         self.assertFalse(self.response.success)
         self.assert_none(self.response.fraud_review)
 
@@ -84,11 +84,11 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                       'TxRefIdx': None,
                       'TxRefNum': None }
 
-        self.assert_match_hash(self.response.params, reference)
+        self.assert_match_hash(self.response.result, reference)
         self.assert_equal('Error validating card/account number range', self.response.message)
 
     def assert_successful_purchase(self):
-        self.assert_equal('4A785F5106CCDC41A936BFF628BF73036FEC5401', self.response.params['TxRefNum'])
+        self.assert_equal('4A785F5106CCDC41A936BFF628BF73036FEC5401', self.response.result['TxRefNum'])
 
         reference = { 'AVSRespCode': 'B ',
                       'AccountNum': '5454545454545454',
@@ -118,7 +118,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                       'TxRefIdx': '1',
                       'TxRefNum': '4A785F5106CCDC41A936BFF628BF73036FEC5401'}
 
-        self.assert_match_hash(reference, self.response.params)
+        self.assert_match_hash(reference, self.response.result)
 
         '''TODO self.assert_equal( 'Successful transaction', self.response.message )'''
 

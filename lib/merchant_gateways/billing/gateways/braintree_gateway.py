@@ -57,13 +57,11 @@ class BraintreeGateway(Gateway):  # CONSIDER most of this belongs in a class Sma
      #               "submit_for_settlement": True TODO  turn this on for sale (purchase) off for authorize
                # }
             })
-        params = self.result.transaction.__dict__
-
-        self.response = self.__class__.Response(self.result.is_success, self.result.transaction.processor_response_text, params,
+        
+        self.response = self.__class__.Response(self.result.is_success, self.result.transaction.processor_response_text, self.result,
                                                 is_test = self.gateway_mode =='test',
                                                 authorization = self.result.transaction.processor_authorization_code
                                                 )
-        self.response.result = self.result
         return self.response
 
 

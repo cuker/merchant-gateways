@@ -27,7 +27,7 @@ class BraintreeGatewayTests( MerchantGatewaysBraintreeGatewaySuite, MerchantGate
         self.assert_equal('8y5jn6',   self.response.result.transaction.id)
         self.assert_equal('54158',    self.response.authorization)
         self.assert_equal('Approved', self.response.message)
-        self.assert_equal('1000',     self.response.params['processor_response_code'])
+        self.assert_equal('1000',     self.response.result.transaction.processor_response_code)
 
     def test_failed_authorization(self):
         self.mock_webservice( self.failed_authorization_response(),

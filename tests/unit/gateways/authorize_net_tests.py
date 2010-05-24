@@ -28,7 +28,7 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
         reference = { 'response_reason_code': '1', 'card_code': 'P', 'response_reason_text': 'This transaction has been approved.',
                       'avs_result_code': 'Y', 'response_code': 1, 'transaction_id': '508141794' }
 
-        self.assert_match_dict(reference, self.response.params)
+        self.assert_match_dict(reference, self.response.result)
         #        self.assertEqual('508141794', self.response.params['authorization'])  #  TODO  also self.response.authorization
         self.assert_equal('This transaction has been approved', self.response.message)
         self.assert_equal('508141794', self.response.authorization)
@@ -36,7 +36,7 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
     def assert_failed_authorization(self):
         reference = { 'response_reason_code': '1', 'card_code': 'P', 'response_reason_text': 'This transaction was declined.',
                       'avs_result_code': 'Y', 'response_code': 2, 'transaction_id': '508141794' }
-        self.assert_match_dict(reference, self.response.params)
+        self.assert_match_dict(reference, self.response.result)
         self.assert_equal('This transaction was declined', self.response.message)
         self.assert_equal('508141794', self.response.authorization)  # uh, we authorize failure around here?
 
@@ -44,7 +44,7 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
         reference = { 'response_reason_code': '1', 'card_code': 'P', 'response_reason_text': 'This transaction has been approved.',
                       'avs_result_code': 'Y', 'response_code': 1, 'transaction_id': '508141795' }
 
-        self.assert_match_dict(reference, self.response.params)
+        self.assert_match_dict(reference, self.response.result)
 
          #  TODO  what's in the response? and why a PayflowRequest inherits Request but a AuthorizeNet Response IS a Response?
 
