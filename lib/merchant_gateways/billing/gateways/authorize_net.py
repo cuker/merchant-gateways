@@ -17,6 +17,8 @@ from merchant_gateways.lib.post import post  #  CONSIDER  move me to gateway.py
 from merchant_gateways.billing import response
 from merchant_gateways.billing.gateways.gateway import default_dict
 
+# TODO learn & steal from bitbucket.org/adroll/authorize
+
 # For more information on the Authorize.Net Gateway please visit their {Integration Center}[http://developer.authorize.net/]
 
 # The login and password are not the username and password you use to
@@ -132,7 +134,6 @@ class AuthorizeNet(Gateway):
         post = {'trans_id': authorization}
         self.add_customer_data(post, options)
         self.commit('PRIOR_AUTH_CAPTURE', money, post)
-
 
       # Void a previous transaction
       #
