@@ -44,6 +44,9 @@ class CreditCardTest(MerchantGatewaysUtilitiesTestSuite):
         self.assert_equal("visa", c.card_type)
         self.assert_valid(c)
 
+    def test_constructor_should_properly_assign_values(self):
+        c = CreditCard(number='4242424242424242', month='01', year='2101')
+        self.assert_equal( 'visa', c.card_type)
 
     def test_constructor_should_trim_blanks(self):
         c = self.credit_card(number='4111 1111 1111 1111 ', year='1929')

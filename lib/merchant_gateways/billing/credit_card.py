@@ -9,7 +9,7 @@ class CreditCard(object):
 
     def __init__(self,
                  #essential attributes for valid, non-bogus creditcards
-                 number, month, year, card_type, first_name, last_name,
+                 number, month, year, card_type=None, first_name=None, last_name=None,
                  #required for Switch / Solo cards
                  start_month=None, start_year=None, issue_number=None,
                  #optional verification_value (CVV, CVV2, etc).
@@ -18,13 +18,13 @@ class CreditCard(object):
         self.number = re.sub('[^\d]', '', str(number))
         self.month = int(month)
         self.year = int(year)    #  CONSIDER  throw the correct error if the year is not a number
-        self.card_type = card_type
         self.first_name = first_name
         self.last_name = last_name
 #        self.start_month = start_month
 #        self.start_year = start_year
         self.issue_number = issue_number
         self.verification_value = verification_value
+        self.card_type = card_type or self._lookup_card_type()
         self.errors = dict()
 
 #    #should be in mixin
@@ -255,6 +255,13 @@ class CreditCard(object):
                      solo='Solo'
                     )
         return types.get(self.card_type.lower(), None)  #  TODO  handle rogue types correctly, etc.!
+
+    def _lookup_card_type(self):
+        for name, matcher in CARD_COMPANIES.items():
+            if re.search(matcher, self.number):
+                return name
+
+        assert False, 'woah nelly TODO real exception system'
 
 CARD_COMPANIES = {
     'visa': '^4\d{12}(\d{3})?$',
