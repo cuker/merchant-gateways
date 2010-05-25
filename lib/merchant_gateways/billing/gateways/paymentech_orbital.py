@@ -155,9 +155,7 @@ class PaymentechOrbital(Gateway):
 
         exp_code = ( '%02i' % credit_card.month) + str(credit_card.year)[-2:] #  CONSIDER  credit_card_format
         x = XML
-
-        from money.Money import CURRENCY
-        numeric = CURRENCY[str(money.currency)].numeric  #  TODO  this should be an accessor
+        numeric = money.currency.numeric
 
         new_order = x.NewOrder(
                         x.OrbitalConnectionUsername(fields['login']),  #  TODO  from configs
@@ -251,8 +249,8 @@ class PaymentechOrbital(Gateway):
         return r
 
     def build_authorization_request(self, money, credit_card, **options):
-        from money.Money import CURRENCY
-        numeric = CURRENCY[str(money.currency)].numeric  #  TODO  this should be an accessor
+        numeric = money.currency.numeric
+
         return xStr(
           XML.Request(
               XML.AC(

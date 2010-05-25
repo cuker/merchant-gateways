@@ -57,7 +57,7 @@ class BraintreeGateway(Gateway):  # CONSIDER most of this belongs in a class Sma
      #               "submit_for_settlement": True TODO  turn this on for sale (purchase) off for authorize
                # }
             })
-        
+
         self.response = self.__class__.Response(self.result.is_success, self.result.transaction.processor_response_text, self.result,
                                                 is_test = self.gateway_mode =='test',
                                                 authorization = self.result.transaction.processor_authorization_code
@@ -237,9 +237,7 @@ class BraintreeGateway(Gateway):  # CONSIDER most of this belongs in a class Sma
 
         exp_code = ( '%02i' % credit_card.month) + str(credit_card.year)[-2:] #  CONSIDER  credit_card_format
         x = XML
-
-        from money.Money import CURRENCY
-        numeric = CURRENCY[str(money.currency)].numeric  #  TODO  this should be an accessor
+        numeric = money.currency.numeric
 
         new_order = x.NewOrder(
                         x.OrbitalConnectionUsername(fields['login']),  #  TODO  from configs
@@ -299,8 +297,8 @@ class BraintreeGateway(Gateway):  # CONSIDER most of this belongs in a class Sma
                  'IndustryType', )
 
     def build_authorization_request(self, money, credit_card, **options):
-        from money.Money import CURRENCY
-        numeric = CURRENCY[str(money.currency)].numeric  #  TODO  this should be an accessor
+        numeric = money.currency.numeric
+
         return xStr(
           XML.Request(
               XML.AC(
