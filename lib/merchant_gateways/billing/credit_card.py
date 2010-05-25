@@ -10,7 +10,7 @@ class CreditCard(object):
     def __init__(self,
                  #essential attributes for valid, non-bogus creditcards
                  number, month, year, card_type=None, first_name=None, last_name=None,
-                 #required for Switch / Solo cards
+                 # TODO required for Switch / Solo cards
                  start_month=None, start_year=None, issue_number=None,
                  #optional verification_value (CVV, CVV2, etc).
                  #Gateways will try to run validation on the passed in value if it is supplied
@@ -24,7 +24,7 @@ class CreditCard(object):
 #        self.start_year = start_year
         self.issue_number = issue_number
         self.verification_value = verification_value
-        self.card_type = card_type or self._lookup_card_type()
+        self.card_type = card_type or self._lookup_card_type()  #  TODO  squeak if those two don't match up
         self.errors = dict()
 
 #    #should be in mixin
