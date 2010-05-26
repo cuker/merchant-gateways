@@ -1,5 +1,7 @@
 
 
+#  TODO  also publish a generic test suite that works for any gateway
+
 class MerchantGatewaysAuthorizeNetSuite:
 
     def successful_authorization_response(self):
