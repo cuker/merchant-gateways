@@ -67,13 +67,6 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite,
         self.gateway.add_invoice(result, description='Cornish Pixies')
         self.assertEqual('Cornish Pixies', result['description'])
 
-    def successful_purchase_response(self):
-        return '$1$,$1$,$1$,$This transaction has been approved.$,$d1GENk$,$Y$,$508141795$,$32968c18334f16525227$,' + \
-                      '$Store purchase$,$1.00$,$CC$,$auth_capture$,$$,$Longbob$,$Longsen$,' + \
-                      '$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,' + \
-                      '$269862C030129C1173727CC10B1935ED$,$P$,$2$,' + \
-                      '$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$'
-
     def test_avs_result(self):
         self.test_successful_authorization()
         avs = self.response.avs_result
