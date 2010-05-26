@@ -2,12 +2,15 @@
 from merchant_gateways.billing.gateways.authorize_net import AuthorizeNet  #  test target is _always_ first line!
 from merchant_gateways.billing.credit_card import CreditCard
 from merchant_gateways.tests.test_helper import *
+from merchant_gateways.tests.billing.gateways.authorize_net_suite import MerchantGatewaysAuthorizeNetSuite
 
 #  TODO  all them options gotta be... OPTIONAL!!
 
 #  TODO  require all required parameters
 
-class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.CommonTests):
+class AuthorizeNetTests(MerchantGatewaysTestSuite,
+                        MerchantGatewaysAuthorizeNetSuite,
+                        MerchantGatewaysTestSuite.CommonTests):
 
     def gateway_type(self):
         return AuthorizeNet
