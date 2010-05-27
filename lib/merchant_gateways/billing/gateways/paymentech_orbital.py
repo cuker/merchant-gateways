@@ -153,16 +153,14 @@ class PaymentechOrbital(Gateway):
 #                            country='USA',  #  TODO vet this default
 
         grandTotalAmount = '%.2f' % money.amount  #  CONSIDER  format AMOUNT like this better, everywhere
+        grandTotalAmount = grandTotalAmount.replace('.', '')  #  CONSIDER internationalize that and respect the CurrencyExponent
         if options.has_key('billing_address'):  fields.update(options['billing_address'])  #  TODO  what about address?
         fields.update(options)
-
         exp_code = ( '%02i' % credit_card.month) + str(credit_card.year)[-2:] #  CONSIDER  credit_card_format
         x = XML
         numeric = money.currency.numeric
 
         new_order = x.NewOrder(
-
-
                         x.IndustryType('EC'),  #  'EC'ommerce - a web buy
                         x.MessageType('A'),  #  auth fwt!
                             # TODO  hallow A – Authorization request AC – Authorization and Mark for Capture FC – Force-Capture request R – Refund request
@@ -189,8 +187,8 @@ class PaymentechOrbital(Gateway):
                         x.AVScountryCode('US'), #  TODO other countries - and ensure this is ISO-compliant or we get a DTD fault
                         x.CustomerProfileFromOrderInd('A'),
                         x.CustomerProfileOrderOverrideInd('NO'),
-                        x.OrderID('sample'),  #  TODO
-                        x.Amount('1001') # TODO grandTotalAmount) * 10^2
+                        x.OrderID('TODO'),
+                        x.Amount(grandTotalAmount)
                         )
         return xStr(XML.Request(new_order))
 

@@ -232,7 +232,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
             }
         self.options['billing_address'] = billing_address
 
-    def TODO_test_build_authorization_request(self):
+    def test_build_authorization_request(self):
         self.money = Money('100.00', 'USD')
         billing_address = self.assemble_billing_address()
         self.options['merchant_id'] = 'Triwizard_Tournament'  #  CONSIDER  accomodate users who prefer name/password
@@ -254,8 +254,8 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                         x.MessageType('A'),
                         x.BIN('1'),
                         x.MerchantID('Triwizard_Tournament'),
-                        x.TerminalID('1'),
-                        x.CardBrand(''),
+                        x.TerminalID('001'),
+                        # CONSIDER  need this? x.CardBrand(''),
                         x.AccountNum('4242424242424242'),
                         x.Exp('1290'),
                         x.CurrencyCode('840'),
@@ -269,11 +269,11 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                         x.AVSstate(billing_address['state']),
                         x.AVSphoneNum(billing_address['phone']),
                         x.AVSname(self.credit_card.first_name + ' ' + self.credit_card.last_name), #  TODO is this really the first & last names??
-                        x.AVScountryCode('840'),
+                        x.AVScountryCode('US'), # TODO get me from the billing address
                         x.CustomerProfileFromOrderInd('A'),
                         x.CustomerProfileOrderOverrideInd('NO'),
-                        x.OrderID(''),
-                        x.Amount('100.00')
+                        x.OrderID('TODO'),
+                        x.Amount('10000')
                            )
                        )
                    )
