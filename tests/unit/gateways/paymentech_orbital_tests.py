@@ -268,8 +268,8 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         assert 2090 == self.credit_card.year
 
         self.assert_xml(message, lambda x:
-                             x.Request(
-                                 x.NewOrder(
+                 x.Request(
+                     x.NewOrder(
                         x.IndustryType('EC'),
                         x.MessageType('A'),
                         x.BIN('1'),
