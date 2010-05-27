@@ -210,7 +210,7 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
 class MerchantGatewaysWebserviceTestSuite(object):
 
     def mock_webservice(self, returns, lamb):
-        self.gateway.post_webservice = Mock(return_value=returns)
+        self.gateway.post_webservice = Mock(return_value=returns)  #  TODO  stop relying on this member!
         lamb()
         self.response = self.gateway.response  #  TODO  take out redundant occurences of this
 

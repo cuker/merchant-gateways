@@ -237,15 +237,7 @@ class PaymentechOrbital(Gateway):
         self.request  = request  # CONSIDER  standardize this
         # request       = self.build_request(request, **options)
         print uri
-        headers = {  #  TODO  TDD these
-              "MIME-Version": "1.0",
-             "Content-Type": "Application/PTI46",  #  CONSIDER  why is this code here??
-            "Content-transfer-encoding": "text",
-            "Request-number": "1",
-            "Document-type": "Request",
-            "Content-length": len(request),
-            "Merchant-id": 'TODO'
-            }
+        headers = self._generate_headers(request)
         print request
         self.result   = self.parse(self.post_webservice(uri, request, headers))  #  CONSIDER  no version of post_webservice needs options
         self.success  = self.result['ApprovalStatus'] == '1'
@@ -262,6 +254,17 @@ class PaymentechOrbital(Gateway):
         r.result = self.result  #  TODO  use params for something else
         self.response = r
         return r
+
+    def _generate_headers(self, request, **options):
+        return {  #  TODO  TDD these
+                  "MIME-Version": "1.0",
+                  "Content-Type": "Application/PTI46", #  CONSIDER  why is this code here??
+                  "Content-transfer-encoding": "text",
+                  "Request-number": "1",
+                  "Document-type": "Request",
+                  "Content-length": len(request),
+                  "Merchant-id": options['merchant_id']  #  TODO  useful error message if it's not there
+                  }
 
     def TODO_build_authorization_request(self, money, credit_card, **options):
         numeric = money.currency.numeric

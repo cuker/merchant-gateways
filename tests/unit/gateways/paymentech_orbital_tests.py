@@ -4,6 +4,7 @@ from merchant_gateways.billing.gateways.paymentech_orbital import PaymentechOrbi
 from merchant_gateways.billing.gateways.gateway import xStr
 from merchant_gateways.billing.credit_card import CreditCard
 from merchant_gateways.tests.test_helper import *
+from merchant_gateways.tests.billing.gateways.paymentech_orbital_suite import MerchantGatewaysPaymentechOrbitalSuite
 from pprint import pprint
 from lxml.builder import ElementMaker
 XML = ElementMaker()
@@ -12,14 +13,16 @@ import os
 
 
 class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
+                             MerchantGatewaysPaymentechOrbitalSuite,
                              MerchantGatewaysTestSuite.CommonTests):
 
     def gateway_type(self):
         return PaymentechOrbital
 
-  #  def mock_webservice(self, response, lamb):  #  TODO  take this out!
-#        self.options['billing_address'] = {}
- #       self.mock_post_webservice(response, lamb)
+    def test_generate_headers(self):
+        headers = self.gateway._generate_headers('yo', merchant_id='nobbly')  # CONSIDER  harry potter trivia!
+        assert len('yo') == headers['Content-length']
+        assert 'nobbly' == headers['Merchant-id']
 
     def _test_REMOTE_authorization(self):
       #  CONSIDER log errors like: 'message': 'Security Information is Missing',
