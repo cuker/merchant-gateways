@@ -35,8 +35,6 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         self.assert_success()
         self.assert_successful_authorization()
 
-#    def test_successful_authorization(self):  pass # TODO
-    def test_failed_authorization(self):  pass # TODO
     def test_successful_purchase(self):  pass # TODO
 
     def assert_successful_authorization(self):
