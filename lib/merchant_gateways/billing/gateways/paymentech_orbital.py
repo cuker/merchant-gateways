@@ -9,6 +9,10 @@ from lxml.builder import ElementMaker
 XML = ElementMaker()
 from money import Money
 
+#  TODO  Callaway noticed on the form that was completed that Discover was selected. They no longer accept Discover. This was updated on the form, but please make sure this is carried through to the site.
+
+#  TODO  Also in the UK they want to be able to accept Visa Electron and Delta, both are Visa debit cards. This shouldn’t be any additional work. Please make sure these cards will be accepted. They will be testing these. 
+
 #  TODO  bow before
 #  http://download.chasepaymentech.com/
 #  http://www.userhelpguides.com/dotnetcharge/paymentechorbital.php
@@ -167,10 +171,10 @@ class PaymentechOrbital(Gateway):
                         x.IndustryType('EC'),  #  'EC'ommerce - a web buy
                         x.MessageType('A'),  #  auth fwt!
                             # TODO  hallow A – Authorization request AC – Authorization and Mark for Capture FC – Force-Capture request R – Refund request
-                        x.BIN('1'),
+                        x.BIN('000001'),
                         x.MerchantID(options['merchant_id']),
-                        x.TerminalID('1'),
-                        x.CardBrand(''),
+                        x.TerminalID('001'),
+                        # x.CardBrand(''),
 
 # TODO SW – Switch / Solo ED – European Direct Debit EC – Electronic Check BL – Bill Me Later DP – PINLess Debit [Generic Value Used in Requests]
 
@@ -187,11 +191,11 @@ class PaymentechOrbital(Gateway):
                         x.AVSstate(fields['state']),
                         x.AVSphoneNum(fields['phone']),
                         x.AVSname(credit_card.first_name + ' ' + credit_card.last_name),
-                        x.AVScountryCode('840'), #  CONSIDER  other countries
+#                        x.AVScountryCode('840'), #  CONSIDER  other countries TODO  this breaks the DTD
                         x.CustomerProfileFromOrderInd('A'),
                         x.CustomerProfileOrderOverrideInd('NO'),
-                        x.OrderID(''),  #  TODO
-                        x.Amount(grandTotalAmount)
+                        x.OrderID('sample'),  #  TODO
+                        x.Amount('1001') # TODO grandTotalAmount) * 10^2
                         )
         return xStr(XML.Request(new_order))
 

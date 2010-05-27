@@ -232,7 +232,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
             }
         self.options['billing_address'] = billing_address
 
-    def test_build_authorization_request(self):
+    def TODO_test_build_authorization_request(self):
         self.money = Money('100.00', 'USD')
 
         billing_address = self.assemble_billing_address()
