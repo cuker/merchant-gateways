@@ -11,7 +11,7 @@ from money import Money
 
 #  TODO  Callaway noticed on the form that was completed that Discover was selected. They no longer accept Discover. This was updated on the form, but please make sure this is carried through to the site.
 
-#  TODO  Also in the UK they want to be able to accept Visa Electron and Delta, both are Visa debit cards. This shouldn’t be any additional work. Please make sure these cards will be accepted. They will be testing these. 
+#  TODO  Also in the UK they want to be able to accept Visa Electron and Delta, both are Visa debit cards. This shouldn’t be any additional work. Please make sure these cards will be accepted. They will be testing these.
 
 #  TODO  bow before
 #  http://download.chasepaymentech.com/
@@ -135,9 +135,7 @@ class PaymentechOrbital(Gateway):
         self.options['merchant_id'] = self.options.get('merchant_id', 'TODO')
         assert isinstance(money, Money), 'TODO  always pass in a Money object - no exceptions!'
         self.options.update(options)
-
         message = self.build_authorization_request(money, creditcard, **self.options)  #  TODO  _authorization_request, everywhere!!
-
         return self.commit(message, **self.options)
 
     def purchase(self, money, credit_card, **options):
@@ -191,7 +189,7 @@ class PaymentechOrbital(Gateway):
                         x.AVSstate(fields['state']),
                         x.AVSphoneNum(fields['phone']),
                         x.AVSname(credit_card.first_name + ' ' + credit_card.last_name),
-#                        x.AVScountryCode('840'), #  CONSIDER  other countries TODO  this breaks the DTD
+                        x.AVScountryCode('US'), #  TODO other countries - and ensure this is ISO-compliant or we get a DTD fault
                         x.CustomerProfileFromOrderInd('A'),
                         x.CustomerProfileOrderOverrideInd('NO'),
                         x.OrderID('sample'),  #  TODO
@@ -242,10 +240,10 @@ class PaymentechOrbital(Gateway):
         uri           = self.is_test and TEST_URL or LIVE_URL
         self.request  = request  # CONSIDER  standardize this
         # request       = self.build_request(request, **options)
-        print uri
+#        print uri
 
         headers = self._generate_headers(request, **options)
-        print request
+ #       print request
         self.result   = self.parse(self.post_webservice(uri, request, headers))  #  CONSIDER  no version of post_webservice needs options
         self.success  = self.result['ApprovalStatus'] == '1'
         self.message  = self.result['StatusMsg']
