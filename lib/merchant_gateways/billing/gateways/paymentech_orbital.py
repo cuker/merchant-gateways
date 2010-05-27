@@ -150,12 +150,9 @@ class PaymentechOrbital(Gateway):
         uri           = self.is_test and TEST_URL or LIVE_URL
         self.request  = request  # CONSIDER  standardize this
         # request       = self.build_request(request, **options)
-#        print uri
-
         headers = self._generate_headers(request, **options)
- #       print request
         self.result   = self.parse(self.post_webservice(uri, request, headers))  #  CONSIDER  no version of post_webservice needs options
-        self.success  = self.result['ApprovalStatus'] == '1'
+        self.success  = self.result['ApprovalStatus'] == '1'  #  TODO  these belong to the response not the gateway
         self.message  = self.result['StatusMsg']
         authorization = self.result['TxRefNum']
         avs_resp_code = self.result.get('AVSRespCode', '') or ''
