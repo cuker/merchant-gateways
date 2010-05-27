@@ -11,6 +11,7 @@ XML = ElementMaker()
 from money import Money
 import os
 
+# ERGO  put us into the test report system and see what we look like!
 
 class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                              MerchantGatewaysPaymentechOrbitalSuite,
@@ -251,25 +252,6 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         self.assert_equal({}, g.setup_address_hash()['shipping_address'])
         self.assert_equal(addy, g.setup_address_hash(shipping_address=addy)['shipping_address'])
 
-    def assemble_billing_address_too(self):  #  TODO dry these up
-        self.options = {
-            'order_id': '1',
-            'description': 'Time-Turner',
-            'email': 'hgranger@hogwarts.edu',
-            'customer': '947',
-            'ip': '192.168.1.1',
-            }
-        billing_address = {
-            'address1': '444 Main St.',
-            'company': 'ACME Software',
-            'phone': '222-222-2222',
-            'zip': '77777',
-            'city': 'Dallas',
-            'country': 'US',  #  TODO  must be US not USA at the interface!
-            'state': 'TX'
-            }
-        self.options['billing_address'] = billing_address
-
     def test_build_authorization_request(self):
         self.money = Money('100.00', 'USD')
         billing_address = self.assemble_billing_address()
@@ -391,20 +373,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
 # Implied decimal including those currencies that are a zero exponent. For example, both $100.00 (an exponent of ‘2’) and 100 Yen (an exponent of ‘0’) should be sent as <Amount>10000</Amount>.
 # See table for min/max amount for each currency type.
 
-# holy f--- do we gotta do all that??
-
-    def TODO_test_build_authorization_request_without_street2(self):
-        self.money = Money('2.00', 'USD')
-
-        self.assemble_billing_address_too()
-
-        message = self.gateway.build_authorization_request(self.money, self.credit_card, **self.options)
-
-        # self.assert_('<street2></street2>' in message)  #  TODO  assert_contains
-
-
-# ERGO  put us into the test report system and see what we look like!
-
+# holy f--- do we gotta do all that?? note added later: YES!
 
 # TODO  comprehend this: Sample XML Auth Response with MIME Header
 
