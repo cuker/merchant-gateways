@@ -286,7 +286,7 @@ class BraintreeGateway(Gateway):  # CONSIDER most of this belongs in a class Sma
                  'AuthCode',                  'OrderID',
                  'AVSRespCode',               'ProcStatus',
                  'CardBrand',                 'ProfileProcStatus',
-                 'CAVVRespCode',              'RecurringAdviceCd',
+                 'CAVVRespCode',              'RecurringAdviceCd',  #  TODO  erase these they are bogus
                  'CustomerName',              'RespCode',
                  'CustomerProfileMessage',    'RespMsg',
                  'CustomerRefNum',            'RespTime',

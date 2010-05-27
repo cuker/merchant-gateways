@@ -278,6 +278,54 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
 
         # TODO default_dict should expose all members as read-only data values
 
+    def test_build_purchase_request(self):
+        self.money = Money('101.00', 'USD')
+        billing_address = self.assemble_billing_address()
+        self.options['merchant_id'] = 'Triwizard_Tournament'  #  CONSIDER  accomodate users who prefer name/password
+
+        message = self.gateway.build_purchase_request(self.money, self.credit_card, **self.options)
+
+#        {'start_month': None, 'verification_value': None, 'start_year': None, 'card_type': 'v', 'issue_number': None, }
+
+        # TODO enforce <?xml version="1.0" encoding="UTF-8"?> tags??
+        #  ERGO  configure the sample correctly at error time
+
+        assert   12 == self.credit_card.month
+        assert 2090 == self.credit_card.year
+
+        self.assert_xml(message, lambda x:
+                             x.Request(
+                                 x.NewOrder(
+                        x.IndustryType('EC'),
+                        x.MessageType('AC'),
+                        x.BIN('1'),
+                        x.MerchantID('Triwizard_Tournament'),
+                        x.TerminalID('001'),
+                        # CONSIDER  need this? x.CardBrand(''),
+                        x.AccountNum('4242424242424242'),
+                        x.Exp('1290'),
+                        x.CurrencyCode('840'),
+                        x.CurrencyExponent('2'),
+                        x.CardSecValInd('1'),
+                        x.CardSecVal(self.credit_card.verification_value),
+                        x.AVSzip(billing_address['zip']),
+                        x.AVSaddress1(billing_address['address1']),
+                        x.AVSaddress2(billing_address['address2']),
+                        x.AVScity(billing_address['city']),
+                        x.AVSstate(billing_address['state']),
+                        x.AVSphoneNum(billing_address['phone']),
+                        x.AVSname(self.credit_card.first_name + ' ' + self.credit_card.last_name), #  TODO is this really the first & last names??
+                        x.AVScountryCode('US'), # TODO get me from the billing address
+                        x.CustomerProfileFromOrderInd('A'),
+                        x.CustomerProfileOrderOverrideInd('NO'),
+                        x.OrderID('TODO'),
+                        x.Amount('10100')
+                           )
+                       )
+                   )
+
+        # TODO default_dict should expose all members as read-only data values
+
     def TODO_test_build_authorization_request_with_alternative_money(self):
         Nuevo_Sol = 'PEN'
         Nuevo_Sol_numeric = '604'

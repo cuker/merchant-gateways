@@ -50,7 +50,13 @@ class PaymentechOrbital(Gateway):
         message = self.build_purchase_request(money, credit_card, **self.options)
         return self.commit(message, **self.options)
 
-    def build_authorization_request(self, money, credit_card, **options):  #  where'd "NewOrder" come from? not in docs...
+    def build_authorization_request(self, money, credit_card, **options):
+        return self.build_request('A', money, credit_card, **options)
+
+    def build_purchase_request(self, money, credit_card, **options):
+        return self.build_request('AC', money, credit_card, **options)
+
+    def build_request(self, message_type, money, credit_card, **options):
 
         assert isinstance(money, Money), 'TODO  always pass in a Money object - no exceptions!'
 
@@ -68,8 +74,11 @@ class PaymentechOrbital(Gateway):
 
         new_order = x.NewOrder(
                         x.IndustryType('EC'),  #  'EC'ommerce - a web buy
-                        x.MessageType('A'),  #  auth fwt!
-                            # TODO  hallow A – Authorization request AC – Authorization and Mark for Capture FC – Force-Capture request R – Refund request
+                        x.MessageType(message_type),
+                            # TODO  hallow A – Authorization request
+                            #           AC – Authorization and Mark for Capture
+                            #          FC – Force-Capture request
+                            #        R – Refund request
                         x.BIN('000001'),
                         x.MerchantID(options['merchant_id']),
                         x.TerminalID('001'),
@@ -172,91 +181,3 @@ class PaymentechOrbital(Gateway):
                   "Merchant-id": options['merchant_id']  #  TODO  useful error message if it's not there
                   }
 
-    def TODO_build_authorization_request(self, money, credit_card, **options):
-        numeric = money.currency.numeric
-
-        return xStr(
-          XML.Request(
-              XML.AC(
-                XML.CommonData(
-                  XML.CommonMandatory(
-                    XML.AccountNum('4012888888881', AccountTypeInd='91'),
-                    XML.POSDetails(POSEntryMode='01'),
-                    XML.MerchantID('123456789012'),
-                    XML.TerminalID('001',
-                                   TermEntCapInd='05',
-                                   CATInfoInd='06',
-                                   TermLocInd='01',
-                                   CardPresentInd='N',
-                                   POSConditionCode='59',
-                                   AttendedTermDataInd='01'),
-                    XML.BIN('000002'),
-                    XML.OrderID('1234567890123456'),
-                    XML.AmountDetails(
-                      XML.Amount('000000005000')),
-                    XML.TxTypeCommon(TxTypeID='G'),
-                    XML.Currency(CurrencyCode=numeric,
-                                 CurrencyExponent='2'),
-                    XML.CardPresence(
-                      XML.CardNP(
-                        XML.Exp('1205'))),
-                    XML.TxDateTime(),
-                        AuthOverrideInd='N',
-                        LangInd='00',
-                        CardHolderAttendanceInd='01',
-                        HcsTcsInd='T',
-                        TxCatg='7',
-                        MessageType='A',
-                        Version='2',
-                        TzCode='705'),
-                  XML.CommonOptional(
-                    XML.Comments('This is an AVS/CVV2 auth request'),
-                    XML.ShippingRef('FEDEX WB12345678 Pri 1'),
-                    XML.CardSecVal('705', CardSecInd='1'),
-                    XML.ECommerceData(
-                      XML.ECOrderNum('1234567890123456'), ECSecurityInd='07'))),
-                XML.Auth(
-                  XML.AuthMandatory(FormatInd='H'),
-                  XML.AuthOptional(
-                    XML.AVSextended(
-                      XML.AVSname('JOE SMITH'),
-                      XML.AVSaddress1('1234 WEST MAIN STREET'),
-                      XML.AVSaddress2('SUITE 123'),
-                      XML.AVScity('TAMPA'),
-                      XML.AVSstate('FL'),
-                      XML.AVSzip('33123-1234'),
-                      XML.AVScountryCode('US')))),
-                XML.Cap(
-                  XML.CapMandatory(
-                    XML.EntryDataSrc('02')),
-                  XML.CapOptional())))
-            )
-
-    def build_purchase_request(self, money, creditcard, **options):
-
-        XML = ElementMaker(
-        #        namespace="http://my.de/fault/namespace",
-         #        nsmap=dict(s="http://schemas.xmlsoap.org/soap/envelope/",
-          #              wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
-           #            )
-        )
-
-        my_doc = XML.Body(XML.billTo)
-        #print(etree.tostring(my_doc, pretty_print=True))
-
-#        xml = Builder::XmlMarkup.new :indent => 2
-#        add_address(xml, creditcard, options[:billing_address], options)
-#        add_purchase_data(xml, money, true, options)
-#        add_creditcard(xml, creditcard)
-#        add_purchase_service(xml, options)
-#        add_business_rules_data(xml)
-#        xml.target!
-
-CREDIT_CARD_CODES = dict( v='001',  #  TODO  convert to Orbital
-                          m='002', # TODO  verify
-                          a='003',  # TODO  verify
-                          d='004' )  # TODO  verify
-#        :visa  => '001',
- #       :master => '002',
-  #      :american_express => '003',
-   #     :discover => '004'
