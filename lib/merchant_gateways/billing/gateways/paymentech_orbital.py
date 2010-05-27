@@ -128,10 +128,12 @@ class PaymentechOrbital(Gateway):
         You must supply an :order_id in the options hash  TODO  complain if it ain't there
         '''
 
+        self.options['merchant_id'] = self.options.get('merchant_id', 'TODO')
         assert isinstance(money, Money), 'TODO  always pass in a Money object - no exceptions!'
         self.options.update(options)
 
         message = self.build_authorization_request(money, creditcard, **self.options)  #  TODO  _authorization_request, everywhere!!
+
         return self.commit(message, **self.options)
 
     def purchase(self, money, credit_card, **options):
