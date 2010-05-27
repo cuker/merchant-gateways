@@ -27,6 +27,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
     def _test_REMOTE_authorization(self):
       #  CONSIDER log errors like: 'message': 'Security Information is Missing',
 
+        self.options['merchant_id'] = 'C-:'
         self.gateway.authorize(self.amount, self.credit_card, **self.options)
         self.response = self.gateway.response
 
@@ -248,7 +249,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
 
         assert   12 == self.credit_card.month
         assert 2090 == self.credit_card.year
-        
+
         self.assert_xml(message, lambda x:
                              x.Request(
                                  x.NewOrder(
