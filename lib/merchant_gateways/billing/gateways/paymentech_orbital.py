@@ -117,6 +117,8 @@ from money import Money
 TEST_URL = 'https://orbitalvar1.paymentech.net/authorize'
 LIVE_URL = 'https://orbital1.paymentech.net/authorize'
 
+ #  TODO  also look at orbitalvar2 etc.
+
 class PaymentechOrbital(Gateway):
 
     def authorize(self, money, creditcard, **options):
@@ -141,7 +143,7 @@ class PaymentechOrbital(Gateway):
         message = self.build_purchase_request(money, credit_card, **self.options)
         return self.commit(message, **self.options)
 
-    def build_authorization_request_TODO(self, money, credit_card, **options):  #  where'd "NewOrder" come from? not in docs...
+    def build_authorization_request(self, money, credit_card, **options):  #  where'd "NewOrder" come from? not in docs...
 
         assert isinstance(money, Money), 'TODO  always pass in a Money object - no exceptions!'
 
@@ -150,7 +152,7 @@ class PaymentechOrbital(Gateway):
 #                            country='USA',  #  TODO vet this default
 
         grandTotalAmount = '%.2f' % money.amount  #  CONSIDER  format AMOUNT like this better, everywhere
-        fields.update(options['billing_address'])  #  TODO  what about address?
+        if options.has_key('billing_address'):  fields.update(options['billing_address'])  #  TODO  what about address?
         fields.update(options)
 
         exp_code = ( '%02i' % credit_card.month) + str(credit_card.year)[-2:] #  CONSIDER  credit_card_format
@@ -158,13 +160,13 @@ class PaymentechOrbital(Gateway):
         numeric = money.currency.numeric
 
         new_order = x.NewOrder(
-                        x.OrbitalConnectionUsername(fields['login']),  #  TODO  from configs
-                        x.OrbitalConnectionPassword(fields['password']),  #  TODO  ibid
+#                        x.OrbitalConnectionUsername(fields['login']),  #  TODO  remove from configs
+ #                       x.OrbitalConnectionPassword(fields['password']),  #  TODO  ibid
                         x.IndustryType('EC'),  #  'EC'ommerce - a web buy
                         x.MessageType('A'),  #  auth fwt!
                             # TODO  hallow A – Authorization request AC – Authorization and Mark for Capture FC – Force-Capture request R – Refund request
                         x.BIN('1'),
-                        x.MerchantID('1'),
+                        x.MerchantID('TODO'),
                         x.TerminalID('1'),
                         x.CardBrand(''),
 
@@ -209,6 +211,8 @@ class PaymentechOrbital(Gateway):
 
         return result
 
+        #  TODO  what's CapMandatory? Need it? Take it out?
+
     def soap_keys(self):  #   CONSIDER  better name coz it's not always about the SOAP
         return ( 'AccountNum',                'MerchantID',
                  'ApprovalStatus',            'MessageType',
@@ -229,10 +233,21 @@ class PaymentechOrbital(Gateway):
         pass
 
     def commit(self, request, **options):
-        url           = self.is_test and TEST_URL or LIVE_URL
+        uri           = self.is_test and TEST_URL or LIVE_URL
         self.request  = request  # CONSIDER  standardize this
         # request       = self.build_request(request, **options)
-        self.result   = self.parse(self.post_webservice(url, request))  #  CONSIDER  no version of post_webservice needs options
+        print uri
+        headers = {  #  TODO  TDD these
+              "MIME-Version": "1.0",
+             "Content-Type": "Application/PTI46",  #  CONSIDER  why is this code here??
+            "Content-transfer-encoding": "text",
+            "Request-number": "1",
+            "Document-type": "Request",
+            "Content-length": len(request),
+            "Merchant-id": 'TODO'
+            }
+        print request
+        self.result   = self.parse(self.post_webservice(uri, request, headers))  #  CONSIDER  no version of post_webservice needs options
         self.success  = self.result['ApprovalStatus'] == '1'
         self.message  = self.result['StatusMsg']
         authorization = self.result['TxRefNum']
@@ -248,7 +263,7 @@ class PaymentechOrbital(Gateway):
         self.response = r
         return r
 
-    def build_authorization_request(self, money, credit_card, **options):
+    def TODO_build_authorization_request(self, money, credit_card, **options):
         numeric = money.currency.numeric
 
         return xStr(
