@@ -8,6 +8,28 @@ class MerchantGatewaysPaymentechOrbitalSuite(MerchantGatewaysWebserviceTestSuite
 
     def set_gateway_up(self):
         self.options['merchant_id'] = 'Anglia 105E'
+        self.assemble_billing_address()
+
+    def assemble_billing_address(self):
+        self.options.update({
+            'order_id': '1',
+            'description': 'Time-Turner',
+            'email': 'hgranger@hogwarts.edu',
+            'customer': '947', #  TODO  test this going through
+            'ip': '192.168.1.1', #  TODO  test this going through
+            })
+        billing_address = {
+            'address1': '444 Main St.',
+            'address2': 'Apt 2',
+            'company': 'ACME Software', #  CONSIDER  Orbital seems to have no slot for the company
+            'phone': '222-222-2222',
+            'zip': '77777',
+            'city': 'Dallas',
+            'country': 'US',  #  TODO  must be US not USA at the interface!
+            'state': 'TX'
+            }
+        self.options['billing_address'] = billing_address
+        return billing_address
 
     def successful_purchase_response(self):  #  TODO  get a real one!
         return self.successful_authorization_response()

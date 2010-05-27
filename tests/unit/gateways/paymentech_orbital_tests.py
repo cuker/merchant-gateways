@@ -251,28 +251,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         self.assert_equal({}, g.setup_address_hash()['shipping_address'])
         self.assert_equal(addy, g.setup_address_hash(shipping_address=addy)['shipping_address'])
 
-    def assemble_billing_address(self):
-        self.options = {
-            'order_id': '1',
-            'description': 'Time-Turner',
-            'email': 'hgranger@hogwarts.edu',
-            'customer': '947', #  TODO  test this going through
-            'ip': '192.168.1.1', #  TODO  test this going through
-            }
-        billing_address = {
-            'address1': '444 Main St.',
-            'address2': 'Apt 2',
-            'company': 'ACME Software', #  CONSIDER  Orbital seems to have no slot for the company
-            'phone': '222-222-2222',
-            'zip': '77777',
-            'city': 'Dallas',
-            'country': 'USA',
-            'state': 'TX'
-            }
-        self.options['billing_address'] = billing_address
-        return billing_address
-
-    def assemble_billing_address_too(self):
+    def assemble_billing_address_too(self):  #  TODO dry these up
         self.options = {
             'order_id': '1',
             'description': 'Time-Turner',
@@ -286,7 +265,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
             'phone': '222-222-2222',
             'zip': '77777',
             'city': 'Dallas',
-            'country': 'USA',
+            'country': 'US',  #  TODO  must be US not USA at the interface!
             'state': 'TX'
             }
         self.options['billing_address'] = billing_address

@@ -224,17 +224,11 @@ class BraintreeGateway(Gateway):  # CONSIDER most of this belongs in a class Sma
         return self.commit(message, **self.options)
 
     def build_authorization_request_TODO(self, money, credit_card, **options):  #  where'd "NewOrder" come from? not in docs...
-
         assert isinstance(money, Money), 'TODO  always pass in a Money object - no exceptions!'
-
         fields = default_dict(**self.options)
-
-#                            country='USA',  #  TODO vet this default
-
         grandTotalAmount = '%.2f' % money.amount  #  CONSIDER  format AMOUNT like this better, everywhere
         fields.update(options['billing_address'])  #  TODO  what about address?
         fields.update(options)
-
         exp_code = ( '%02i' % credit_card.month) + str(credit_card.year)[-2:] #  CONSIDER  credit_card_format
         x = XML
         numeric = money.currency.numeric

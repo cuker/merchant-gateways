@@ -63,8 +63,6 @@ class PaymentechOrbital(Gateway):
 
         fields = default_dict(**self.options)
 
-#                            country='USA',  #  TODO vet this default
-
         grandTotalAmount = '%.2f' % money.amount  #  CONSIDER  format AMOUNT like this better, everywhere
         grandTotalAmount = grandTotalAmount.replace('.', '')  #  CONSIDER internationalize that and respect the CurrencyExponent
         if options.has_key('billing_address'):  fields.update(options['billing_address'])  #  TODO  what about address?
@@ -72,6 +70,8 @@ class PaymentechOrbital(Gateway):
         exp_code = ( '%02i' % credit_card.month) + str(credit_card.year)[-2:] #  CONSIDER  credit_card_format
         x = XML
         numeric = money.currency.numeric
+        # print fields
+        assert 2 == len(fields['country']), 'TODO  raise a value error - the gateway enforces this. (%s)' % fields['country']
 
         new_order = x.NewOrder(
                         x.IndustryType('EC'),  #  'EC'ommerce - a web buy
@@ -100,7 +100,7 @@ class PaymentechOrbital(Gateway):
                         x.AVSstate(fields['state']),
                         x.AVSphoneNum(fields['phone']),
                         x.AVSname(credit_card.first_name + ' ' + credit_card.last_name),
-                        x.AVScountryCode('US'), #  TODO other countries - and ensure this is ISO-compliant or we get a DTD fault
+                        x.AVScountryCode('USA'), #  TODO other countries - and ensure this is ISO-compliant or we get a DTD fault
                         x.CustomerProfileFromOrderInd('A'),
                         x.CustomerProfileOrderOverrideInd('NO'),
                         x.OrderID('TODO'),
@@ -149,7 +149,7 @@ class PaymentechOrbital(Gateway):
         # request       = self.build_request(request, **options)
         headers = self._generate_headers(request, **options)
         self.result   = self.parse(self.post_webservice(uri, request, headers))  #  CONSIDER  no version of post_webservice needs options
-        self.success  = self.result['ApprovalStatus'] == '1'  #  TODO  these belong to the response not the gateway
+        self.success  = self.result['ApprovalStatus'] == '1'  #  CONSIDER  these belong to the response not the gateway
         self.message  = self.result['StatusMsg']
         authorization = self.result['TxRefNum']
         avs_resp_code = self.result.get('AVSRespCode', '') or ''
