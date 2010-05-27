@@ -35,8 +35,6 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         self.assert_success()
         self.assert_successful_authorization()
 
-    def test_successful_purchase(self):  pass # TODO
-
     def assert_successful_authorization(self):
         order_id = str(self.options['order_id'])  #  TODO  put something in options
         self.assert_equal('4A785F5106CCDC41A936BFF628BF73036FEC5401', self.response.authorization)

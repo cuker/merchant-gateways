@@ -46,6 +46,7 @@ class PaymentechOrbital(Gateway):
            You must supply an order_id in the options hash'''
 
         assert isinstance(money, Money), 'TODO  always pass in a Money object - no exceptions!'
+        self.options.update(options)
         self.options = self.setup_address_hash(**self.options)
         message = self.build_purchase_request(money, credit_card, **self.options)
         return self.commit(message, **self.options)
@@ -122,8 +123,6 @@ class PaymentechOrbital(Gateway):
             result[key] = len(nodes) and nodes[0].text or None
 
         return result
-
-        #  TODO  what's CapMandatory? Need it? Take it out?
 
     def soap_keys(self):  #   CONSIDER  better name coz it's not always about the SOAP
         return ( 'AccountNum',                'MerchantID',
