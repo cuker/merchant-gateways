@@ -112,8 +112,6 @@ class PaymentechOrbital(Gateway):
 #                      XML.expirationYear(str(credit_card.year)),
 #                      XML.cardType('001')  #  TODO
 
-# TODO  question fields in Cybersource        (template_p % fields) )
-
     def parse(self, soap):
         result = {}
         keys  = self.soap_keys()
