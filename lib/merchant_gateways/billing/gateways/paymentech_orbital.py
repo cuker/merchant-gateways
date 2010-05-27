@@ -166,7 +166,7 @@ class PaymentechOrbital(Gateway):
                         x.MessageType('A'),  #  auth fwt!
                             # TODO  hallow A – Authorization request AC – Authorization and Mark for Capture FC – Force-Capture request R – Refund request
                         x.BIN('1'),
-                        x.MerchantID('TODO'),
+                        x.MerchantID(options['merchant_id']),
                         x.TerminalID('1'),
                         x.CardBrand(''),
 
@@ -237,7 +237,8 @@ class PaymentechOrbital(Gateway):
         self.request  = request  # CONSIDER  standardize this
         # request       = self.build_request(request, **options)
         print uri
-        headers = self._generate_headers(request)
+
+        headers = self._generate_headers(request, **options)
         print request
         self.result   = self.parse(self.post_webservice(uri, request, headers))  #  CONSIDER  no version of post_webservice needs options
         self.success  = self.result['ApprovalStatus'] == '1'
