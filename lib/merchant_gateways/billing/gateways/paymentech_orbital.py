@@ -44,9 +44,6 @@ from money import Money
 #    ErrorCode    Optional
 #    ErrorMessage    Optional
 
-#    Login       Required
-#    Password    Optional  uh...
-
 #    Month       Required
 #    FirstName    Optional
 #    LastName    Optional
@@ -164,8 +161,8 @@ class PaymentechOrbital(Gateway):
         numeric = money.currency.numeric
 
         new_order = x.NewOrder(
-#                        x.OrbitalConnectionUsername(fields['login']),  #  TODO  remove from configs
- #                       x.OrbitalConnectionPassword(fields['password']),  #  TODO  ibid
+
+
                         x.IndustryType('EC'),  #  'EC'ommerce - a web buy
                         x.MessageType('A'),  #  auth fwt!
                             # TODO  hallow A – Authorization request AC – Authorization and Mark for Capture FC – Force-Capture request R – Refund request

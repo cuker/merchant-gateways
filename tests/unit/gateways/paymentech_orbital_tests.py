@@ -234,10 +234,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
 
     def TODO_test_build_authorization_request(self):
         self.money = Money('100.00', 'USD')
-
         billing_address = self.assemble_billing_address()
-# TODO retire these        self.options['login'] = 'Triwizard'  #  TODO  is the one true standard interface "login" or "username"
-        # self.options['password'] = 'Tournament'
         self.options['merchant_id'] = 'Triwizard_Tournament'  #  CONSIDER  accomodate users who prefer name/password
 
         message = self.gateway.build_authorization_request(self.money, self.credit_card, **self.options)
