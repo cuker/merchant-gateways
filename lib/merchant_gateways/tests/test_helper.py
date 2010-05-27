@@ -233,6 +233,10 @@ class MerchantGatewaysTestSuite( MerchantGatewaysUtilitiesTestSuite,
                                        first_name='Hermione', last_name='Granger' )
 
         self.subscription_id = '100748'  #  TODO  use or lose this
+        getattr(self, 'set_gateway_up', lambda: None)() #  CONSIDER explain to Python-land this is what virtual methods are FOR!!!
+        #self.set_gateway_up()
+
+#    def set_gateway_up(self):  pass  #  oh yeah!
 
     def assert_success(self):
         #  TODO assert is_test

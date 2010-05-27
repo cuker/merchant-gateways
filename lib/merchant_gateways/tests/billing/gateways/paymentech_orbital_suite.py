@@ -6,6 +6,9 @@ from merchant_gateways.billing.gateways.gateway import xStr
 
 class MerchantGatewaysPaymentechOrbitalSuite(MerchantGatewaysWebserviceTestSuite):
 
+    def set_gateway_up(self):
+        self.options['merchant_id'] = 'Anglia 105E'
+
     def successful_purchase_response(self):  #  TODO  get a real one!
         return self.successful_authorization_response()
 
