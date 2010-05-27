@@ -25,7 +25,7 @@ from money import Money
 TEST_URL = 'https://orbitalvar1.paymentech.net/authorize'
 LIVE_URL = 'https://orbital1.paymentech.net/authorize'
 
- #  CONSIDER  also look at orbitalvar2 etc.
+ #  CONSIDER  if orbital1 fails, switch to orbital2. And fall back after a while...
 
 class PaymentechOrbital(Gateway):
 
@@ -36,9 +36,9 @@ class PaymentechOrbital(Gateway):
         You must supply an :order_id in the options hash  TODO  complain if it ain't there
         '''
 
-        assert isinstance(money, Money), 'TODO  always pass in a Money object - no exceptions!'
+        assert isinstance(money, Money)
         self.options.update(options)
-        message = self.build_authorization_request(money, creditcard, **self.options)  #  TODO  _authorization_request, everywhere!!
+        message = self.build_authorization_request(money, creditcard, **self.options)
         return self.commit(message, **self.options)
 
     def purchase(self, money, credit_card, **options):
@@ -138,7 +138,7 @@ class PaymentechOrbital(Gateway):
                  'HostAVSRespCode',           'TerminalID',
                  'HostCVV2RespCode',          'TxRefIdx',
                  'HostRespCode',              'TxRefNum',
-                 'IndustryType', )
+                 'IndustryType', )  #  TODO  warn for each item in the message that ain't here
 
     class Response(response.Response):
         pass
@@ -165,10 +165,10 @@ class PaymentechOrbital(Gateway):
         return r
 
     def _generate_headers(self, request, **options):
-        return {  #  TODO  TDD these
+        return {
                   "MIME-Version": "1.0",
                   "Content-Type": "Application/PTI46", #  CONSIDER  why is this code here??
-                  "Content-transfer-encoding": "text",
+                  "Content-transfer-encoding": "text",  #  CONSIDER  nobody tests this, either...
                   "Request-number": "1",
                   "Document-type": "Request",
                   "Content-length": len(request),

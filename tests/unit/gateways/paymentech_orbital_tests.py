@@ -25,15 +25,78 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         assert 'nobbly' == headers['Merchant-id']
 
     def _test_REMOTE_authorization(self):
-      #  CONSIDER log errors like: 'message': 'Security Information is Missing',
+        #  CONSIDER log errors like: 'message': 'Security Information is Missing',
+
+        # TODO  they will NOT be accepting American Express on the UK site.
 
         self.options['merchant_id'] = 'C-:'
-        self.gateway.authorize(self.amount, self.credit_card, **self.options)
+        self.credit_card.number = '4111111111111111'
+        self.gateway.purchase(self.amount, self.credit_card, **self.options)
         self.response = self.gateway.response
 
         assert self.response.is_test
         self.assert_success()
-        self.assert_successful_authorization()
+        pprint(self.response.result)
+
+        TODO_use_this_passing_auth_result = {
+            'AVSRespCode': '3 ',
+             'AccountNum': '4111111111111111',
+             'ApprovalStatus': '1',
+             'AuthCode': 'tst839',
+             'CAVVRespCode': None,
+             'CVV2RespCode': 'M',
+             'CardBrand': 'VI',
+             'CustomerName': 'HERMIONE GRANGER',
+             'CustomerProfileMessage': 'Profile Created',
+             'CustomerRefNum': '3813444',
+             'HostAVSRespCode': '  ',
+             'HostCVV2RespCode': 'M',
+             'HostRespCode': '100',
+             'IndustryType': None,
+             'MerchantID': '041756',
+             'MessageType': 'A',
+             'OrderID': 'TODO',
+             'ProcStatus': '0',
+             'ProfileProcStatus': '0',
+             'RecurringAdviceCd': None,
+             'RespCode': '00',
+             'RespMsg': None,
+             'RespTime': '183559',
+             'StatusMsg': 'Approved',
+             'TerminalID': '001',
+             'TxRefIdx': '0',
+             'TxRefNum': '4BFEF3CF93E69568318ADC83DB054BD059AB54EE'}
+
+        TODO_use_this_passing_purchase_result = {
+            'AVSRespCode': '3 ',
+             'AccountNum': '4111111111111111',
+             'ApprovalStatus': '1',
+             'AuthCode': 'tst839',
+             'CAVVRespCode': None,
+             'CVV2RespCode': 'M',
+             'CardBrand': 'VI',
+             'CustomerName': 'HERMIONE GRANGER',
+             'CustomerProfileMessage': 'Profile Created',
+             'CustomerRefNum': '3813446',
+             'HostAVSRespCode': '  ',
+             'HostCVV2RespCode': 'M',
+             'HostRespCode': '100',
+             'IndustryType': None,
+             'MerchantID': '041756',
+             'MessageType': 'AC',
+             'OrderID': 'TODO',
+             'ProcStatus': '0',
+             'ProfileProcStatus': '0',
+             'RecurringAdviceCd': None,
+             'RespCode': '00',
+             'RespMsg': None,
+             'RespTime': '183937',
+             'StatusMsg': 'Approved',
+             'TerminalID': '001',
+             'TxRefIdx': '1',
+             'TxRefNum': '4BFEF4A9AF7862245FB58E77624909089D6954C2'}
+
+        #self.assert_successful_authorization()
 
     def assert_successful_authorization(self):
         order_id = str(self.options['order_id'])  #  TODO  put something in options
