@@ -92,7 +92,7 @@ class PaymentechOrbital(Gateway):
                         x.AccountNum(credit_card.number),
                         x.Exp(exp_code),
                         x.CurrencyCode(numeric),
-                        x.CurrencyExponent('2'),  #  TODO  figure out what this is it's probably important
+                        x.CurrencyExponent('2'),  #  TODO  vary this when we vary the money type
                         x.CardSecValInd('1'),  #  CONSIDER  visa & discover only - nullify for others
                         x.CardSecVal(credit_card.verification_value),
                         x.AVSzip(fields['zip']),
