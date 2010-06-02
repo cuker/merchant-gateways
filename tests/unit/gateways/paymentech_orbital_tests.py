@@ -292,7 +292,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                         x.AVScountryCode('US'), # TODO get me from the billing address
                         x.CustomerProfileFromOrderInd('A'),
                         x.CustomerProfileOrderOverrideInd('NO'),
-                        x.OrderID('TODO'),
+                        x.OrderID('1'),
                         x.Amount('10000')
                            )
                        )
@@ -303,6 +303,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
     def test_build_purchase_request(self):
         self.money = Money('101.00', 'USD')
         billing_address = self.assemble_billing_address()
+        self.options['order_id'] = 42
         self.options['merchant_id'] = 'Triwizard_Tournament'  #  CONSIDER  accomodate users who prefer name/password
 
         message = self.gateway.build_purchase_request(self.money, self.credit_card, **self.options)
@@ -340,7 +341,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                         x.AVScountryCode('US'),
                         x.CustomerProfileFromOrderInd('A'),
                         x.CustomerProfileOrderOverrideInd('NO'),
-                        x.OrderID('TODO'),
+                        x.OrderID('42'),
                         x.Amount('10100')
                            )
                        )
@@ -357,7 +358,6 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         self.money = self.amount  #  TODO knock this off
         yo = self.assert_raises(ValueError, self.gateway.build_authorization_request, self.money, self.credit_card, **self.options)
         self.assert_contains('Country code must be 2 characters (China)', yo)
-
 
         # TODO default_dict should expose all members as read-only data values
 

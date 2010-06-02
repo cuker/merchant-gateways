@@ -8,6 +8,7 @@ from lxml import etree
 from lxml.builder import ElementMaker
 XML = ElementMaker()
 from money import Money
+from pprint import pprint
 
 #  TODO  Callaway noticed on the form that was completed that Discover was selected.
 #       They no longer accept Discover. This was updated on the form, but please make
@@ -70,6 +71,8 @@ class PaymentechOrbital(Gateway):
         exp_code = ( '%02i' % credit_card.month) + str(credit_card.year)[-2:] #  CONSIDER  credit_card_format
         numeric = money.currency.numeric
 
+        print money.currency.__dict__  #  TODO  where'z the exponent?
+
         if 2 != len(fields['country']):
             raise ValueError('Country code must be 2 characters (%s)' % fields['country'])
 
@@ -96,7 +99,7 @@ class PaymentechOrbital(Gateway):
                         x.CardSecValInd('1'),  #  CONSIDER  visa & discover only - nullify for others
                         x.CardSecVal(credit_card.verification_value),
                         x.AVSzip(fields['zip']),
-                        x.AVSaddress1(fields['address1']),  #  TODO  pull an AVSresponse?
+                        x.AVSaddress1(fields['address1']),
                         x.AVSaddress2(fields['address2']),
                         x.AVScity(fields['city']),
                         x.AVSstate(fields['state']),
@@ -105,7 +108,7 @@ class PaymentechOrbital(Gateway):
                         x.AVScountryCode(fields['country']), #  and ensure this is ISO-compliant or we get a DTD fault
                         x.CustomerProfileFromOrderInd('A'),
                         x.CustomerProfileOrderOverrideInd('NO'),
-                        x.OrderID('TODO'),
+                        x.OrderID(str(fields['order_id'])),  #  TODO  do blank order_id pass validation?
                         x.Amount(grandTotalAmount)
                         )
         return xStr(XML.Request(new_order))
