@@ -348,13 +348,15 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
 
     def test_set_country_code(self):
         self.options['billing_address']['country'] = 'CN'  #  China! (right?;)
-        pprint(self.options)
-        self.money = self.amount
+        self.money = self.amount  #  TODO knock this off
         message = self.gateway.build_authorization_request(self.money, self.credit_card, **self.options)
         self.assert_xml(message, lambda x: x.AVScountryCode('CN'))
 
     def test_raise_an_exception_if_country_code_is_too_long(self):
-        'TODO'
+        self.options['billing_address']['country'] = 'China'  # longer that 2 characters (that's all we can check!)
+        self.money = self.amount  #  TODO knock this off
+        yo = self.assert_raises(ValueError, self.gateway.build_authorization_request, self.money, self.credit_card, **self.options)
+        self.assert_contains('Country code must be 2 characters (China)', yo)
 
 
         # TODO default_dict should expose all members as read-only data values

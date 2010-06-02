@@ -70,8 +70,9 @@ class PaymentechOrbital(Gateway):
         exp_code = ( '%02i' % credit_card.month) + str(credit_card.year)[-2:] #  CONSIDER  credit_card_format
         x = XML
         numeric = money.currency.numeric
-        # print fields
-        assert 2 == len(fields['country']), 'TODO  raise a value error - the gateway enforces this. (%s)' % fields['country']
+
+        if 2 != len(fields['country']):
+            raise ValueError('Country code must be 2 characters (%s)' % fields['country'])
 
         new_order = x.NewOrder(
                         x.IndustryType('EC'),  #  'EC'ommerce - a web buy

@@ -41,7 +41,7 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
             self.assertTrue( first == second,
                           (message + ('\n%r != %r' % (first, second))).lstrip() )
 
-    def assert_raises_(self, except_cls, callable_, *args, **kw):  #  CONSIDER  merge with django-test-extensions' assert_raises?
+    def assert_raises(self, except_cls, callable_, *args, **kw):  #  CONSIDER  merge with django-test-extensions' assert_raises?
         try:
             callable_(*args, **kw)
             assert False, "Callable should raise an exception"  #  TODO  assertFalse, with complete diagnostics
