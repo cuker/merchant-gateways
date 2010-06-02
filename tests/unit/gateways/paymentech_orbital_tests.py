@@ -354,22 +354,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         Nuevo_Sol_numeric = '604'
         self.money = Money('200.00', Nuevo_Sol)
         message = self.gateway.build_purchase_request(self.money, self.credit_card, **self.options)
-        from os import path
-#        message = message.replace('AccountNum', 'AcountNum')
-        here = path.dirname(__file__)  #  CONSIDER abstract system to find the schemas?!
-        there = path.join(here, '../../../lib/merchant_gateways/tests/billing/gateways/paymentech_orbital_schemas/Request_PTI49.xsd')
-        self.assert_schema(there, message)
-#        print message
-
-    def assert_schema(self, schema_file, xml):
-        from lxml import etree
-
-        with open(schema_file, 'r') as xsd:
-            self._xmlschema_doc = etree.parse(xsd)
-
-        xmlschema = etree.XMLSchema(self._xmlschema_doc)
-        root = etree.XML(xml)
-        xmlschema.assertValid(root)
+        self.assert_gateway_message_schema(message, 'Request_PTI49.xsd')
 
     def TODO_test_build_authorization_request_with_alternative_money(self):
         Nuevo_Sol = 'PEN'

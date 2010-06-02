@@ -143,3 +143,19 @@ class MerchantGatewaysPaymentechOrbitalSuite(MerchantGatewaysWebserviceTestSuite
                         XML.SwitchSoloStartDate(),
                         XML.SwitchSoloIssueNum())))
 
+    def assert_xml_schema(self, xml, schema_file):  #  ERGO  merge with assert_schema
+        from lxml import etree
+
+        with open(schema_file, 'r') as xsd:
+            self._xmlschema_doc = etree.parse(xsd)
+
+        xmlschema = etree.XMLSchema(self._xmlschema_doc)
+        root = etree.XML(xml)
+        xmlschema.assertValid(root)
+
+    def assert_gateway_message_schema(self, message, schema_file):
+        from os import path
+        here = path.dirname(__file__)
+        there = path.join(here, 'paymentech_orbital_schemas', schema_file)
+        self.assert_xml_schema(message, there)
+
