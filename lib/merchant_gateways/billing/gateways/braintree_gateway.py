@@ -43,7 +43,7 @@ class BraintreeGateway(Gateway):  # CONSIDER most of this belongs in a class Sma
     class Response(response.Response):
         pass
 
-    def authorize(self, money, credit_card, **options):  #  TODO  self.amount -> self.money
+    def authorize(self, money, credit_card, **options):
 
         self._configure()
 

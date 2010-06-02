@@ -228,7 +228,7 @@ class CybersourceTests(MerchantGatewaysTestSuite,
 #    def test_avs_result(self):  #  TODO  move Cybersource to an "AvsStyle" module, and move this test to its abstract testor
 #        self.gateway.expects(:ssl_post).returns(successful_purchase_response)
 #
-#        response = self.gateway.purchase(self.amount, self.credit_card, self.options)
+#        response = self.gateway.purchase(self.money, self.credit_card, self.options)
 #        assert_equal 'Y', response.avs_result['code']
 
     def test_cvv_result(self):
@@ -563,7 +563,7 @@ class CyberSourceTest < Test::Unit::TestCase
       :password => 'p'
     )
 
-    self.amount = 100
+    self.money = 100
     self.credit_card = credit_card('4111111111111111', :type => 'visa')
     self.declined_card = credit_card('801111111111111', :type => 'visa')
 

@@ -114,7 +114,7 @@ class BraintreeGatewayTests( MerchantGatewaysBraintreeGatewaySuite, MerchantGate
     def _test_REMOTE_successful_authorization(self):
         #self.mock_webservice(self.successful_authorization_response())
         self.options['description'] = 'Chamber of Secrets'
-        self.response = self.gateway.authorize(self.amount, self.credit_card, **self.options)
+        self.response = self.gateway.authorize(self.money, self.credit_card, **self.options)
 
 # TODO        assert self.response.is_test
         self.assert_success()

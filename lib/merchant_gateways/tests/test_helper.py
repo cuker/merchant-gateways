@@ -222,7 +222,7 @@ class MerchantGatewaysTestSuite( MerchantGatewaysUtilitiesTestSuite,
         self.gateway = self.gateway_type()(is_test=True, login='X', password='Y')
         self.gateway.gateway_mode = 'test'
         from decimal import Decimal
-        self.amount = Money('100', 'USD')
+        self.money = Money('100', 'USD')
         self.options = dict(order_id=1)  #  TODO  change me to Harry Potter's favorite number & pass all tests
         from merchant_gateways.billing.credit_card import CreditCard
 
@@ -259,7 +259,7 @@ class MerchantGatewaysTestSuite( MerchantGatewaysUtilitiesTestSuite,
 
             self.options['description'] = 'Chamber of Secrets'
             self.mock_webservice(self.successful_authorization_response(),
-                lambda: self.gateway.authorize(self.amount, self.credit_card, **self.options) )
+                lambda: self.gateway.authorize(self.money, self.credit_card, **self.options) )
             self.response = self.gateway.response
 
             assert self.response.is_test
@@ -268,7 +268,7 @@ class MerchantGatewaysTestSuite( MerchantGatewaysUtilitiesTestSuite,
 
         def test_failed_authorization(self):
             self.mock_webservice( self.failed_authorization_response(),
-                lambda:  self.gateway.authorize(self.amount, self.credit_card, **self.options) )
+                lambda:  self.gateway.authorize(self.money, self.credit_card, **self.options) )
 
             self.response = self.gateway.response
             assert self.response.is_test
@@ -277,7 +277,7 @@ class MerchantGatewaysTestSuite( MerchantGatewaysUtilitiesTestSuite,
 
         def test_successful_purchase(self):
             self.mock_webservice(self.successful_purchase_response(),
-                lambda: self.gateway.purchase(self.amount, self.credit_card, **self.options) )
+                lambda: self.gateway.purchase(self.money, self.credit_card, **self.options) )
 
             self.response = self.gateway.response  #  CONSIDER move inside ??
             assert self.response.is_test

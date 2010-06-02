@@ -45,7 +45,7 @@ class PayflowTests( MerchantGatewaysPayflowSuite,
                         username='LOGIN',
                         password='PASSWORD')
 
-        #~ assert response = self.gateway.authorize(self.amount, self.credit_card)
+        #~ assert response = self.gateway.authorize(self.money, self.credit_card)
 
         # TODO  test these        print self.response.params
         #        self.assertEqual('508141794', self.response.params['authorization'])  #  TODO  also self.response.authorization

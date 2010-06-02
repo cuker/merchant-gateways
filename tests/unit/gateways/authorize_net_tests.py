@@ -26,7 +26,7 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite,
                 'x_type=AUTH_ONLY&x_description=Chamber+of+Secrets&x_test_request=TRUE', {}
                 )  #  TODO  beautify the response, via assert_params
 
-        #~ assert response = self.gateway.authorize(self.amount, self.credit_card)
+        #~ assert response = self.gateway.authorize(self.money, self.credit_card)
 
         reference = { 'response_reason_code': '1', 'card_code': 'P', 'response_reason_text': 'This transaction has been approved.',
                       'avs_result_code': 'Y', 'response_code': 1, 'transaction_id': '508141794' }
@@ -76,7 +76,7 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite,
 
     def test_fraudulent_avs_result(self):
         self.mock_webservice(self.fraud_review_response(),  #  TODO  abstract test on this
-            lambda: self.gateway.authorize(self.amount, self.credit_card, **self.options) )
+            lambda: self.gateway.authorize(self.money, self.credit_card, **self.options) )
         self.response = self.gateway.response
         avs = self.response.avs_result
         self.assert_equal( 'X', avs.code )
@@ -97,7 +97,7 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite,
 
     def test_fraudulent_cvv_result(self):
         self.mock_webservice(self.fraud_review_response(),
-                             lambda: self.gateway.authorize(self.amount, self.credit_card, **self.options) )
+                             lambda: self.gateway.authorize(self.money, self.credit_card, **self.options) )
         self.response = self.gateway.response
         cvv = self.response.cvv_result
         self.assert_equal( 'M', cvv.code )
@@ -216,13 +216,13 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite,
 
     def test_successful_credit(self):
         self.mock_webservice( self.successful_purchase_response(),  #  TODO  shouldn't that be a successful_credit_response()?
-                              lambda: self.gateway.credit(self.amount, '123456789', card_number=self.credit_card.number) )
+                              lambda: self.gateway.credit(self.money, '123456789', card_number=self.credit_card.number) )
         self.assert_success()
         self.assert_equal('This transaction has been approved', self.response.message)
 
     def test_failed_credit(self):
         self.mock_webservice( self.failed_credit_response(),  #  TODO  shouldn't that be a successful_credit_response()?
-                              lambda: self.gateway.credit(self.amount, '123456789', card_number=self.credit_card.number) )
+                              lambda: self.gateway.credit(self.money, '123456789', card_number=self.credit_card.number) )
         self.assert_failure()
         self.assert_equal('The referenced transaction does not meet the criteria for issuing a credit', self.response.message)
 
@@ -243,7 +243,7 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite,
 
     def test_response_under_review_by_fraud_service(self):
         self.mock_webservice( self.fraud_review_response(),
-                              lambda: self.gateway.purchase(self.amount, self.credit_card) )
+                              lambda: self.gateway.purchase(self.money, self.credit_card) )
         self.assert_failure()
         self.assert_(self.response.fraud_review)
         self.assert_equal("Thank you! For security reasons your order is currently being reviewed", self.response.message)

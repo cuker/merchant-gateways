@@ -33,7 +33,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         self.options['merchant_id'] = 'C-:'
         self.credit_card.number = '4111111111111111'
 
-        self.gateway.purchase(self.amount, self.credit_card, **self.options)
+        self.gateway.purchase(self.money, self.credit_card, **self.options)
         self.response = self.gateway.response
 
         assert self.response.is_test
@@ -346,8 +346,6 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                    )
 
     def test_build_purchase_request_with_null_order_id(self):
-        self.money = Money('101.00', 'USD')
-        billing_address = self.assemble_billing_address()
         self.options['order_id'] = None
         message = self.gateway.build_authorization_request(self.money, self.credit_card, **self.options)
         self.assert_xml(message, lambda x: x.OrderID(''))
@@ -355,7 +353,6 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
 
     def test_build_purchase_request_with_no_order_id(self):
         self.money = Money('101.00', 'USD')
-        billing_address = self.assemble_billing_address()
         del self.options['order_id']
         message = self.gateway.build_authorization_request(self.money, self.credit_card, **self.options)
         self.assert_xml(message, lambda x: x.OrderID(''))
@@ -371,13 +368,11 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
 
     def test_set_country_code(self):
         self.options['billing_address']['country'] = 'CN'  #  China! (right?;)
-        self.money = self.amount  #  TODO knock this off
         message = self.gateway.build_authorization_request(self.money, self.credit_card, **self.options)
         self.assert_xml(message, lambda x: x.AVScountryCode('CN'))
 
     def test_raise_an_exception_if_country_code_is_too_long(self):
         self.options['billing_address']['country'] = 'China'  # longer that 2 characters (that's all we can check!)
-        self.money = self.amount  #  TODO knock this off
         yo = self.assert_raises(ValueError, self.gateway.build_authorization_request, self.money, self.credit_card, **self.options)
         self.assert_contains('Country code must be 2 characters (China)', yo)
 
@@ -385,7 +380,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
 
     def test_validate_purchase_request(self):
         Nuevo_Sol = 'PEN'
-        Nuevo_Sol_numeric = '604'
+        Nuevo_Sol_numeric = '604'  #  CONSIDER  vary this, to prove we can
         self.money = Money('200.00', Nuevo_Sol)
         message = self.gateway.build_purchase_request(self.money, self.credit_card, **self.options)
         self.assert_gateway_message_schema(message, 'Request_PTI49.xsd')
