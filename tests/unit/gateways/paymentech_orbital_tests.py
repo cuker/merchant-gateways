@@ -114,7 +114,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
 
         # CONSIDER use 'RespMsg': None,
         # CONSIDER what be 'CardBrand': 'MC', 'MerchantID': '000000', 'ProfileProcStatus': '0','RecurringAdviceCd': None  'CustomerRefNum
-        # TODO  uh... 'CustomerName': 'JOE SMITH', 'MessageType': 'AC',
+
         #  CONSIDER stash the  'HostAVSRespCode': 'I3',
         # CONSIDER  use the 'AuthCode': 'tst554', 'RespTime': '121825', 'ProcStatus': '0', , 'HostRespCode': '100'}
 
@@ -209,7 +209,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
             CardBrand='MC',
             CAVVRespCode=None,
             CustomerName='JOE SMITH',
-            CustomerProfileMessage='Profile Created',  #  TODO  use this?
+            CustomerProfileMessage='Profile Created',  #  CONSIDER  use this?
             CustomerRefNum='2145108',
             CVV2RespCode='M',
             HostAVSRespCode='I3',
@@ -262,7 +262,6 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
 
 #        {'start_month': None, 'verification_value': None, 'start_year': None, 'card_type': 'v', 'issue_number': None, }
 
-        # TODO enforce <?xml version="1.0" encoding="UTF-8"?> tags??
         #  ERGO  configure the sample correctly at error time
 
         assert   12 == self.credit_card.month
@@ -338,7 +337,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                         x.AVSstate(billing_address['state']),
                         x.AVSphoneNum(billing_address['phone']),
                         x.AVSname(self.credit_card.first_name + ' ' + self.credit_card.last_name), #  TODO is this really the first & last names??
-                        x.AVScountryCode('US'), # TODO get me from the billing address
+                        x.AVScountryCode('US'),
                         x.CustomerProfileFromOrderInd('A'),
                         x.CustomerProfileOrderOverrideInd('NO'),
                         x.OrderID('TODO'),
@@ -346,6 +345,17 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                            )
                        )
                    )
+
+    def test_set_country_code(self):
+        self.options['billing_address']['country'] = 'CN'  #  China! (right?;)
+        pprint(self.options)
+        self.money = self.amount
+        message = self.gateway.build_authorization_request(self.money, self.credit_card, **self.options)
+        self.assert_xml(message, lambda x: x.AVScountryCode('CN'))
+
+    def test_raise_an_exception_if_country_code_is_too_long(self):
+        'TODO'
+
 
         # TODO default_dict should expose all members as read-only data values
 
@@ -362,14 +372,14 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         self.money = Money('200.00', Nuevo_Sol)
         message = self.gateway.build_authorization_request(self.money, self.credit_card, **self.options)
 
-        self.assert_xml(message, lambda x:
+        self.assert_xml( message, lambda x:
                              x.Request(
-                                 x.AC(
-                                    XML.CommonData(
-                                      XML.CommonMandatory(
-                                        XML.Currency(CurrencyCode=Nuevo_Sol_numeric,
-                                                     CurrencyExponent='2'  #  TODO  vary this
-                                        )
+                               x.AC(
+                                 XML.CommonData(
+                                   XML.CommonMandatory(
+                                     XML.Currency( CurrencyCode=Nuevo_Sol_numeric,
+                                                   CurrencyExponent='2'  #  TODO  vary this
+                                          )
                                         )
                                       )
                                     )

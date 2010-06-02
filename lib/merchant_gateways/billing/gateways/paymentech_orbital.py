@@ -100,7 +100,7 @@ class PaymentechOrbital(Gateway):
                         x.AVSstate(fields['state']),
                         x.AVSphoneNum(fields['phone']),
                         x.AVSname(credit_card.first_name + ' ' + credit_card.last_name),
-                        x.AVScountryCode('US'), #  TODO other countries - and ensure this is ISO-compliant or we get a DTD fault
+                        x.AVScountryCode(fields['country']), #  and ensure this is ISO-compliant or we get a DTD fault
                         x.CustomerProfileFromOrderInd('A'),
                         x.CustomerProfileOrderOverrideInd('NO'),
                         x.OrderID('TODO'),
