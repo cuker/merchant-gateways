@@ -1355,7 +1355,8 @@ E
 
 AVSextended
 
-Cardholder Billing Address Country Code: Required if processing a U.K. based Address. Valid values: US – United States CA – Canada GB – Great Britain UK – United Kingdom “ “ – Blank for all other countries
+Cardholder Billing Address Country Code: 
+Required if processing a U.K. based Address. Valid values: US – United States CA – Canada GB – Great Britain UK – United Kingdom “ “ – Blank for all other countries
 
 O
 

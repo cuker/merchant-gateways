@@ -32,6 +32,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
 
         self.options['merchant_id'] = 'C-:'
         self.credit_card.number = '4111111111111111'
+
         self.gateway.purchase(self.amount, self.credit_card, **self.options)
         self.response = self.gateway.response
 
@@ -347,6 +348,28 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                    )
 
         # TODO default_dict should expose all members as read-only data values
+
+    def test_validate_purchase_request(self):
+        Nuevo_Sol = 'PEN'
+        Nuevo_Sol_numeric = '604'
+        self.money = Money('200.00', Nuevo_Sol)
+        message = self.gateway.build_purchase_request(self.money, self.credit_card, **self.options)
+        from os import path
+#        message = message.replace('AccountNum', 'AcountNum')
+        here = path.dirname(__file__)  #  CONSIDER abstract system to find the schemas?!
+        there = path.join(here, '../../../lib/merchant_gateways/tests/billing/gateways/paymentech_orbital_schemas/Request_PTI49.xsd')
+        self.assert_schema(there, message)
+#        print message
+
+    def assert_schema(self, schema_file, xml):
+        from lxml import etree
+
+        with open(schema_file, 'r') as xsd:
+            self._xmlschema_doc = etree.parse(xsd)
+
+        xmlschema = etree.XMLSchema(self._xmlschema_doc)
+        root = etree.XML(xml)
+        xmlschema.assertValid(root)
 
     def TODO_test_build_authorization_request_with_alternative_money(self):
         Nuevo_Sol = 'PEN'

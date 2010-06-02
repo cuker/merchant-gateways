@@ -100,7 +100,7 @@ class PaymentechOrbital(Gateway):
                         x.AVSstate(fields['state']),
                         x.AVSphoneNum(fields['phone']),
                         x.AVSname(credit_card.first_name + ' ' + credit_card.last_name),
-                        x.AVScountryCode('USA'), #  TODO other countries - and ensure this is ISO-compliant or we get a DTD fault
+                        x.AVScountryCode('US'), #  TODO other countries - and ensure this is ISO-compliant or we get a DTD fault
                         x.CustomerProfileFromOrderInd('A'),
                         x.CustomerProfileOrderOverrideInd('NO'),
                         x.OrderID('TODO'),
@@ -148,6 +148,13 @@ class PaymentechOrbital(Gateway):
         self.request  = request  # CONSIDER  standardize this
         # request       = self.build_request(request, **options)
         headers = self._generate_headers(request, **options)
+
+#        print uri, headers
+#        if headers['Merchant-id'] == '041756':
+ #           request = request.replace('AccountNum', 'AcountNum')
+  #          headers['Content-length'] = len(request)
+   # TODO done with this yet?        print request
+
         self.result   = self.parse(self.post_webservice(uri, request, headers))  #  CONSIDER  no version of post_webservice needs options
         self.success  = self.result['ApprovalStatus'] == '1'  #  CONSIDER  these belong to the response not the gateway
         self.message  = self.result['StatusMsg']
@@ -167,7 +174,7 @@ class PaymentechOrbital(Gateway):
     def _generate_headers(self, request, **options):
         return {
                   "MIME-Version": "1.0",
-                  "Content-Type": "Application/PTI46", #  CONSIDER  why is this code here??
+                  "Content-Type": "Application/PTI49", #  CONSIDER  why is this code here??
                   "Content-transfer-encoding": "text",  #  CONSIDER  nobody tests this, either...
                   "Request-number": "1",
                   "Document-type": "Request",
