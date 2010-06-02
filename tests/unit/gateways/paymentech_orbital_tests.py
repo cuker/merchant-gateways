@@ -397,7 +397,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                                  XML.CommonData(
                                    XML.CommonMandatory(
                                      XML.Currency( CurrencyCode=Nuevo_Sol_numeric,
-                                                   CurrencyExponent='2'  #  TODO  vary this
+                                                   CurrencyExponent='2'  #  CONSIDER  vary this
                                           )
                                         )
                                       )

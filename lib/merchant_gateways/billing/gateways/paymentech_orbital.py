@@ -184,6 +184,6 @@ class PaymentechOrbital(Gateway):
                   "Request-number": "1",
                   "Document-type": "Request",
                   "Content-length": len(request),
-                  "Merchant-id": options['merchant_id']  #  TODO  useful error message if it's not there
+                  "Merchant-id": options['merchant_id']  #  CONSIDER  useful error message if it's not there
                   }
 
