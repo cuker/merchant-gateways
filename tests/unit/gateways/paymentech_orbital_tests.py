@@ -121,7 +121,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         self.assert_equal('B ', self.response.result['AVSRespCode'])  #  CONSIDER why 'B '?
         avs = self.response.avs_result
         self.assert_equal( 'B', avs.code )
-        self.assert_equal( 'Y', avs.street_match )  #  TODO  why none? What wrong with B?
+        self.assert_equal( 'Y', avs.street_match )  #  CONSIDER  why none? What wrong with B?
         self.assert_equal( None, avs.postal_match )
         self.assert_equal('M', self.response.result['CVV2RespCode'])
         cvv = self.response.cvv_result
