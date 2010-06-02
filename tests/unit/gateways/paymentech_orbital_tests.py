@@ -298,8 +298,6 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                        )
                    )
 
-        # TODO default_dict should expose all members as read-only data values
-
     def test_build_purchase_request(self):
         self.money = Money('101.00', 'USD')
         billing_address = self.assemble_billing_address()
@@ -346,6 +344,30 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                            )
                        )
                    )
+
+    def test_build_purchase_request_with_null_order_id(self):
+        self.money = Money('101.00', 'USD')
+        billing_address = self.assemble_billing_address()
+        self.options['order_id'] = None
+        message = self.gateway.build_authorization_request(self.money, self.credit_card, **self.options)
+        self.assert_xml(message, lambda x: x.OrderID(''))
+        self.assert_gateway_message_schema(message, 'Request_PTI49.xsd')
+
+    def test_build_purchase_request_with_no_order_id(self):
+        self.money = Money('101.00', 'USD')
+        billing_address = self.assemble_billing_address()
+        del self.options['order_id']
+        message = self.gateway.build_authorization_request(self.money, self.credit_card, **self.options)
+        self.assert_xml(message, lambda x: x.OrderID(''))
+        self.assert_gateway_message_schema(message, 'Request_PTI49.xsd')
+
+    def test_build_purchase_request_with_blank_order_id(self):
+        self.money = Money('101.00', 'USD')
+        billing_address = self.assemble_billing_address()
+        self.options['order_id'] = ' '
+        message = self.gateway.build_authorization_request(self.money, self.credit_card, **self.options)
+        self.assert_xml(message, lambda x: x.OrderID(' '))
+        self.assert_gateway_message_schema(message, 'Request_PTI49.xsd')
 
     def test_set_country_code(self):
         self.options['billing_address']['country'] = 'CN'  #  China! (right?;)

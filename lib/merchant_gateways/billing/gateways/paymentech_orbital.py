@@ -71,7 +71,7 @@ class PaymentechOrbital(Gateway):
         exp_code = ( '%02i' % credit_card.month) + str(credit_card.year)[-2:] #  CONSIDER  credit_card_format
         numeric = money.currency.numeric
 
-        print money.currency.__dict__  #  TODO  where'z the exponent?
+        # print money.currency.__dict__  #  CONSIDER  where'z the exponent?
 
         if 2 != len(fields['country']):
             raise ValueError('Country code must be 2 characters (%s)' % fields['country'])
@@ -95,7 +95,7 @@ class PaymentechOrbital(Gateway):
                         x.AccountNum(credit_card.number),
                         x.Exp(exp_code),
                         x.CurrencyCode(numeric),
-                        x.CurrencyExponent('2'),  #  TODO  vary this when we vary the money type
+                        x.CurrencyExponent('2'),  #  CONSIDER  vary this when we vary the money type
                         x.CardSecValInd('1'),  #  CONSIDER  visa & discover only - nullify for others
                         x.CardSecVal(credit_card.verification_value),
                         x.AVSzip(fields['zip']),
