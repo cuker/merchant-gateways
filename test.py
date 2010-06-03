@@ -19,5 +19,11 @@ from tests.unit.gateways.paymentech_orbital_tests import *
 
 #  TODO  import with from future in fab system and test utils
 
-runner = unittest.TextTestRunner(verbosity=1, descriptions=False)  #  TODO  help this feeb test runner not hug a nut!
+if sys.argv.count('--xml'):
+    sys.argv.remove('--xml')
+    from tests.xmlrunner import XMLTestRunner
+    runner = XMLTestRunner()
+else:
+    runner = unittest.TextTestRunner(verbosity=1, descriptions=False)
+
 unittest.main(testRunner=runner)

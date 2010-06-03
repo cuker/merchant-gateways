@@ -57,10 +57,10 @@ def autotest(cmd='fab test', sleep=1):  #  CONSIDER  accept app,list,comma,delim
         time.sleep(sleep)
 
 
-def test():
+def test(extra=''):
     'run the short test batch for this project'
-
-    _sh( 'python test.py' )
+    cmd = 'python test.py ' + extra
+    _sh( cmd.rstrip() )
 
 
 def pull():
@@ -91,6 +91,7 @@ def ci(whatfo='refactor'):  #  TODO  option to invoke an editor (yilk!)
 
 def soak():
     test()
+    test('--xml')
     document('../reports/merchant-gateways_docs/')
 
 
