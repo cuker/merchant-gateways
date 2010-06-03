@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from fabric.api import *
 import os, time, sys
 
@@ -88,6 +89,12 @@ def ci(whatfo='refactor'):  #  TODO  option to invoke an editor (yilk!)
     _sh('git push')
 
 
+def soak():
+    test()
+    document('../reports/merchant-gateways_docs/')
+
+
 def _sh(cmd):
     local(cmd, capture=False)
+
 
