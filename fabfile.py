@@ -237,7 +237,6 @@ def report():
 
     html = _convert_test_output_to_report('TEST-unittest.TestSuite.xml')
 
-
     name = 'merchant-gateways'
     from os import path
     import os

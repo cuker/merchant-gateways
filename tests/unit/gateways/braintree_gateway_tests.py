@@ -293,53 +293,6 @@ class BraintreeGatewayTests( MerchantGatewaysBraintreeGatewaySuite, MerchantGate
         reference = '?x_login=X&x_invoice_num=1&x_trans_id=Y&x_last_name=Granger&x_card_code=None&x_card_num=4242424242424242&x_amount=1.00&x_delim_char=%2C&x_tran_key=Y&x_encap_char=%24&x_version=3.1&x_first_name=Hermione&x_exp_date=1290&x_delim_data=TRUE&x_relay_response=FALSE&x_type=AUTH_CAPTURE&x_description=&x_test_request=TRUE'
         self.assert_equal(reference, self.gateway.post_data(action, parameters))
 
-#    def mock_webservice(self, response, lamb):
-#        self.options['billing_address'] = {}
-#        self.mock_post_webservice(response, lamb)
-
-#
-#    def assert_successful_purchase(self):
-#        self.assert_equal('4A785F5106CCDC41A936BFF628BF73036FEC5401', self.response.params['TxRefNum'])
-#
-#        reference = { 'AVSRespCode': 'B ',
-#                      'AccountNum': '5454545454545454',
-#                      'ApprovalStatus': '1',
-#                      'AuthCode': 'tst554',
-#                      'CAVVRespCode': None,
-#                      'CVV2RespCode': 'M',
-#                      'CardBrand': 'MC',
-#                      'CustomerName': 'JOE SMITH',
-#                      'CustomerProfileMessage': 'Profile Created',
-#                      'CustomerRefNum': '2145108',
-#                      'HostAVSRespCode': 'I3',
-#                      'HostCVV2RespCode': 'M',
-#                      'HostRespCode': '100',
-#                      'IndustryType': None,
-#                      'MerchantID': '000000',
-#                      'MessageType': 'AC',
-#                      'OrderID': '1',
-#                      'ProcStatus': '0',
-#                      'ProfileProcStatus': '0',
-#                      'RecurringAdviceCd': None,
-#                      'RespCode': '00',
-#                      'RespMsg': None,
-#                      'RespTime': '121825',
-#                      'StatusMsg': 'Approved',
-#                      'TerminalID': '000',
-#                      'TxRefIdx': '1',
-#                      'TxRefNum': '4A785F5106CCDC41A936BFF628BF73036FEC5401'}
-#
-#        self.assert_match_hash(reference, self.response.params)
-#
-#        '''TODO self.assert_equal( 'Successful transaction', self.response.message )'''
-#
-#    def test_build_request(self):
-#        #  TODO  de-cybersource me
-#
-## TODO worry about: POST /AUTHORIZE HTTP/1.0 MIME-Version: 1.0 Content-type: application/PTI26 Content-length: 876 Content-transfer-encoding: text Request-number: 1 Document-type: Request Interface-Version: Test 1.4
-#
-#        reference_too = '''<?xml version="1.0" encoding="UTF-8"?> <Request> <AC> <CommonData> <CommonMandatory AuthOverrideInd="N" LangInd="00" CardHolderAttendanceInd="01" HcsTcsInd="T" TxCatg="7" MessageType="A" Version="2" TzCode="705"> <AccountNum AccountTypeInd="91">4012888888881</AccountNum> <POSDetails POSEntryMode="01"/> <MerchantID>123456789012</MerchantID> <TerminalID TermEntCapInd="05" CATInfoInd="06" TermLocInd="01" CardPresentInd="N" POSConditionCode="59" AttendedTermDataInd="01">001</TerminalID> <BIN>000002</BIN> <OrderID>1234567890123456</OrderID> <AmountDetails> <Amount>000000005000</Amount> </AmountDetails> <TxTypeCommon TxTypeID="G"/> <Currency CurrencyCode="840" CurrencyExponent="2"/> <CardPresence> <CardNP> <Exp>1205</Exp> </CardNP> </CardPresence> <TxDateTime/> </CommonMandatory> <CommonOptional> <Comments>This is an AVS/CVV2 auth request</Comments> <ShippingRef>FEDEX WB12345678 Pri 1</ShippingRef> <CardSecVal CardSecInd="1">705</CardSecVal> <ECommerceData ECSecurityInd="07"> <ECOrderNum>1234567890123456</ECOrderNum> </ECommerceData> </CommonOptional> </CommonData> <Auth> <AuthMandatory FormatInd="H"/> <AuthOptional> <AVSextended> <AVSname>JOE SMITH</AVSname> <AVSaddress1>1234 WEST MAIN STREET</AVSaddress1> <AVSaddress2>SUITE 123</AVSaddress2> <AVScity>TAMPA</AVScity> <AVSstate>FL</AVSstate> <AVSzip>33123-1234</AVSzip> <AVScountryCode>US</AVScountryCode> </AVSextended> </AuthOptional> </Auth> <Cap> <CapMandatory> <EntryDataSrc>02</EntryDataSrc> </CapMandatory> <CapOptional/> </Cap> </AC> </Request>'''
-
 #<?xml version="1.0" encoding="utf-8"?>
 #<Request>
 #  <AC>
