@@ -290,8 +290,8 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                         x.AVSphoneNum(billing_address['phone']),
                         x.AVSname(self.credit_card.first_name + ' ' + self.credit_card.last_name), #  TODO is this really the first & last names??
                         x.AVScountryCode('US'), # TODO get me from the billing address
-                        x.CustomerProfileFromOrderInd('A'),
-                        x.CustomerProfileOrderOverrideInd('NO'),
+                        #x.CustomerProfileFromOrderInd('A'),
+                        #x.CustomerProfileOrderOverrideInd('NO'),
                         x.OrderID('1'),
                         x.Amount('10000')
                            )
@@ -337,8 +337,8 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
                         x.AVSphoneNum(billing_address['phone']),
                         x.AVSname(self.credit_card.first_name + ' ' + self.credit_card.last_name), #  TODO is this really the first & last names??
                         x.AVScountryCode('US'),
-                        x.CustomerProfileFromOrderInd('A'),
-                        x.CustomerProfileOrderOverrideInd('NO'),
+                        #x.CustomerProfileFromOrderInd('A'),
+                        #x.CustomerProfileOrderOverrideInd('NO'),
                         x.OrderID('42'),
                         x.Amount('10100')
                            )

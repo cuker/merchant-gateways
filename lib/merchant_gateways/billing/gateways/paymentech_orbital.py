@@ -106,8 +106,8 @@ class PaymentechOrbital(Gateway):
                         x.AVSphoneNum(fields['phone']),
                         x.AVSname(credit_card.first_name + ' ' + credit_card.last_name),
                         x.AVScountryCode(fields['country']), #  and ensure this is ISO-compliant or we get a DTD fault
-                        x.CustomerProfileFromOrderInd('A'),
-                        x.CustomerProfileOrderOverrideInd('NO'),
+                        #x.CustomerProfileFromOrderInd('A'), # TODO: make these optional
+                        #x.CustomerProfileOrderOverrideInd('NO'),
                         x.OrderID(str(fields['order_id'])),  #  TODO  do blank order_id pass validation?
                         x.Amount(grandTotalAmount)
                         )
@@ -186,4 +186,3 @@ class PaymentechOrbital(Gateway):
                   "Content-length": len(request),
                   "Merchant-id": options['merchant_id']  #  CONSIDER  useful error message if it's not there
                   }
-
