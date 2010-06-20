@@ -291,4 +291,4 @@ def grep(string,list):
     for text in list:
         match = expr.search(text)
         if match != None:
-            print match.string
+            yield match.string
