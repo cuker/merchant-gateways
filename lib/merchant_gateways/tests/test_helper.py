@@ -55,7 +55,7 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
             return self.assert_xml_tree(xml, xpath, **kw)
 
         tree = self._xml_to_tree(xml, forgiving=kw.get('forgiving', False))
-        nodes = tree.xpath(xpath, **kw)
+        nodes = tree.xpath(xpath, **kw)  #  TODO  this could automatically do namespaces
         self.assertTrue(len(nodes) > 0, xpath + ' should match ' + self._xml)
         node = nodes[0]
         if kw.get('verbose', False):  self.reveal_xml(node)  #  "here have ye been? What have ye seen?"--Morgoth

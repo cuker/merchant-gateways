@@ -42,8 +42,8 @@ class PayflowTests( MerchantGatewaysPayflowSuite,
                         self.credit_card.verification_value,
                         first_name='Hermione',
                         last_name='Granger',
-                        username='LOGIN',)
-                        #password='PASSWORD')
+                        username='LOGIN',
+                        password='Y')
 
         #~ assert response = self.gateway.authorize(self.money, self.credit_card)
 
@@ -258,7 +258,7 @@ class PayflowTests( MerchantGatewaysPayflowSuite,
               XML.Card(
                 XML.CardType('Visa'),
                 XML.CardNum('4242424242424242'),
-                XML.ExpDate('201109'),
+                XML.ExpDate('209012'),
                 XML.NameOnCard('Hermione'),
                 XML.CVNum('456'),
                 XML.ExtData(Name='LASTNAME', Value='Granger')))))
@@ -688,7 +688,7 @@ xmlns="http://www.paypal.com/XMLPay">
   <RequestAuth>
     <UserPass>
       <User>LOGIN</User>
-      <Password>PASSWORD</Password>
+      <Password>Y</Password>
     </UserPass>
   </RequestAuth>
 </XMLPayRequest>

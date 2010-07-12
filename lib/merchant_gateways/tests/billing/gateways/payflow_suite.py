@@ -95,8 +95,8 @@ class MerchantGatewaysPayflowSuite:
                     ),
                     x.RequestAuth(
                         x.UserPass(
-                            x.User('LOGIN'),
-                            x.Password('PASSWORD')
+                            x.User('LOGIN'), # TODO  use username here
+                            x.Password(password)
                         )
                     )
                 )
