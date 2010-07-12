@@ -42,8 +42,8 @@ class PayflowTests( MerchantGatewaysPayflowSuite,
                         self.credit_card.verification_value,
                         first_name='Hermione',
                         last_name='Granger',
-                        username='LOGIN',
-                        password='PASSWORD')
+                        username='LOGIN',)
+                        #password='PASSWORD')
 
         #~ assert response = self.gateway.authorize(self.money, self.credit_card)
 
