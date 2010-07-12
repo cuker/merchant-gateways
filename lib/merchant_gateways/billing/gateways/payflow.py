@@ -83,13 +83,17 @@ xmlns="http://www.paypal.com/XMLPay">
   </RequestData>
   <RequestAuth>
     <UserPass>
-      <User>LOGIN</User>
-      <Password>PASSWORD</Password>
+      <User>%(user)s</User>
+      <Password>%(password)s</Password>
     </UserPass>
   </RequestAuth>
 </XMLPayRequest>
 '''  #  TODO  vary all this data
-        return template % { 'request_body': request_body }
+        info = dict(self.options)
+        info.setdefault('user', 'LOGIN')
+        info.setdefault('password', 'PASSWORD')
+        info['request_body'] = request_body
+        return template % info
 
     def build_credit_card_request(self, action, money, credit_card, **options):
         transaction_type = TRANSACTIONS[action]

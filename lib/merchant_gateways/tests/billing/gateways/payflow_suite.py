@@ -86,7 +86,7 @@ class MerchantGatewaysPayflowSuite:
                             x.Card(
                                 x.CardType(card_type),
                                 x.CardNum(cc_number),
-                                x.ExpDate('201109'),
+                                x.ExpDate('209012'),
                                 x.NameOnCard(first_name),
                                 x.CVNum(cv_num),
                                 x.ExtData(Name="LASTNAME", Value=last_name)
