@@ -4,11 +4,10 @@ from merchant_gateways.billing.cvv_result import CVVResult
 from merchant_gateways.billing.gateways.gateway import default_dict
 
 class Response(object):
-    def __init__(self, success, message, params={}, **options):
+    def __init__(self, success, message, result={}, **options):
         self.success = success
         self.message = message
-        self.params  = params
-        #  TODO  add result!
+        self.result  = result
 
         self.options     = default_dict(options).set_default(None)
         self.test          = options.setdefault('test', False)
@@ -24,7 +23,7 @@ class Response(object):
     def to_dict(self):  #  TODO  find a use for this
         return {'success': self.success,
                 'message': self.message,
-                'params': self.params,
+                'params': self.result,
                 'test': self.test,
                 'authorization': self.authorization,
                 'fraud_review': self.fraud_review}

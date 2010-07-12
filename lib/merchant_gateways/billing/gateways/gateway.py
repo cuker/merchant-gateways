@@ -9,6 +9,7 @@
 #  CONSIDER  exception handling, logging, conversation recording, signals for exceptions, success, & fail
 
 from money import Money  #  TODO  add cuker/python-money to the requirements
+from merchant_gateways.lib.post import post  #  CONSIDER  move me to gateway.py
 
 
 class Gateway(object):
@@ -98,8 +99,11 @@ class Gateway(object):
         options['shipping_address'] = options.get('shipping_address', {})
         return self.options  #  TODO options, results, message, param, etc ALL ARE ALWAYS MEMBERS
 
-    def post_webservice(self, url, params):   #  CONSIDER  get a better Mock library and this goes away! (otherwise, put it in the base class)
-        return post(url, {})
+    def post_webservice(self, url, params, headers={}):   #  CONSIDER  get a better Mock library and this goes away! (otherwise, put it in the base class)
+        got = post(url, params, headers)
+        #  TODO  log(got) here!
+        # print got
+        return got
 
 
 class default_dict(dict):  #  TODO  move to utils

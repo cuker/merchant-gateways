@@ -54,7 +54,7 @@ class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
         #name='',
                        # TODO merge more _where_to=_where_to )
         grandTotalAmount = str(money.amount)  #  TODO  pass the currency thru
-        fields.update(options['billing_address'])
+        fields.update(options.get('billing_address', {}))
         fields.update(options)  #  TODO  options should override credit card - everywhere, and doc that!
 
         # TODO fields.update(address).update(options)
@@ -141,12 +141,13 @@ class Cybersource(Gateway):  # TODO avs? cvv? or equivalent?
         authorization = [str(self.options['order_id']), self.result['requestID'], self.result['requestToken']]
         authorization = ';'.join(authorization)
 
-        return Cybersource.Response( self.success, self.message, self.result,
+        self.response = Cybersource.Response( self.success, self.message, self.result,
                                         is_test=self.is_test,
                                         authorization=authorization,
 #                                       :avs_result => { :code => response[:avsCode] },  TODO TDD me
                                      cvv_result=self.result['cvCode']
                                     )  #  TODO  inherit what Payflow do here
+        return self.response
 
     def build_request(self, body, **options):
         template = '''<?xml version="1.0" encoding="UTF-8"?>

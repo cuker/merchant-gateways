@@ -2,51 +2,61 @@
 from merchant_gateways.billing.gateways.authorize_net import AuthorizeNet  #  test target is _always_ first line!
 from merchant_gateways.billing.credit_card import CreditCard
 from merchant_gateways.tests.test_helper import *
+from merchant_gateways.tests.billing.gateways.authorize_net_suite import MerchantGatewaysAuthorizeNetSuite
 
 #  TODO  all them options gotta be... OPTIONAL!!
 
 #  TODO  require all required parameters
 
-#  TODO  rename MerchantGatewaysTestSuite
-
-class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.CommonTests):
+class AuthorizeNetTests(MerchantGatewaysTestSuite,
+                        MerchantGatewaysAuthorizeNetSuite,
+                        MerchantGatewaysTestSuite.CommonTests):
 
     def gateway_type(self):
         return AuthorizeNet
-
-    def mock_webservice(self, response):
-        self.mock_get_webservice(response)  #  TODO  is this REALLY a "get"??
 
     def assert_successful_authorization(self):
 
         # TODO  assert the response is None if we epic-fail (oh, and trap exceptions)
 
-        self.gateway.get_webservice.assert_called_with(
+        self.gateway.post_webservice.assert_called_with(
                 ('https://test.authorize.net/gateway/transact.dll?x_login=X&x_invoice_num=%i&' % self.options['order_id']) +
                 'x_last_name=Granger&x_card_code=456&x_card_num=4242424242424242&x_amount=100.00&x_delim_char=%2C&x_tran_key=Y&' +
                 'x_encap_char=%24&x_version=3.1&x_first_name=Hermione&x_exp_date=1290&x_delim_data=TRUE&x_relay_response=FALSE&' +
                 'x_type=AUTH_ONLY&x_description=Chamber+of+Secrets&x_test_request=TRUE', {}
                 )  #  TODO  beautify the response, via assert_params
 
-        #~ assert response = self.gateway.authorize(self.amount, self.credit_card)
+        #~ assert response = self.gateway.authorize(self.money, self.credit_card)
 
-        # TODO  test these        print self.response.params
+        reference = { 'response_reason_code': '1', 'card_code': 'P', 'response_reason_text': 'This transaction has been approved.',
+                      'avs_result_code': 'Y', 'response_code': 1, 'transaction_id': '508141794' }
+
+        self.assert_match_dict(reference, self.response.result)
         #        self.assertEqual('508141794', self.response.params['authorization'])  #  TODO  also self.response.authorization
-        self.assertEqual('508141794', self.response.authorization)
+        self.assert_equal('This transaction has been approved', self.response.message)
+        self.assert_equal('508141794', self.response.authorization)
 
     def assert_failed_authorization(self):
-        self.assertEqual('508141794', self.response.authorization)  # uh, we authorize failure around here?
+        reference = { 'response_reason_code': '1', 'card_code': 'P', 'response_reason_text': 'This transaction was declined.',
+                      'avs_result_code': 'Y', 'response_code': 2, 'transaction_id': '508141794' }
+        self.assert_match_dict(reference, self.response.result)
+        self.assert_equal('This transaction was declined', self.response.message)
+        self.assert_equal('508141794', self.response.authorization)  # uh, we authorize failure around here?
 
     def assert_successful_purchase(self):
+        reference = { 'response_reason_code': '1', 'card_code': 'P', 'response_reason_text': 'This transaction has been approved.',
+                      'avs_result_code': 'Y', 'response_code': 1, 'transaction_id': '508141795' }
 
-        self.assert_success()  #  TODO  what's in the response? and why a PayflowRequest inherits Request but a AuthorizeNet Response IS a Response?
+        self.assert_match_dict(reference, self.response.result)
 
-          #  TODO  who set the amount? Why ain't it 42.95?
+         #  TODO  what's in the response? and why a PayflowRequest inherits Request but a AuthorizeNet Response IS a Response?
 
-        self.gateway.get_webservice.assert_called_with(
+        #  CONSIDER  test u can vary the x_amount
+
+        self.gateway.post_webservice.assert_called_with(
                 ('https://test.authorize.net/gateway/transact.dll?x_login=X&x_invoice_num=%i&x_trans_id=Y&' % self.options['order_id']) + \
-                  'x_last_name=Granger&x_card_code=456&x_card_num=4242424242424242&x_amount=100.00' + \
-                  '&x_delim_char=%2C&x_tran_key=Y&x_encap_char=%24&x_version=3.1&x_first_name=Hermione&' + \
+                  'x_last_name=Granger&x_card_code=456&x_card_num=4242424242424242&x_amount=100.00&' + \
+                  'x_delim_char=%2C&x_tran_key=Y&x_encap_char=%24&x_version=3.1&x_first_name=Hermione&' + \
                   'x_exp_date=1290&x_delim_data=TRUE&x_relay_response=FALSE&x_type=AUTH_CAPTURE&' + \
                   'x_description=&x_test_request=TRUE', {}
                 )  #  TODO  beautify the response, and constrain the order of the params
@@ -54,20 +64,8 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
     def test_add_description(self):
         result = {}
         self.gateway.order_id = 42
-        self.gateway.add_invoice(result, { 'description': 'Cornish Pixies' })
+        self.gateway.add_invoice(result, description='Cornish Pixies')
         self.assertEqual('Cornish Pixies', result['description'])
-
-    def successful_authorization_response(self):
-        return '$1$,$1$,$1$,$This transaction has been approved.$,$advE7f$,$Y$,$508141794$,$5b3fe66005f3da0ebe51$,$$,$1.00$,' + \
-                      '$CC$,$auth_only$,$$,$Longbob$,$Longsen$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,' + \
-                        '$2860A297E0FE804BCB9EF8738599645C$,$P$,$2$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$'
-
-    def successful_purchase_response(self):
-        return '$1$,$1$,$1$,$This transaction has been approved.$,$d1GENk$,$Y$,$508141795$,$32968c18334f16525227$,' + \
-                      '$Store purchase$,$1.00$,$CC$,$auth_capture$,$$,$Longbob$,$Longsen$,' + \
-                      '$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,' + \
-                      '$269862C030129C1173727CC10B1935ED$,$P$,$2$,' + \
-                      '$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$'
 
     def test_avs_result(self):
         self.test_successful_authorization()
@@ -77,8 +75,9 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
         self.assert_equal( 'Y', avs.postal_match )
 
     def test_fraudulent_avs_result(self):
-        self.mock_webservice(self.fraud_review_response())  #  TODO  abstract test on this
-        self.response = self.gateway.authorize(self.amount, self.credit_card, **self.options)
+        self.mock_webservice(self.fraud_review_response(),  #  TODO  abstract test on this
+            lambda: self.gateway.authorize(self.money, self.credit_card, **self.options) )
+        self.response = self.gateway.response
         avs = self.response.avs_result
         self.assert_equal( 'X', avs.code )
         self.assert_equal( 'Y', avs.street_match )
@@ -97,8 +96,9 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
         self.assert_equal( 'Not Processed', cvv.message )  #  TODO  huh?
 
     def test_fraudulent_cvv_result(self):
-        self.mock_webservice(self.fraud_review_response())
-        self.response = self.gateway.authorize(self.amount, self.credit_card, **self.options)
+        self.mock_webservice(self.fraud_review_response(),
+                             lambda: self.gateway.authorize(self.money, self.credit_card, **self.options) )
+        self.response = self.gateway.response
         cvv = self.response.cvv_result
         self.assert_equal( 'M', cvv.code )
         self.assert_equal( 'Match', cvv.message )  #  TODO  huh??
@@ -115,6 +115,8 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
         reference = '?x_login=X&x_invoice_num=1&x_trans_id=Y&x_last_name=Granger&x_card_code=None&x_card_num=4242424242424242&x_amount=1.00&x_delim_char=%2C&x_tran_key=Y&x_encap_char=%24&x_version=3.1&x_first_name=Hermione&x_exp_date=1290&x_delim_data=TRUE&x_relay_response=FALSE&x_type=AUTH_CAPTURE&x_description=&x_test_request=TRUE'
         self.assert_equal(reference, self.gateway.post_data(action, parameters))
 
+    # TODO  fun with print self.assert_params(params)!
+
     def test_parse(self):
         reference = { 'response_reason_code': '1', 'card_code': 'P', 'response_reason_text': 'This transaction has been approved.',
                       'avs_result_code': 'Y', 'response_code': 1, 'transaction_id': '508141794' }
@@ -124,7 +126,7 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
         reference = { 'response_reason_code': '1', 'card_code': 'P', 'response_reason_text': 'This transaction was declined.',
                       'avs_result_code': 'Y', 'response_code': 2, 'transaction_id': '508141794' }
 
-        self.assert_match_hash(reference, self.gateway.parse(self.failed_authorization_response()))
+        self.assert_match_dict(reference, self.gateway.parse(self.failed_authorization_response()))
 
         reference = { 'card_code': 'P', 'response_reason_text': 'This transaction has been approved.', 'response_reason_code': '1',
                       'avs_result_code': 'Y', 'response_code': 1, 'transaction_id': '508141795' }
@@ -144,111 +146,111 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
 #      def successful_update_recurring_response
 #      def successful_cancel_recurring_response
 
-    '''  def test_add_address_outsite_north_america
+    def test_add_address_outsite_north_america(self):
         result = {}
 
-        self.gateway.send(:add_address, result, :billing_address => {:address1 => '164 Waverley Street', :country => 'DE', :state => ''} )
+        self.gateway.add_address( result, billing_address = {'address1': '164 Waverley Street', 'country': 'DE', 'state': ''} )
 
-        assert_equal ["address", "city", "company", "country", "phone", "state", "zip"], result.stringify_keys.keys.sort
-        assert_equal 'n/a', result[:state]
-        assert_equal '164 Waverley Street', result[:address]
-        assert_equal 'DE', result[:country]
-      end
+        self.assert_equal_set(["address", "city", "company", "country", "phone", "state", "zip"], result.keys())
+        self.assert_equal('n/a', result['state'])
+        self.assert_equal('164 Waverley Street', result['address'])
+        self.assert_equal('DE', result['country'])
 
-      def test_add_address
+    def test_add_address(self):
         result = {}
 
-        self.gateway.send(:add_address, result, :billing_address => {:address1 => '164 Waverley Street', :country => 'US', :state => 'CO'} )
+        self.gateway.add_address( result, billing_address= { 'address1': '164 Waverley Street', 'country': 'US', 'state': 'CO' } )
 
-        assert_equal ["address", "city", "company", "country", "phone", "state", "zip"], result.stringify_keys.keys.sort
-        assert_equal 'CO', result[:state]
-        assert_equal '164 Waverley Street', result[:address]
-        assert_equal 'US', result[:country]
+        self.assert_equal_set(["address", "city", "company", "country", "phone", "state", "zip"], result.keys())
+        self.assert_equal('CO', result['state'])
+        self.assert_equal('164 Waverley Street', result['address'])
+        self.assert_equal('US', result['country'])
 
-      end
-
-      def test_add_invoice
+    def test_add_invoice(self):
         result = {}
-        self.gateway.send(:add_invoice, result, :order_id => '#1001')
-        assert_equal '#1001', result[:invoice_num]
-      end
+        self.gateway.add_invoice(result, order_id='#1001')
+        self.assert_equal('#1001', result['invoice_num'])  #  TODO  now test it actually goes out the wire!
 
-      def test_add_duplicate_window_without_duplicate_window
-        result = {}
-        ActiveMerchant::Billing::AuthorizeNetGateway.duplicate_window = nil
-        self.gateway.send(:add_duplicate_window, result)
-        assert_nil result[:duplicate_window]
-      end
+#      def test_add_duplicate_window_without_duplicate_window  CONSIDER  whut?
+#        result = {}
+#        ActiveMerchant::Billing::AuthorizeNetGateway.duplicate_window = nil
+#        self.gateway.send(:add_duplicate_window, result)
+#        assert_nil result[:duplicate_window]
+#      end
+#
+#      def test_add_duplicate_window_with_duplicate_window
+#        result = {}
+#        ActiveMerchant::Billing::AuthorizeNetGateway.duplicate_window = 0
+#        self.gateway.send(:add_duplicate_window, result)
+#        assert_equal 0, result[:duplicate_window]
+#      end
 
-      def test_add_duplicate_window_with_duplicate_window
-        result = {}
-        ActiveMerchant::Billing::AuthorizeNetGateway.duplicate_window = 0
-        self.gateway.send(:add_duplicate_window, result)
-        assert_equal 0, result[:duplicate_window]
-      end
+    def test_purchase_is_valid_csv(self):
+       params = { 'amount': '1.01' }
 
-      def test_purchase_is_valid_csv
-       params = { :amount => '1.01' }
+       self.gateway.add_creditcard(params, self.credit_card)
+       data = self.gateway.post_data('AUTH_ONLY', params)
+       sample = self.assert_params(re.sub(r'^\?', '', data))
+       reference = self.assert_params(self.post_data_fixture())
+       self.assert_match_dict(reference, sample)
 
-       self.gateway.send(:add_creditcard, params, self.credit_card)
+    def post_data_fixture(self):
+        return ( 'x_encap_char=%24&x_card_num=4242424242424242&x_exp_date=1290&x_card_code=456&x_type=AUTH_ONLY&' +
+                 'x_first_name=Hermione&x_version=3.1&x_login=X&x_last_name=Granger&x_tran_key=Y&x_relay_response=FALSE' +
+                 '&x_delim_data=TRUE&x_delim_char=%2C&x_amount=1.01' )
 
-       assert data = self.gateway.send(:post_data, 'AUTH_ONLY', params)
-       assert_equal post_data_fixture.size, data.size
-      end
+    def test_purchase_meets_minimum_requirements(self):  #  TODO  what was the point of this?
+        params = { 'amount': "1.01" }
 
-      def test_purchase_meets_minimum_requirements
-        params = {
-          :amount => "1.01",
-        }
+        self.gateway.add_creditcard(params, self.credit_card)
+        data = self.gateway.post_data('AUTH_ONLY', params)  #  TODO  should the ? be there?
+        sample = self.assert_params(re.sub(r'^\?', '', data))
+    #    print sample  #  TODO  where's the 1.01 ??
 
-        self.gateway.send(:add_creditcard, params, self.credit_card)
+#        assert data = self.gateway.send(:post_data, 'AUTH_ONLY', params)
+        for key in self.minimum_requirements():
+            self.assert_contains('x_' + key, sample.keys())
 
-        assert data = self.gateway.send(:post_data, 'AUTH_ONLY', params)
-        minimum_requirements.each do |key|
-          assert_not_nil(data =~ /x_#{key}=/)
-        end
-      end
+    def minimum_requirements(self):
+        return ['version', 'delim_data', 'relay_response', 'login', 'tran_key', 'amount', 'card_num', 'exp_date', 'type']
 
-      def test_successful_credit
-        self.gateway.expects(:ssl_post).returns(successful_purchase_response)
-        assert response = self.gateway.credit(self.amount, '123456789', :card_number => self.credit_card.number)
-        assert_success response
-        assert_equal 'This transaction has been approved', response.message
-      end
+    def test_successful_credit(self):
+        self.mock_webservice( self.successful_purchase_response(),  #  TODO  shouldn't that be a successful_credit_response()?
+                              lambda: self.gateway.credit(self.money, '123456789', card_number=self.credit_card.number) )
+        self.assert_success()
+        self.assert_equal('This transaction has been approved', self.response.message)
 
-      def test_failed_credit
-        self.gateway.expects(:ssl_post).returns(failed_credit_response)
+    def test_failed_credit(self):
+        self.mock_webservice( self.failed_credit_response(),  #  TODO  shouldn't that be a successful_credit_response()?
+                              lambda: self.gateway.credit(self.money, '123456789', card_number=self.credit_card.number) )
+        self.assert_failure()
+        self.assert_equal('The referenced transaction does not meet the criteria for issuing a credit', self.response.message)
 
-        assert response = self.gateway.credit(self.amount, '123456789', :card_number => self.credit_card.number)
-        assert_failure response
-        assert_equal 'The referenced transaction does not meet the criteria for issuing a credit', response.message
-      end
+    def failed_credit_response(self):
+        return '$3$,$2$,$54$,$The referenced transaction does not meet the criteria for issuing a credit.$,$$,$P$,$0$,$$,$$,$1.00$,$CC$,$credit$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$39265D8BA0CDD4F045B5F4129B2AAA01$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$'
 
-      def test_supported_countries
-        assert_equal ['US'], AuthorizeNetGateway.supported_countries
-      end
+    def test_supported_card_types(self):
+        '''Consider: These trivial kinds of test should put their money where their mouths are and loop thru them!'''
 
-      def test_supported_card_types
-        assert_equal [:visa, :master, :american_express, :discover], AuthorizeNetGateway.supported_cardtypes
-      end
+        self.assert_equal(['visa', 'master', 'american_express', 'discover'], AuthorizeNet.supported_cardtypes)
+        self.assert_equal(['US'], AuthorizeNet.supported_countries)
 
-      def test_failure_without_response_reason_text
-        assert_nothing_raised do
-          assert_equal '', self.gateway.send(:message_from, {})
-        end
-      end
+#      def test_failure_without_response_reason_text  CONSIDER wat?
+#        assert_nothing_raised do
+#          assert_equal '', self.gateway.send(:message_from, {})
+#        end
+#      end
 
-      def test_response_under_review_by_fraud_service
-        self.gateway.expects(:ssl_post).returns(fraud_review_response)
+    def test_response_under_review_by_fraud_service(self):
+        self.mock_webservice( self.fraud_review_response(),
+                              lambda: self.gateway.purchase(self.money, self.credit_card) )
+        self.assert_failure()
+        self.assert_(self.response.fraud_review)
+        self.assert_equal("Thank you! For security reasons your order is currently being reviewed", self.response.message)
 
-        response = self.gateway.purchase(self.amount, self.credit_card)
-        assert_failure response
-        assert response.fraud_review?
-        assert_equal "Thank you! For security reasons your order is currently being reviewed", response.message
-      end
+    '''
 
-
-      # ARB Unit Tests
+      # ARB Unit Tests CONSIDER  we have no mandate for recurrence yet (right?)
 
       def test_successful_recurring
         self.gateway.expects(:ssl_post).returns(successful_recurring_response)
@@ -299,17 +301,6 @@ class AuthorizeNetTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
       end
 
       private
-      def post_data_fixture
-        'x_encap_char=%24&x_card_num=4242424242424242&x_exp_date=0806&x_card_code=123&x_type=AUTH_ONLY&x_first_name=Longbob&x_version=3.1&x_login=X&x_last_name=Longsen&x_tran_key=Y&x_relay_response=FALSE&x_delim_data=TRUE&x_delim_char=%2C&x_amount=1.01'
-      end
-
-      def minimum_requirements
-        %w(version delim_data relay_response login tran_key amount card_num exp_date type)
-      end
-
-      def failed_credit_response
-        '$3$,$2$,$54$,$The referenced transaction does not meet the criteria for issuing a credit.$,$$,$P$,$0$,$$,$$,$1.00$,$CC$,$credit$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$39265D8BA0CDD4F045B5F4129B2AAA01$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$,$$'
-      end
 
       def successful_recurring_response
         <<-XML

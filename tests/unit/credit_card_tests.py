@@ -44,6 +44,9 @@ class CreditCardTest(MerchantGatewaysUtilitiesTestSuite):
         self.assert_equal("visa", c.card_type)
         self.assert_valid(c)
 
+    def test_constructor_should_properly_assign_values(self):
+        c = CreditCard(number='4242424242424242', month='01', year='2101')
+        self.assert_equal( 'visa', c.card_type)
 
     def test_constructor_should_trim_blanks(self):
         c = self.credit_card(number='4111 1111 1111 1111 ', year='1929')
@@ -69,7 +72,7 @@ class CreditCardTest(MerchantGatewaysUtilitiesTestSuite):
 
         self.deny_valid(self.visa)
         reference = dict(first_name='this field is required', last_name='this field is required')  #  CONSIDER  match this to Django model-land
-        self.assert_match_hash(reference, self.visa.errors)
+        self.assert_match_dict(reference, self.visa.errors)
 
     def test_should_be_able_to_liberate_a_bogus_card(self):
         c = self.credit_card('', card_type='bogus')

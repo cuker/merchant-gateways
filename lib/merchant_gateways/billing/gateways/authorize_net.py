@@ -13,9 +13,11 @@ except ImportError:
     import elementtree.ElementTree as ET  #  CONSIDER  give a darn about this library??
 
 import re
-
 from merchant_gateways.lib.post import post  #  CONSIDER  move me to gateway.py
 from merchant_gateways.billing import response
+from merchant_gateways.billing.gateways.gateway import default_dict
+
+# TODO learn & steal from bitbucket.org/adroll/authorize
 
 # For more information on the Authorize.Net Gateway please visit their {Integration Center}[http://developer.authorize.net/]
 
@@ -48,16 +50,16 @@ class AuthorizeNet(Gateway):
     APPROVED, DECLINED, ERROR, FRAUD_REVIEW = 1, 2, 3, 4
     RESPONSE_CODE, RESPONSE_REASON_CODE, RESPONSE_REASON_TEXT = 0, 2, 3
     AVS_RESULT_CODE, TRANSACTION_ID, CARD_CODE_RESPONSE_CODE = 5, 6, 38
-#    RECURRING_ACTIONS = {  TODO
-#      u'create': 'ARBCreateSubscription',
-#      u'update': 'ARBUpdateSubscription',
-#      u'cancel': 'ARBCancelSubscription'
-#    }
     test_url = "https://test.authorize.net/gateway/transact.dll"
     live_url = "https://secure.authorize.net/gateway/transact.dll"
 
 #    arb_test_url = 'https://apitest.authorize.net/xml/v1/request.api'
 #    arb_live_url = 'https://api.authorize.net/xml/v1/request.api'
+#    RECURRING_ACTIONS = {  CONSIDER
+#      u'create': 'ARBCreateSubscription',
+#      u'update': 'ARBUpdateSubscription',
+#      u'cancel': 'ARBCancelSubscription'
+#    }
 
     supported_countries = ['US']
     supported_cardtypes = ['visa', 'master', 'american_express', 'discover']
@@ -90,9 +92,9 @@ class AuthorizeNet(Gateway):
         post = {}
         self.options.update(options)  #  TODO  everyone does it like this
         # TODO self.options = options
-        self.add_invoice(post, options)
+        self.add_invoice(post, **options)
         self.add_creditcard(post, creditcard)
-        self.add_address(post, options)
+        self.add_address(post, **options)
         self.add_customer_data(post,options)
         #  TODO  merge passed options & self.options
 
@@ -115,9 +117,9 @@ class AuthorizeNet(Gateway):
           'trans_id': self.options['password']
         }
 
-        self.add_invoice(post, options)
+        self.add_invoice(post, **options)
         self.add_creditcard(post, creditcard)
-        self.add_address(post, options)
+        self.add_address(post, **options)
         self.add_customer_data(post, options)
 
         return self.commit('AUTH_CAPTURE', money, post)
@@ -132,7 +134,6 @@ class AuthorizeNet(Gateway):
         post = {'trans_id': authorization}
         self.add_customer_data(post, options)
         self.commit('PRIOR_AUTH_CAPTURE', money, post)
-
 
       # Void a previous transaction
       #
@@ -158,15 +159,14 @@ class AuthorizeNet(Gateway):
       # ==== Options
       #
       # * <tt>:card_number</tt> -- The credit card number the credit is being issued to. (REQUIRED)
-    def credit(self, money, identification, options = {}):
+    def credit(self, money, identification, **options):
         #requires!(options, :card_number)
-        assert('card_number' in options)
+        assert('card_number' in options)  #  CONSIDER  how to credit a transaction?
 
         post = dict( trans_id= identification,
                      card_num= options['card_number'] )
 
-        self.add_invoice(post, options)
-
+        self.add_invoice(post, **options)
         self.commit('CREDIT', money, post)
 
     def commit(self, action, money, parameters):
@@ -177,15 +177,12 @@ class AuthorizeNet(Gateway):
         parameters['test_request'] = self.is_test and 'TRUE' or 'FALSE'
 
         #url = test? ? self.test_url : self.live_url
-        if self.is_test:
-            url = self.test_url
-        else:
-            url = self.live_url
+        url = self.is_test and self.test_url or self.live_url  #  TODO  api_uri()
 
         url = url + self.post_data(action, parameters)
 
         # data = post(url, {})
-        self.result = self.get_webservice(url, {})
+        self.result = self.post_webservice(url, {})  #  TODO  post or get?
         self.response = self.parse(self.result)
         self.message = self.message_from(self.response)
 
@@ -201,13 +198,14 @@ class AuthorizeNet(Gateway):
 
         #test_mode = test? || message =~ /TESTMODE/
 
-        r = AuthorizeNet.Response(self.is_success(self.response), self.message, self.response,
+        r = AuthorizeNet.Response(self.is_success(self.response), self.message, self.response,  #  TODO -> result!!!
                 is_test=self.is_test,
                 authorization=self.response['transaction_id'],
                 fraud_review=self.is_fraud_review(self.response),
                 avs_result=self.response['avs_result_code'],
                 cvv_result=self.response['card_code']
                 )  #  TODO  also pass the options in
+        self.response = r
         return r
 
     def is_success(self, response):
@@ -250,7 +248,7 @@ class AuthorizeNet(Gateway):
         #print '?' + urlencode(request)
         return '?' + urlencode(request)
 
-    def add_invoice(self, post, options):
+    def add_invoice(self, post, **options):
         post['invoice_num'] = options.get('order_id', '')
         post['description'] = options.get('description', '')
 
@@ -273,13 +271,14 @@ class AuthorizeNet(Gateway):
         if 'ip' in options:
             post['customer_ip'] = options['ip']
 
-    def add_address(self, post, options):
+    def add_address(self, post, **options):
         address = None
-        if 'billing_address' in options:
+        if 'billing_address' in options:  #  TODO  use get
             address = options['billing_address']
         elif 'address' in options:
             address = options['address']
         if address:
+            address = default_dict(address)
             post['address'] = str(address['address1'])
             post['company'] = str(address['company'])
             post['phone'] = str(address['phone'])

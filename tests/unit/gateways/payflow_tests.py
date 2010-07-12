@@ -7,17 +7,24 @@ from merchant_gateways.tests.billing.gateways.payflow_suite import MerchantGatew
 from pprint import pprint
 from money import Money
 
-class PayflowTests( MerchantGatewaysTestSuite,
-                    MerchantGatewaysTestSuite.CommonTests,
-                    MerchantGatewaysPayflowSuite ):
+class PayflowTests( MerchantGatewaysPayflowSuite,
+                    MerchantGatewaysTestSuite,
+                    MerchantGatewaysTestSuite.CommonTests ):
 
     def gateway_type(self):
         return Payflow
 
-    def mock_webservice(self, response):
-        self.mock_post_webservice(response)
-
     def assert_successful_authorization(self):
+        '''
+        All gateways must pass the common test,
+        L{tests.test_helper.MerchantGatewaysTestSuite.CommonTests.test_successful_authorization}.
+
+        That calls this assertion, in each concrete test suite, to assert
+        this gateway's specific details.
+
+        See U{http://broadcast.oreilly.com/2010/05/abstract-tests.html} for more on the the
+        Abstract Test pattern
+        '''
 
         assert self.response.is_test
         self.assertEqual('Approved', self.response.message)
@@ -38,7 +45,7 @@ class PayflowTests( MerchantGatewaysTestSuite,
                         username='LOGIN',
                         password='PASSWORD')
 
-        #~ assert response = self.gateway.authorize(self.amount, self.credit_card)
+        #~ assert response = self.gateway.authorize(self.money, self.credit_card)
 
         # TODO  test these        print self.response.params
         #        self.assertEqual('508141794', self.response.params['authorization'])  #  TODO  also self.response.authorization
@@ -57,15 +64,20 @@ class PayflowTests( MerchantGatewaysTestSuite,
         pass   #  TODO  make this work by simply returning a TODO string!
 
     def test_successful_void(self):
-        self.mock_webservice(self.successful_void_response())
         authorization = 'Mobiliarbus'
-        self.response = self.gateway.void(authorization)
+
+
+        self.mock_webservice(self.successful_void_response(),
+                             lambda: self.gateway.void(authorization) )
+        self.response = self.gateway.response
         assert 'TODO' in self.response.result
 
     def test_successful_credit(self):
-        self.mock_webservice(self.successful_credit_response())
         authorization = 'Mobiliarbus'
-        self.response = self.gateway.credit(Money('42.00', 'MAD'), authorization)
+
+        self.mock_webservice(self.successful_credit_response(),
+                             lambda: self.gateway.credit(Money('42.00', 'MAD'), authorization) )
+        self.response = self.gateway.response
         assert 'TODO' in self.response.result
 
     def successful_purchase_response(self):  #  TODO  this is bogus! What does a real one look like???

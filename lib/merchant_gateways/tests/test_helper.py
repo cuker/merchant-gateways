@@ -1,25 +1,47 @@
 
+import unittest
 
 from mock import Mock
 #  CONSIDER  django-test-extensions needs to work w/o django
-import unittest
 from pprint import pformat
 from money import Money
+import cgi
 
 
 class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
+    '''
+    This contains copies of test utilities found in `django-test-extensions <http://github.com/cuker/django-test-extensions>`_.
+    '''
 
-    def assert_success(self):
-        #  TODO assert is_test
-        self.assertTrue(isinstance(self.response, self.gateway_response_type()))
-        self.assertTrue(self.response.success, 'Response should not fail: ' + pformat(self.response.__dict__))
+    def assert_contains(self, needle, haystack, diagnostic=''):
+        'Assert that one value (the hasystack) contains another value (the needle)'
+        diagnostic = diagnostic + "\nContent should contain `%s' but doesn't:\n%s" % (needle, haystack)
+        diagnostic = diagnostic.strip()
+        return self.assert_(needle in haystack, diagnostic)
 
-    def assert_failure(self):
-        self.assertTrue(isinstance(self.response, self.gateway_response_type()))
-            #~ clean_backtrace do
-        self.assertFalse(self.response.success, 'Response should fail: ' + pformat(self.response.__dict__))
+    def assert_none(self, *args, **kwargs):
+        "assert you ain't nothin'"
 
-    def assert_raises_(self, except_cls, callable_, *args, **kw):  #  CONSIDER  merge with django-test-extensions' assert_raises?
+        return self.assertEqual(None, *args, **kwargs)
+
+    def assert_equal(self, *args, **kwargs):
+        'Assert that two values are equal'
+
+        return self.assertEqual(*args, **kwargs)
+
+    def assert_equal_set(self, reference, sample, *args, **kwargs):
+        'Assert that two values are equal'
+
+        return self.assertEqual(set(reference), set(sample), *args, **kwargs)
+
+    def assertEqual(self, first, second, message=''):
+        'NOTE Python 3 fixes this: http://docs.python.org/dev/py3k/library/unittest.html#unittest.TestCase.longMessage '
+
+        if first != second:
+            self.assertTrue( first == second,
+                          (message + ('\n%r != %r' % (first, second))).lstrip() )
+
+    def assert_raises(self, except_cls, callable_, *args, **kw):  #  CONSIDER  merge with django-test-extensions' assert_raises?
         try:
             callable_(*args, **kw)
             assert False, "Callable should raise an exception"  #  TODO  assertFalse, with complete diagnostics
@@ -115,19 +137,30 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
         sample = re.sub(r'\n\s*', '\n', sample).strip()
         self.assertEqual(reference, sample, "\n%s\nshould match:%s" % (reference, sample))  #  CONSIDER  use XPath to rotorouter the two samples!
 
-    def assert_none(self, *args, **kwargs):
-        "assert you ain't nothin'"
+    def assert_params(self, params, **dict):  #  ERGO  put me in django-test-extensions!
+        qsparams = cgi.parse_qs(params)
 
-        return self.assertEqual(None, *args, **kwargs)
+        for k,v in qsparams.items():
+            if len(v) == 1:
+                qsparams[k] = v[0] # easier to manipulate, because most real-life params are singular
 
-    def assert_equal(self, *args, **kwargs):
-        'Assert that two values are equal'
+        if dict:  #  assert_params optionally does not check any params
+            self.assert_dict_contains(qsparams, **dict)  #  ERGO  better diagnostic, as usual!
 
-        return self.assertEqual(*args, **kwargs)
+        return qsparams
 
+    def assert_dict_contains(self, dict, **elements):  #  ERGO  promote me & merge with assert_match_dict
+        assert elements, 'assert_dict_contains works best with "kwargs"!'
+
+        for k,v in elements.items():
+            self.assert_equal(v, dict.get(k, not v), 'for key `%s`' % k)
+
+    #@deprecated
     def assert_match_hash(self, reference, sample, diagnostic=''):
+        self.assert_match_dict(reference, sample, diagnostic)
+
+    def assert_match_dict(self, reference, sample, diagnostic=''):
         if reference == sample:  return
-        print dir(reference)
         reference = reference.copy()
         sample = sample.copy()
         from pprint import pformat
@@ -145,6 +178,13 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
 
         diagnostic = diagnostic.strip()
         self.assert_equal( reference, sample, diagnostic )
+
+    def convert_xml_to_element_maker(self, thang):
+        'script that coverts XML to its ElementMaker notation'
+
+        from lxml import etree
+        doc = etree.XML(thang)
+        return self._convert_child_nodes(doc)
 
     def _convert_child_nodes(self, node, depth=0):
         code = '\n' + ' ' * depth * 2 + 'XML.' + node.tag + '('
@@ -166,21 +206,13 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
         code += ')'
         return code
 
-    def convert_xml_to_element_maker(self, thang):
-        'script that coverts XML to its ElementMaker notation'
-
-        from lxml import etree
-        doc = etree.XML(thang)
-        return self._convert_child_nodes(doc)
-
 
 class MerchantGatewaysWebserviceTestSuite(object):
 
-    def mock_get_webservice(self, returns):
-        self.gateway.get_webservice = Mock(return_value=returns)
-
-    def mock_post_webservice(self, returns):
-        self.gateway.post_webservice = Mock(return_value=returns)
+    def mock_webservice(self, returns, lamb):
+        self.gateway.post_webservice = Mock(return_value=returns)  #  TODO  stop relying on this member!
+        lamb()
+        self.response = self.gateway.response  #  TODO  take out redundant occurences of this
 
 
 class MerchantGatewaysTestSuite( MerchantGatewaysUtilitiesTestSuite,
@@ -190,7 +222,7 @@ class MerchantGatewaysTestSuite( MerchantGatewaysUtilitiesTestSuite,
         self.gateway = self.gateway_type()(is_test=True, login='X', password='Y')
         self.gateway.gateway_mode = 'test'
         from decimal import Decimal
-        self.amount = Money('100', 'USD')
+        self.money = Money('100', 'USD')
         self.options = dict(order_id=1)  #  TODO  change me to Harry Potter's favorite number & pass all tests
         from merchant_gateways.billing.credit_card import CreditCard
 
@@ -201,33 +233,54 @@ class MerchantGatewaysTestSuite( MerchantGatewaysUtilitiesTestSuite,
                                        first_name='Hermione', last_name='Granger' )
 
         self.subscription_id = '100748'  #  TODO  use or lose this
+        getattr(self, 'set_gateway_up', lambda: None)() #  CONSIDER explain to Python-land this is what virtual methods are FOR!!!
+        #self.set_gateway_up()
 
-    class CommonTests:
+#    def set_gateway_up(self):  pass  #  oh yeah!
+
+    def assert_success(self):
+        #  TODO assert is_test
+        self.assertTrue(isinstance(self.response, self.gateway_response_type()))
+        self.assertTrue(self.response.success, 'Response should not fail: ' + pformat(self.response.__dict__))
+
+    def assert_failure(self):
+        self.assertTrue(isinstance(self.response, self.gateway_response_type()))
+            #~ clean_backtrace do
+        self.assertFalse(self.response.success, 'Response should fail: ' + pformat(self.response.__dict__))
+
+
+    class CommonTests:  #  CONSIDER  move us to gateway_test.py?
 
         def gateway_response_type(self):
             return self.gateway_type().Response
 
         def test_successful_authorization(self):
-            self.mock_webservice(self.successful_authorization_response())
-            self.options['description'] = 'Chamber of Secrets'
-            self.response = self.gateway.authorize(self.amount, self.credit_card, **self.options)
+            '''All gateways authorize with these inputs and outputs'''
 
-    # TODO        assert self.response.is_test
-            self.assert_successful_authorization()
+            self.options['description'] = 'Chamber of Secrets'
+            self.mock_webservice(self.successful_authorization_response(),
+                lambda: self.gateway.authorize(self.money, self.credit_card, **self.options) )
+            self.response = self.gateway.response
+
+            assert self.response.is_test
             self.assert_success()
-            self.assert_equal(repr(True), repr(self.response.is_test))
+            self.assert_successful_authorization()
 
         def test_failed_authorization(self):
-            self.mock_webservice(self.failed_authorization_response())
-            self.response = self.gateway.authorize(self.amount, self.credit_card, **self.options)
+            self.mock_webservice( self.failed_authorization_response(),
+                lambda:  self.gateway.authorize(self.money, self.credit_card, **self.options) )
+
+            self.response = self.gateway.response
+            assert self.response.is_test
             self.assert_failure()
             self.assert_failed_authorization()
-            self.assert_equal(repr(True), repr(self.response.is_test))
 
         def test_successful_purchase(self):
-            self.mock_webservice(self.successful_purchase_response())
-            self.response = self.gateway.purchase(self.amount, self.credit_card, **self.options)
-            print self.response
+            self.mock_webservice(self.successful_purchase_response(),
+                lambda: self.gateway.purchase(self.money, self.credit_card, **self.options) )
+
+            self.response = self.gateway.response  #  CONSIDER move inside ??
+            assert self.response.is_test
             self.assert_successful_purchase()
 
 nil = None # C-;
@@ -238,4 +291,4 @@ def grep(string,list):
     for text in list:
         match = expr.search(text)
         if match != None:
-            print match.string
+            yield match.string

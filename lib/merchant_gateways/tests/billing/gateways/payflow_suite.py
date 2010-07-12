@@ -1,4 +1,7 @@
 
+from merchant_gateways.billing.gateways.gateway import xStr  #  TODO  better home for that stinker!
+from lxml.builder import ElementMaker
+XML = ElementMaker()
 
 #  CONSIDER  orbital
 
@@ -22,21 +25,20 @@ class MerchantGatewaysPayflowSuite:
                 </ResponseData>'''
 
     def failed_authorization_response(self):
-        return '''<ResponseData>
-                    <Result>12</Result>
-                    <Message>Declined</Message>
-                    <Partner>verisign</Partner>
-                    <HostCode>000</HostCode>
-                    <ResponseText>AP</ResponseText>
-                    <PnRef>VUJN1A6E11D9</PnRef>
-                    <IavsResult>N</IavsResult>
-                    <ZipMatch>Match</ZipMatch>
-                    <AuthCode>094016</AuthCode>
-                    <Vendor>ActiveMerchant</Vendor>
-                    <AvsResult>Y</AvsResult>
-                    <StreetMatch>Match</StreetMatch>
-                    <CvResult>Match</CvResult>
-                </ResponseData>'''
+        return xStr( XML.ResponseData(
+                      XML.Result('12'),
+                      XML.Message('Declined'),
+                      XML.Partner('verisign'),
+                      XML.HostCode('000'),
+                      XML.ResponseText('AP'),
+                      XML.PnRef('VUJN1A6E11D9'),
+                      XML.IavsResult('N'),
+                      XML.ZipMatch('Match'),
+                      XML.AuthCode('094016'),
+                      XML.Vendor('ActiveMerchant'),
+                      XML.AvsResult('Y'),
+                      XML.StreetMatch('Match'),
+                      XML.CvResult('Match')) )
 
     def successful_void_response(self):
         return '''<ResponseData><TODO/>
