@@ -107,7 +107,7 @@ xmlns="http://www.paypal.com/XMLPay">
                           XML.Card(
                               XML.CardType(credit_card.type_name()),
                               XML.CardNum(credit_card.number),
-                              XML.ExpDate('201109'),
+                              XML.ExpDate('%04d%02d' % (credit_card.year, credit_card.month)),
                               XML.NameOnCard(credit_card.first_name),
                               XML.CVNum(credit_card.verification_value),
                               XML.ExtData(Name="LASTNAME", Value=credit_card.last_name )
@@ -117,7 +117,7 @@ xmlns="http://www.paypal.com/XMLPay">
     def add_address(self, _where_to, **address):
         if not address:  return ''
         address = default_dict(address)
-
+        
         return XML(_where_to,
                       XML.Name(address['name']),
                       XML.Phone('(555)555-5555'),
@@ -231,6 +231,10 @@ xmlns="http://www.paypal.com/XMLPay">
           # Perform non-referenced credit
           '# TODO request = build_credit_card_request(:credit, money, identification_or_credit_card, options)'
 
+        return self.commit(request)
+    
+    def capture(self, money, authorization):
+        request = self.build_reference_request('capture', money, authorization)
         return self.commit(request)
 
 '''      include PayflowCommonAPI
