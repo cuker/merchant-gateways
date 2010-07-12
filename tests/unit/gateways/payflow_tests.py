@@ -38,7 +38,7 @@ class PayflowTests( MerchantGatewaysPayflowSuite,
                         'USD',  #  TODO  use self.money.currency here
                         'Visa',
                         '4242424242424242',
-                        '201109',
+                        '209012',
                         self.credit_card.verification_value,
                         first_name='Hermione',
                         last_name='Granger',
