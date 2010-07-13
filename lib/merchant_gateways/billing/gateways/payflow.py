@@ -153,13 +153,11 @@ xmlns="http://www.paypal.com/XMLPay">
         from lxml import etree
         xml = etree.XML(data)
         namespaces={'paypal':'http://www.paypal.com/XMLPay'}
-        try:
-            root = xml.xpath('..//paypal:TransactionResult', namespaces=namespaces)[0]
-        except:
-            #print data
-            raise
+        root = xml.xpath('..//paypal:TransactionResult', namespaces=namespaces)[0]
         for node in root.xpath('*', namespace='paypal', namespaces=namespaces):
             response[node.tag.split('}')[-1]] = node.text
+        if response.get('Result') != '0':
+            raise MerchantGatewayError(response.get('Message', 'No error message given'), response)
         '''
         root = REXML::XPath.first(xml, "//ResponseData")
 
