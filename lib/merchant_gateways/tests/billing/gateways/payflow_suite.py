@@ -8,47 +8,104 @@ XML = ElementMaker()
 class MerchantGatewaysPayflowSuite:
 
     def successful_authorization_response(self):
-        return '''<ResponseData>
-                    <Result>0</Result>
-                    <Message>Approved</Message>
-                    <Partner>verisign</Partner>
-                    <HostCode>000</HostCode>
-                    <ResponseText>AP</ResponseText>
-                    <PnRef>VUJN1A6E11D9</PnRef>
-                    <IavsResult>N</IavsResult>
-                    <ZipMatch>Match</ZipMatch>
-                    <AuthCode>094016</AuthCode>
-                    <Vendor>ActiveMerchant</Vendor>
-                    <AvsResult>Y</AvsResult>
-                    <StreetMatch>Match</StreetMatch>
-                    <CvResult>Match</CvResult>
-                </ResponseData>'''
+        return '''<XMLPayResponse xmlns="http://www.paypal.com/XMLPay">
+                  <ResponseData>
+                    <Vendor>LOGIN</Vendor>
+                    <Partner>paypal</Partner>
+                    <TransactionResults>
+                        <TransactionResult>
+                            <Result>0</Result>
+                            <Message>Approved</Message>
+                            <Partner>verisign</Partner>
+                            <HostCode>000</HostCode>
+                            <ResponseText>AP</ResponseText>
+                            <PnRef>VUJN1A6E11D9</PnRef>
+                            <IavsResult>N</IavsResult>
+                            <ZipMatch>Match</ZipMatch>
+                            <AuthCode>094016</AuthCode>
+                            <Vendor>ActiveMerchant</Vendor>
+                            <AvsResult>Y</AvsResult>
+                            <StreetMatch>Match</StreetMatch>
+                            <CvResult>Match</CvResult>
+                        </TransactionResult>
+                    </TransactionResults>
+                </ResponseData>
+                </XMLPayResponse>'''
 
     def failed_authorization_response(self):
-        return xStr( XML.ResponseData(
-                      XML.Result('12'),
-                      XML.Message('Declined'),
-                      XML.Partner('verisign'),
-                      XML.HostCode('000'),
-                      XML.ResponseText('AP'),
-                      XML.PnRef('VUJN1A6E11D9'),
-                      XML.IavsResult('N'),
-                      XML.ZipMatch('Match'),
-                      XML.AuthCode('094016'),
-                      XML.Vendor('ActiveMerchant'),
-                      XML.AvsResult('Y'),
-                      XML.StreetMatch('Match'),
-                      XML.CvResult('Match')) )
+        return '''<XMLPayResponse xmlns="http://www.paypal.com/XMLPay">
+                  <ResponseData>
+                    <Vendor>LOGIN</Vendor>
+                    <Partner>paypal</Partner>
+                    <TransactionResults>
+                        <TransactionResult>
+                            <Result>12</Result>
+                            <Message>Declined</Message>
+                            <Partner>verisign</Partner>
+                            <HostCode>000</HostCode>
+                            <ResponseText>AP</ResponseText>
+                            <PnRef>VUJN1A6E11D9</PnRef>
+                            <IavsResult>N</IavsResult>
+                            <ZipMatch>Match</ZipMatch>
+                            <AuthCode>094016</AuthCode>
+                            <Vendor>ActiveMerchant</Vendor>
+                            <AvsResult>Y</AvsResult>
+                            <StreetMatch>Match</StreetMatch>
+                            <CvResult>Match</CvResult>
+                        </TransactionResult>
+                    </TransactionResults>
+                </ResponseData>
+                </XMLPayResponse>'''
 
     def successful_void_response(self):
-        return '''<ResponseData><TODO/>
-                  <Result>0</Result>
-                  </ResponseData>'''  #  TODO  correct fault handling if ResponseData ain't there
+        return '''<XMLPayResponse xmlns="http://www.paypal.com/XMLPay">
+                  <ResponseData>
+                    <Vendor>LOGIN</Vendor>
+                    <Partner>paypal</Partner>
+                    <TransactionResults>
+                        <TransactionResult>
+                            <Result>0</Result>
+                            <Message>Approved</Message>
+                            <Partner>verisign</Partner>
+                            <HostCode>000</HostCode>
+                            <ResponseText>AP</ResponseText>
+                            <PnRef>VUJN1A6E11D9</PnRef>
+                            <IavsResult>N</IavsResult>
+                            <ZipMatch>Match</ZipMatch>
+                            <AuthCode>094016</AuthCode>
+                            <Vendor>ActiveMerchant</Vendor>
+                            <AvsResult>Y</AvsResult>
+                            <StreetMatch>Match</StreetMatch>
+                            <CvResult>Match</CvResult>
+                        </TransactionResult>
+                    </TransactionResults>
+                </ResponseData>
+                </XMLPayResponse>'''
 
     def successful_credit_response(self):
-        return '''<ResponseData><TODO/>
-                  <Result>0</Result>
-                  </ResponseData>'''  #  TODO  correct fault handling if ResponseData ain't there
+        return '''<XMLPayResponse xmlns="http://www.paypal.com/XMLPay">
+                  <ResponseData>
+                    <Vendor>LOGIN</Vendor>
+                    <Partner>paypal</Partner>
+                    <TransactionResults>
+                        <TransactionResult>
+                            <Result>0</Result>
+                            <Message>Approved</Message>
+                            <Partner>verisign</Partner>
+                            <HostCode>000</HostCode>
+                            <ResponseText>AP</ResponseText>
+                            <PnRef>VUJN1A6E11D9</PnRef>
+                            <IavsResult>N</IavsResult>
+                            <ZipMatch>Match</ZipMatch>
+                            <AuthCode>094016</AuthCode>
+                            <Vendor>ActiveMerchant</Vendor>
+                            <AvsResult>Y</AvsResult>
+                            <StreetMatch>Match</StreetMatch>
+                            <CvResult>Match</CvResult>
+                        </TransactionResult>
+                    </TransactionResults>
+                </ResponseData>
+                </XMLPayResponse>'''
 
     def assert_webservice_called(self, mock, vendor, amount, currency, card_type, cc_number, exp_date, cv_num,
                                        first_name, last_name, username, password):

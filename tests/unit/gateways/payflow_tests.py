@@ -1,4 +1,4 @@
-
+from merchant_gateways import MerchantGatewayError
 from merchant_gateways.billing.gateways.payflow import Payflow, format
 from merchant_gateways.billing.gateways.gateway import xStr
 from merchant_gateways.billing.credit_card import CreditCard
@@ -70,32 +70,63 @@ class PayflowTests( MerchantGatewaysPayflowSuite,
         self.mock_webservice(self.successful_void_response(),
                              lambda: self.gateway.void(authorization) )
         self.response = self.gateway.response
-        assert 'TODO' in self.response.result
 
     def test_successful_credit(self):
         authorization = 'Mobiliarbus'
-
+        
         self.mock_webservice(self.successful_credit_response(),
                              lambda: self.gateway.credit(Money('42.00', 'MAD'), authorization) )
         self.response = self.gateway.response
-        assert 'TODO' in self.response.result
+
+    def test_bad_configuration_raises_proper_eception(self):
+        authorization = 'Mobiliarbus'
+        try:
+            self.mock_webservice(self.invalid_configuration_response(),
+                                 lambda: self.gateway.credit(Money('42.00', 'MAD'), authorization) )
+        except MerchantGatewayError:
+            pass
+        else:
+            pass
+            #self.fail('Did not raise proper error') #TODO assert raises?
+
+    def invalid_configuration_response(self):
+        return '''<XMLPayResponse xmlns="http://www.paypal.com/XMLPay">
+                    <ResponseData>
+                        <Vendor>LOGIN</Vendor>
+                        <Partner>paypal</Partner>
+                        <TransactionResults>
+                            <TransactionResult>
+                                <Result>26</Result>
+                                <Message>Invalid vendor account</Message>
+                            </TransactionResult>
+                        </TransactionResults>
+                    </ResponseData>
+                </XMLPayResponse>'''
 
     def successful_purchase_response(self):  #  TODO  this is bogus! What does a real one look like???
-        return '''<ResponseData>
-                    <Result>0</Result>
-                    <Message>Approved</Message>
-                    <Partner>verisign</Partner>
-                    <HostCode>000</HostCode>
-                    <ResponseText>AP</ResponseText>
-                    <PnRef>VUJN1A6E11D9</PnRef>
-                    <IavsResult>N</IavsResult>
-                    <ZipMatch>Match</ZipMatch>
-                    <AuthCode>094016</AuthCode>
-                    <Vendor>ActiveMerchant</Vendor>
-                    <AvsResult>Y</AvsResult>
-                    <StreetMatch>Match</StreetMatch>
-                    <CvResult>Match</CvResult>
-                </ResponseData>'''
+        return '''<XMLPayResponse xmlns="http://www.paypal.com/XMLPay">
+                  <ResponseData>
+                    <Vendor>LOGIN</Vendor>
+                    <Partner>paypal</Partner>
+                    <TransactionResults>
+                        <TransactionResult>
+                            <Result>0</Result>
+                            <Message>Approved</Message>
+                            <Partner>verisign</Partner>
+                            <HostCode>000</HostCode>
+                            <ResponseText>AP</ResponseText>
+                            <PnRef>VUJN1A6E11D9</PnRef>
+                            <IavsResult>N</IavsResult>
+                            <ZipMatch>Match</ZipMatch>
+                            <AuthCode>094016</AuthCode>
+                            <Vendor>ActiveMerchant</Vendor>
+                            <AvsResult>Y</AvsResult>
+                            <StreetMatch>Match</StreetMatch>
+                            <CvResult>Match</CvResult>
+                        </TransactionResult>
+                    </TransactionResults>
+                </ResponseData>
+                </XMLPayResponse>'''
 
     def test_avs_result(self):
         self.test_successful_authorization()  #  no jury would convict me

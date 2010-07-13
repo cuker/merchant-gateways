@@ -1,5 +1,6 @@
 
 from gateway import Gateway, default_dict
+from merchant_gateways import MerchantGatewayError
 from merchant_gateways.billing.avs_result import AVSResult
 from merchant_gateways.billing.cvv_result import CVVResult
 from pprint import pprint
@@ -151,11 +152,14 @@ xmlns="http://www.paypal.com/XMLPay">
         response = {}
         from lxml import etree
         xml = etree.XML(data)
-        root = xml.xpath('//ResponseData')[0]  #  TODO  useful, logged errors if these ain't here
-
-        for node in root.xpath('*'):
-            response[node.tag] = node.text
-
+        namespaces={'paypal':'http://www.paypal.com/XMLPay'}
+        try:
+            root = xml.xpath('..//paypal:TransactionResult', namespaces=namespaces)[0]
+        except:
+            #print data
+            raise
+        for node in root.xpath('*', namespace='paypal', namespaces=namespaces):
+            response[node.tag.split('}')[-1]] = node.text
         '''
         root = REXML::XPath.first(xml, "//ResponseData")
 
