@@ -73,7 +73,7 @@ class Payflow(Gateway):
 <XMLPayRequest Timeout="30" version="2.1"
 xmlns="http://www.paypal.com/XMLPay">
   <RequestData>
-    <Vendor>LOGIN</Vendor>
+    <Vendor>%(vendor)s</Vendor>
     <Partner>PayPal</Partner>
     <Transactions>
       <Transaction>
@@ -91,6 +91,7 @@ xmlns="http://www.paypal.com/XMLPay">
 </XMLPayRequest>
 '''  #  TODO  vary all this data
         info = dict(self.options)
+        info.setdefault('vendor', 'LOGIN')
         info.setdefault('user', 'LOGIN')
         info.setdefault('password', 'PASSWORD')
         info['request_body'] = request_body
