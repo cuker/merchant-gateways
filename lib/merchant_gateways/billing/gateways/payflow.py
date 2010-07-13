@@ -90,7 +90,7 @@ xmlns="http://www.paypal.com/XMLPay">
   </RequestAuth>
 </XMLPayRequest>
 '''  #  TODO  vary all this data
-        info = dict(self.options)
+        info = self.options.copy()
         info.setdefault('vendor', 'LOGIN')
         info.setdefault('user', 'LOGIN')
         info.setdefault('password', 'PASSWORD')
