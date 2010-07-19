@@ -115,7 +115,7 @@ xmlns="http://www.paypal.com/XMLPay">
                               XML.CardType(credit_card.type_name()),
                               XML.CardNum(credit_card.number),
                               XML.ExpDate('%04d%02d' % (credit_card.year, credit_card.month)),
-                              XML.NameOnCard(credit_card.first_name),
+                              XML.NameOnCard(credit_card.name()),
                               XML.CVNum(credit_card.verification_value),
                               XML.ExtData(Name="LASTNAME", Value=credit_card.last_name )
                           ))))
@@ -127,7 +127,7 @@ xmlns="http://www.paypal.com/XMLPay">
         
         return XML(_where_to,
                       XML.Name(address['name']),
-                      XML.Phone('(555)555-5555'),
+                      XML.Phone('(555)555-5555'), #TODO don't hardcode this
                       XML.Address(
                               XML.Street(address['address1']),
                               XML.City(address['city']),
