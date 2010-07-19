@@ -331,7 +331,7 @@ class PayflowTests( MerchantGatewaysPayflowSuite,
         self.assert_xml_text(card, 'CardType', 'Visa')
         self.assert_xml_text(card, 'CardNum', '4242424242424242')
         self.assert_xml_text(card, 'ExpDate', '201109')
-        self.assert_xml_text(card, 'NameOnCard', 'Longbob')
+        self.assert_xml_text(card, 'NameOnCard', 'Longbob Longsen')
         self.assert_xml_text(card, 'CVNum', '123')
         extdata = self.assert_xml(card, 'ExtData[ @Name = "LASTNAME" ]')
         self.assert_equal(extdata.attrib['Value'], 'Longsen')
@@ -348,7 +348,7 @@ class PayflowTests( MerchantGatewaysPayflowSuite,
                                       <CardType>Switch</CardType>
                                       <CardNum>5641820000000005</CardNum>
                                       <ExpDate>201109</ExpDate>
-                                      <NameOnCard>Longbob</NameOnCard>
+                                      <NameOnCard>Longbob Longsen</NameOnCard>
                                       <CVNum>123</CVNum>
                                       <ExtData Name="LASTNAME" Value="Longsen"/>
                                       <ExtData Name="CardIssue" Value="01"/>
