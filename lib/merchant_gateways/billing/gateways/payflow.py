@@ -74,7 +74,7 @@ class Payflow(Gateway):
 xmlns="http://www.paypal.com/XMLPay">
   <RequestData>
     <Vendor>%(vendor)s</Vendor>
-    <Partner>PayPal</Partner>
+    <Partner>%(partner)s</Partner>
     <Transactions>
       <Transaction>
         <Verbosity>MEDIUM</Verbosity>
@@ -93,6 +93,7 @@ xmlns="http://www.paypal.com/XMLPay">
         info = self.options.copy()
         info.setdefault('vendor', 'LOGIN')
         info.setdefault('user', 'LOGIN')
+        info.setdefault('partner', 'PayPal')
         info.setdefault('password', 'PASSWORD')
         info['request_body'] = request_body
         return template % info
