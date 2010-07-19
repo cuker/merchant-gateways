@@ -151,13 +151,14 @@ class PayflowTests( MerchantGatewaysPayflowSuite,
         #self.assert_equal('M', self.response.cvv_result.code) #TODO wth is this for?
 
     def test_build_headers(self):
+        headers = self.gateway.build_headers(42)
+        del headers['X-VPS-Request-ID']
         self.assertEqual({'Content-Length': '42',
                              'Content-Type': 'text/xml',
                              'X-VPS-Client-Timeout': '30',
-                             'X-VPS-Request-ID': 'you neek',
                              'X-VPS-VIT-Integration-Product': "TODO what's my name",
                              'X-VPS-VIT-Runtime-Version': '4.2'},
-                         self.gateway.build_headers(42))
+                         headers)
 
     def test_build_request(self):
         sample = self.gateway.build_request(reference)

@@ -6,6 +6,8 @@ from merchant_gateways.billing.cvv_result import CVVResult
 from pprint import pprint
 from merchant_gateways.billing import response
 from merchant_gateways.billing.gateways.gateway import xStr
+import random
+import string
 from lxml import etree
 from lxml.builder import ElementMaker # TODO document we do lxml only !
 XML = ElementMaker()
@@ -14,6 +16,9 @@ from money import Money
 # TODO use this      XMLNS = 'http://www.paypal.com/XMLPay'
 # TODO  actually write a real post_webservice
 # TODO  advise NB that active_merchant has braintree - of course!
+
+def gencode(length=16, chars=(string.uppercase+string.lowercase+string.digits)):
+    return ''.join([random.choice(chars) for i in range(length)])
 
 class Payflow(Gateway):
 
@@ -65,7 +70,7 @@ class Payflow(Gateway):
       	  "X-VPS-Client-Timeout" : '30',  #  TODO  bfd?!
       	  "X-VPS-VIT-Integration-Product" : "TODO what's my name",
       	  "X-VPS-VIT-Runtime-Version" : '4.2',  #  TODO  what's my version?
-      	  "X-VPS-Request-ID" : 'you neek'  #  TODO  _how_ unique?
+      	  "X-VPS-Request-ID" : gencode(),
      	  }
 
     def build_request(self, request_body, request_type=None):  # TODO  what's the request_type for?
