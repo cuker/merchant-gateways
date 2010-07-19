@@ -19,7 +19,7 @@ class MerchantGatewaysPayflowSuite:
                             <Partner>verisign</Partner>
                             <HostCode>000</HostCode>
                             <ResponseText>AP</ResponseText>
-                            <PnRef>VUJN1A6E11D9</PnRef>
+                            <PNRef>VUJN1A6E11D9</PNRef>
                             <IavsResult>N</IavsResult>
                             <ZipMatch>Match</ZipMatch>
                             <AuthCode>094016</AuthCode>
@@ -44,7 +44,7 @@ class MerchantGatewaysPayflowSuite:
                             <Partner>verisign</Partner>
                             <HostCode>000</HostCode>
                             <ResponseText>AP</ResponseText>
-                            <PnRef>VUJN1A6E11D9</PnRef>
+                            <PNRef>VUJN1A6E11D9</PNRef>
                             <IavsResult>N</IavsResult>
                             <ZipMatch>Match</ZipMatch>
                             <AuthCode>094016</AuthCode>
@@ -69,7 +69,7 @@ class MerchantGatewaysPayflowSuite:
                             <Partner>verisign</Partner>
                             <HostCode>000</HostCode>
                             <ResponseText>AP</ResponseText>
-                            <PnRef>VUJN1A6E11D9</PnRef>
+                            <PNRef>VUJN1A6E11D9</PNRef>
                             <IavsResult>N</IavsResult>
                             <ZipMatch>Match</ZipMatch>
                             <AuthCode>094016</AuthCode>
@@ -94,7 +94,7 @@ class MerchantGatewaysPayflowSuite:
                             <Partner>verisign</Partner>
                             <HostCode>000</HostCode>
                             <ResponseText>AP</ResponseText>
-                            <PnRef>VUJN1A6E11D9</PnRef>
+                            <PNRef>VUJN1A6E11D9</PNRef>
                             <IavsResult>N</IavsResult>
                             <ZipMatch>Match</ZipMatch>
                             <AuthCode>094016</AuthCode>
