@@ -108,7 +108,7 @@ xmlns="http://www.paypal.com/XMLPay">
                     XML.PayData(
                       XML.Invoice(
                           self.add_address('BillTo', **bill_to_address),
-                          XML.TotalAmt(formatted_amount, Currency=str(money.currency))
+                          XML.TotalAmt(formatted_amount, Currency=str(money.currency.code))
                       ),
                       XML.Tender(
                           XML.Card(
