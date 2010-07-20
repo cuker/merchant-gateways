@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+from __future__ import with_statement
 from gateway import Gateway, default_dict, xStr
 from merchant_gateways.billing import response
 from merchant_gateways.billing.avs_result import AVSResult
