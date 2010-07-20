@@ -160,7 +160,9 @@ class PaymentechOrbital(Gateway):
   #          headers['Content-length'] = len(request)
    # TODO done with this yet?        print request
 
+        self._log(request)
         self.result   = self.parse(self.post_webservice(uri, request, headers))  #  CONSIDER  no version of post_webservice needs options
+
         self.success  = self.result['ApprovalStatus'] == '1'  #  CONSIDER  these belong to the response not the gateway
         self.message  = self.result['StatusMsg']
         authorization = self.result['TxRefNum']
@@ -175,6 +177,15 @@ class PaymentechOrbital(Gateway):
         r.result = self.result  #  TODO  use params for something else
         self.response = r
         return r
+
+    def _log(self, request):
+        import re
+        message = re.sub(r'\<AccountNum\>\d+', r'<AccountNum>9999999999999999', request)
+        message = re.sub(r'\<CardSecVal\>\d+', r'<CardSecVal>999', message)
+            #  print message
+
+        with open('/tmp/gateway.log', 'a') as f:  #  TODO  real log system
+            f.write(message)
 
     def _generate_headers(self, request, **options):
         return {
