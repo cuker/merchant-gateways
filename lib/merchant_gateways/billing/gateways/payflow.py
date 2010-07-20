@@ -21,7 +21,7 @@ def gencode(length=16, chars=(string.uppercase+string.lowercase+string.digits)):
     return ''.join([random.choice(chars) for i in range(length)])
 
 class Payflow(Gateway):
-
+    CARD_STORE = True
     TEST_URL = 'https://pilot-payflowpro.paypal.com'
     LIVE_URL = 'https://payflowpro.paypal.com'
 
@@ -31,10 +31,10 @@ class Payflow(Gateway):
         return self.commit(self.request)
 
     def build_sale_or_authorization_request(self, action, money, credit_card_or_reference, **options):  # TODO  tdd each arg
-#        if credit_card_or_reference.is_a?(String)
-        #$ self.build_reference_sale_or_authorization_request(action, money, credit_card_or_reference, options)
- # TODO       else
-        return self.build_credit_card_request(action, money, credit_card_or_reference, **options)
+        if isinstance(credit_card_or_reference, basestring):
+            return self.build_reference_sale_or_authorization_request(action, money, credit_card_or_reference, **options)
+        else:
+            return self.build_credit_card_request(action, money, credit_card_or_reference, **options)
 
     def commit(self, request_body, request_type = None):
         request = self.build_request(request_body, request_type)
@@ -43,17 +43,17 @@ class Payflow(Gateway):
         url = self.is_test and self.TEST_URL or self.LIVE_URL  #  TODO  test the live url is live
         self.result = self.parse(self.post_webservice(url, request, headers))
 
-    	# self.result = parse(ssl_post(test? ? TEST_URL : LIVE_URL, request, headers))'''
+        # self.result = parse(ssl_post(test? ? TEST_URL : LIVE_URL, request, headers))'''
 
         passed = self.result['Result'] == '0'
         self.message = passed and 'Approved' or 'Declined'
 
-    	self.response = Payflow.Response( passed, self.message, None, # TODO response[:result] == "0", response[:message], response,
-    	    is_test=self.is_test,
-    	    # authorization='VUJN1A6E11D9', # TODO > response[:pn_ref] || response[:rp_ref],
-    	    authorization=self.result.get('PNRef', self.result.get('RPRef', None)),  #  TODO  test the RPRef
-    	    cvv_result = CVV_CODE[self.result.get('CvResult', None)],  #  TODO  default_dict to the rescue!
-    	    avs_result = self.result.get('AvsResult', None)
+        self.response = Payflow.Response( passed, self.message, None, # TODO response[:result] == "0", response[:message], response,
+            is_test=self.is_test,
+            # authorization='VUJN1A6E11D9', # TODO > response[:pn_ref] || response[:rp_ref],
+            authorization=self.result.get('PNRef', self.result.get('RPRef', None)),  #  TODO  test the RPRef
+            cvv_result = CVV_CODE[self.result.get('CvResult', None)],  #  TODO  default_dict to the rescue!
+            avs_result = self.result.get('AvsResult', None)
             )  #  TODO  stash the response in self.response
         self.response.result = self.result
         return self.response
@@ -67,11 +67,11 @@ class Payflow(Gateway):
         return {
           "Content-Type" : "text/xml",
           "Content-Length" : str(content_length),
-      	  "X-VPS-Client-Timeout" : '30',  #  TODO  bfd?!
-      	  "X-VPS-VIT-Integration-Product" : "TODO what's my name",
-      	  "X-VPS-VIT-Runtime-Version" : '4.2',  #  TODO  what's my version?
-      	  "X-VPS-Request-ID" : gencode(),
-     	  }
+          "X-VPS-Client-Timeout" : '30',  #  TODO  bfd?!
+          "X-VPS-VIT-Integration-Product" : "TODO what's my name",
+          "X-VPS-VIT-Runtime-Version" : '4.2',  #  TODO  what's my version?
+          "X-VPS-Request-ID" : gencode(),
+        }
 
     def build_request(self, request_body, request_type=None):  # TODO  what's the request_type for?
         template = '''<?xml version="1.0" encoding="UTF-8"?>
@@ -102,6 +102,24 @@ xmlns="http://www.paypal.com/XMLPay">
         info.setdefault('password', 'PASSWORD')
         info['request_body'] = request_body
         return template % info
+
+    def build_reference_sale_or_authorization_request(self, action, money, reference, **options): #TODO tdd this
+        transaction_type = TRANSACTIONS[action]
+        formatted_amount = '%.2f' % money.amount  #  TODO  rename to money; merge with grandTotalAmount system
+        return xStr(
+            XML(transaction_type,
+                XML.PayData(
+                    XML.Invoice(
+                        XML.TotalAmt(formatted_amount, Currency=str(money.currency.code))
+                    ),
+                    XML.Tender(
+                        XML.Card(
+                            XML.ExtData(Name='ORIGID', Value=reference)
+                        )
+                    )
+                )
+            )
+        )
 
     def build_credit_card_request(self, action, money, credit_card, **options):
         transaction_type = TRANSACTIONS[action]

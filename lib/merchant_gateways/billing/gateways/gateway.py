@@ -14,6 +14,7 @@ from merchant_gateways.lib.post import post  #  CONSIDER  move me to gateway.py
 
 class Gateway(object):
     DEBIT_CARDS = ('switch', 'solo')  #  TODO  use this
+    CARD_STORE = False
     money_format = 'dollars'
     supported_cardtypes = []
     options = {}

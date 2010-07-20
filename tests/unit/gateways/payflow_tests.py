@@ -49,6 +49,10 @@ class PayflowTests( MerchantGatewaysPayflowSuite,
         # TODO  test these        print self.response.params
         #        self.assertEqual('508141794', self.response.params['authorization'])  #  TODO  also self.response.authorization
         self.assertEqual('VUJN1A6E11D9', self.response.authorization)
+    
+    def assert_successful_purchase(self):
+        pass
+        #TODO
 
     def assert_failed_authorization(self):
         self.assertEqual( "Declined", self.response.message)  #  TODO  what's the other message?
@@ -71,8 +75,11 @@ class PayflowTests( MerchantGatewaysPayflowSuite,
         #self.assert_failure()
         #self.assert_failed_authorization()
 
-    def test_successful_purchase(self):
-        pass   #  TODO  make this work by simply returning a TODO string!
+    def test_successful_purchase_with_reference(self):
+        authorization = 'Mobiliarbus'
+        self.mock_webservice(self.successful_purchase_response(),
+                             lambda: self.gateway.purchase(self.money, authorization) )
+        self.response = self.gateway.response
 
     def test_successful_void(self):
         authorization = 'Mobiliarbus'
@@ -125,7 +132,7 @@ class PayflowTests( MerchantGatewaysPayflowSuite,
                             <Partner>verisign</Partner>
                             <HostCode>000</HostCode>
                             <ResponseText>AP</ResponseText>
-                            <PnRef>VUJN1A6E11D9</PnRef>
+                            <PNRef>VUJN1A6E11D9</PNRef>
                             <IavsResult>N</IavsResult>
                             <AuthCode>094016</AuthCode>
                             <Vendor>ActiveMerchant</Vendor>
@@ -264,6 +271,10 @@ class PayflowTests( MerchantGatewaysPayflowSuite,
         options = { 'address': { 'name': 'Ron Weasley' } }  #  TODO  change stuff; then test it
         sample = self.gateway.build_credit_card_request('purchase', Money('1.00', 'USD'), self.credit_card, **options)
         self.assert_xml(sample, '//Sale/PayData')
+    
+    def test_build_referenced_transaction_request(self):
+        sample = self.gateway.build_reference_sale_or_authorization_request('purchase', Money('1.00', 'USD'), 'VUJN1A6E11D9')
+        self.assert_xml(sample, '//Sale/PayData') #TODO look for our ref
 
     def test_build_credit_card_request_without_an_address(self):
         sample = self.gateway.build_credit_card_request('authorization', Money('1.00', 'USD'), self.credit_card)  # TODO options is not optional
