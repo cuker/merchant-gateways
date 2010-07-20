@@ -180,9 +180,17 @@ class PaymentechOrbital(Gateway):
 
     def _log(self, request):
         import re
-        message = re.sub(r'\<AccountNum\>\d+', r'<AccountNum>9999999999999999', request)
-        message = re.sub(r'\<CardSecVal\>\d+', r'<CardSecVal>999', message)
-            #  print message
+
+        def replace_account_num_digits(x):
+            return r'<AccountNum>%s</AccountNum>' % re.sub('\d', '9', x.groups('num')[0])
+
+        message = re.sub(r'\<AccountNum\>(?P<num>.*)\<\/AccountNum\>', replace_account_num_digits, request)
+
+        def replace_card_sec_val_digits(x):
+            return r'<CardSecVal>%s</CardSecVal>' % re.sub('\d', '9', x.groups('num')[0])
+
+        message = re.sub(r'\<CardSecVal\>(?P<num>.*)\<\/CardSecVal\>', replace_card_sec_val_digits, message)
+        # print message
 
         with open('/tmp/gateway.log', 'a') as f:  #  TODO  real log system
             f.write(message)
