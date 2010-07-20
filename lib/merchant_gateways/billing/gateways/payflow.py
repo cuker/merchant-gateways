@@ -252,7 +252,7 @@ xmlns="http://www.paypal.com/XMLPay">
         return [
                 XML.Invoice(
                         XML.TotalAmt( '%.2f' % money.amount, #  TODO currency-specific template!
-                                      Currency=str(money.currency) ) )
+                                      Currency=str(money.currency.code) ) )
         ]
 
     def credit(self, money, identification_or_credit_card):
