@@ -358,6 +358,13 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         self.assert_xml(message, lambda x: x.OrderID(''))
         self.assert_gateway_message_schema(message, 'Request_PTI49.xsd')
 
+    def test_a_purchase_request_with_no_country_passes_validation(self):
+        self.money = Money('101.00', 'USD')
+        # self.options['billing_address']['country'] = 'NO'  #  TODO  don't
+        message = self.gateway.build_authorization_request(self.money, self.credit_card, **self.options)
+        message = message.replace('<AVScountryCode>US</AVScountryCode>', '<AVScountryCode></AVScountryCode>')
+        self.assert_gateway_message_schema(message, 'Request_PTI49.xsd')
+
     def test_build_purchase_request_with_blank_order_id(self):
         self.money = Money('101.00', 'USD')
         billing_address = self.assemble_billing_address()
