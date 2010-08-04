@@ -120,10 +120,12 @@ class PaymentechOrbital(Gateway):
 
     def censor_countries(self, fields):
         permitted_country = fields['country']
+
         if permitted_country not in ('US', 'CA', 'UK', 'GB', ): # meanwhile, UK is neither United nor a Kingdom! C-;
             return ''
+            
         return permitted_country
-    
+
     def parse(self, soap):
         result = {}
         keys  = self.soap_keys()
