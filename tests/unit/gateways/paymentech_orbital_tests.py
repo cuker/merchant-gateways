@@ -365,6 +365,13 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
         message = message.replace('<AVScountryCode>US</AVScountryCode>', '<AVScountryCode></AVScountryCode>')
         self.assert_gateway_message_schema(message, 'Request_PTI49.xsd')
 
+    def test_build_purchase_request_and_censor_inferior_countries(self):
+        self.money = Money('101.00', 'USD')
+        self.options['billing_address']['country'] = 'NO'
+        message = self.gateway.build_authorization_request(self.money, self.credit_card, **self.options)
+        self.assert_contains('<AVScountryCode></AVScountryCode>', message)
+        self.assert_gateway_message_schema(message, 'Request_PTI49.xsd')
+
     def test_build_purchase_request_with_blank_order_id(self):
         self.money = Money('101.00', 'USD')
         billing_address = self.assemble_billing_address()
@@ -376,7 +383,7 @@ class PaymentechOrbitalTests(MerchantGatewaysTestSuite,
     def test_set_country_code(self):
         self.options['billing_address']['country'] = 'CN'  #  China! (right?;)
         message = self.gateway.build_authorization_request(self.money, self.credit_card, **self.options)
-        self.assert_xml(message, lambda x: x.AVScountryCode('CN'))
+        self.assert_xml(message, lambda x: x.AVScountryCode(''))  # CN is censored!!
 
     def test_raise_an_exception_if_country_code_is_too_long(self):
         self.options['billing_address']['country'] = 'China'  # longer that 2 characters (that's all we can check!)

@@ -77,6 +77,10 @@ class PaymentechOrbital(Gateway):
             raise ValueError('Country code must be 2 characters (%s)' % fields['country'])
 
         x = XML
+        permitted_country = fields['country']
+
+        if permitted_country not in ('US', 'CA', 'UK', 'GB', ): # meanwhile, UK is neither United nor a Kingdom! C-;
+            permitted_country = ''
 
         new_order = x.NewOrder(
                         x.IndustryType('EC'),  #  'EC'ommerce - a web buy
@@ -105,7 +109,7 @@ class PaymentechOrbital(Gateway):
                         x.AVSstate(fields['state']),
                         x.AVSphoneNum(fields['phone']),
                         x.AVSname(credit_card.first_name + ' ' + credit_card.last_name),
-                        x.AVScountryCode(fields['country']), #  and ensure this is ISO-compliant or we get a DTD fault
+                        x.AVScountryCode(permitted_country), #  and ensure this is ISO-compliant or we get a DTD fault
                         #x.CustomerProfileFromOrderInd('A'), # TODO: make these optional
                         #x.CustomerProfileOrderOverrideInd('NO'),
                         x.OrderID(str(fields['order_id'])),  #  TODO  do blank order_id pass validation?
