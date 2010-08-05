@@ -91,6 +91,7 @@ class BraintreeGateway(Gateway):  # CONSIDER most of this belongs in a class Sma
                                                 )
         return self.response
 
+#  TODO  upgrade the servers to Braintree 2.4.1
 
 #  TODO  trust nothing below this line
 #  TODO  trust nothing below this line
