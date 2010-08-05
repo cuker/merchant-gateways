@@ -33,11 +33,13 @@ class BraintreeGateway(Gateway):  # CONSIDER most of this belongs in a class Sma
 
         Environment.Sandbox = Environment("sandbox.braintreegateway.com", "443", True, where_da_cert)
 
+        # print self.options
+
         braintree.Configuration.configure(
             braintree.Environment.Sandbox,  #  TODO the vaunted is_test should key this!!
-            "TODO",
-            "config",
-            "us"
+            self.options.get('merchant_id', 'config_error TODO'),
+            self.options.get('public_key', 'config_error TODO'),
+            self.options.get('private_key', 'config_error TODO')
         )
 
     class Response(response.Response):
@@ -45,6 +47,7 @@ class BraintreeGateway(Gateway):  # CONSIDER most of this belongs in a class Sma
 
     def authorize(self, money, credit_card, **options):
 
+        self.options.update(options)
         self._configure()
         exp = '%02i/%i' % (credit_card.month, credit_card.year)
 
