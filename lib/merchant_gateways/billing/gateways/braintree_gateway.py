@@ -49,7 +49,7 @@ class BraintreeGateway(Gateway):  # CONSIDER most of this belongs in a class Sma
         exp = '%02i/%i' % (credit_card.month, credit_card.year)
 
         self.result = Transaction.sale({
-                "amount": "100",
+                "amount": '%.02f' % money.amount,
                 "credit_card": {
                     "number": credit_card.number,  #  TODO  nearby test on this
                     "expiration_date": exp
@@ -72,7 +72,7 @@ class BraintreeGateway(Gateway):  # CONSIDER most of this belongs in a class Sma
         exp = '%02i/%i' % (credit_card.month, credit_card.year)
 
         self.result = Transaction.sale({
-                "amount": "100",
+                "amount": '%.02f' % money.amount,
                 "credit_card": {
                     "number": credit_card.number,  #  TODO  nearby test on this
                     "expiration_date": exp
