@@ -46,12 +46,13 @@ class BraintreeGateway(Gateway):  # CONSIDER most of this belongs in a class Sma
     def authorize(self, money, credit_card, **options):
 
         self._configure()
+        exp = '%02i/%i' % (credit_card.month, credit_card.year)
 
         self.result = Transaction.sale({
                 "amount": "100",
                 "credit_card": {
-                    "number": "5105105105105101",
-                    "expiration_date": "05/2012"
+                    "number": credit_card.number,  #  TODO  nearby test on this
+                    "expiration_date": exp
                 } #,
     #            "options": {
      #               "submit_for_settlement": True TODO  turn this on for sale (purchase) off for authorize
