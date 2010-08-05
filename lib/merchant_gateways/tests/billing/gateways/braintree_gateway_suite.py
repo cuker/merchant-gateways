@@ -11,7 +11,7 @@ class MerchantGatewaysBraintreeGatewaySuite:
             mock_do.return_value = returns
             lamb()
 
-        self.response = self.gateway.response  #  TODO  all web service mockers do this
+        self.response = getattr(self.gateway, 'response', {})  #  TODO  all web service mockers do this
 
     def successful_authorization_response(self):
         return {u'transaction': {u'amount': u'100.00',
