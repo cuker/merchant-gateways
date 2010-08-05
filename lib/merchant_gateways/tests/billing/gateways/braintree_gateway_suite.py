@@ -6,12 +6,15 @@ class MerchantGatewaysBraintreeGatewaySuite:
 
     def mock_webservice(self, returns, lamb):
         from mock import patch
+        call_args = None
 
         with patch('braintree.util.http.Http.post') as mock_do:
             mock_do.return_value = returns
             lamb()
+            call_args = mock_do.call_args[0]
 
         self.response = getattr(self.gateway, 'response', {})  #  TODO  all web service mockers do this
+        return call_args
 
     def successful_authorization_response(self):
         return {u'transaction': {u'amount': u'100.00',
