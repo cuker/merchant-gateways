@@ -45,22 +45,23 @@ class BraintreeGateway(Gateway):  # CONSIDER most of this belongs in a class Sma
     class Response(response.Response):
         pass
 
-    def authorize(self, money, credit_card, **options):
-
-        self.options.update(options)
-        self._configure()
+    def generate_payment_info(self, money, credit_card):
         exp = '%02i/%i' % (credit_card.month, credit_card.year)
-
-        self.result = Transaction.sale({
+        info = {
                 "amount": '%.02f' % money.amount,
                 "credit_card": {
                     "number": credit_card.number,  #  TODO  nearby test on this
                     "expiration_date": exp
-                } #,
-    #            "options": {
-     #               "submit_for_settlement": True TODO  turn this on for sale (purchase) off for authorize
-               # }
-            })
+                }}
+        if getattr(credit_card, 'custom_fields', None):
+            info["custom_fields"] = credit_card.custom_fields
+        return info
+
+    def authorize(self, money, credit_card, **options):
+
+        self.options.update(options)
+        self._configure()
+        self.result = Transaction.sale(self.generate_payment_info(money, credit_card))
 
         self.response = self.__class__.Response(self.result.is_success, self.result.transaction.processor_response_text, self.result,
                                                 is_test = self.gateway_mode =='test',
@@ -72,18 +73,9 @@ class BraintreeGateway(Gateway):  # CONSIDER most of this belongs in a class Sma
     def purchase(self, money, credit_card, **options):
 
         self._configure()
-        exp = '%02i/%i' % (credit_card.month, credit_card.year)
-
-        self.result = Transaction.sale({
-                "amount": '%.02f' % money.amount,
-                "credit_card": {
-                    "number": credit_card.number,  #  TODO  nearby test on this
-                    "expiration_date": exp
-                },
-                "options": {
-                    "submit_for_settlement": True # TODO  turn this on for sale (purchase) off for authorize
-                }
-            })
+        info = self.generate_payment_info(money, credit_card)
+        info["options"] = {"submit_for_settlement": True}
+        self.result = Transaction.sale(info)
 
         self.response = self.__class__.Response(self.result.is_success, self.result.transaction.processor_response_text, self.result,
                                                 is_test = self.gateway_mode =='test',
