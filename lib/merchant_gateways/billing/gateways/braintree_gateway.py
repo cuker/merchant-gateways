@@ -30,6 +30,7 @@ class BraintreeGateway(Gateway):  # CONSIDER most of this belongs in a class Sma
     def _configure(self):
         if getattr(self, 'configured', False):  return
         where_da_cert = Environment.braintree_root() + "/ssl/sandbox_braintreegateway_com.ca.crt"  #  TODO move us into braintree
+        braintree.Configuration.use_unsafe_ssl = True
 
         Environment.Sandbox = Environment("sandbox.braintreegateway.com", "443", True, where_da_cert)
 
@@ -63,7 +64,7 @@ class BraintreeGateway(Gateway):  # CONSIDER most of this belongs in a class Sma
             })
 
         self.response = self.__class__.Response(self.result.is_success, self.result.transaction.processor_response_text, self.result,
-                                                is_test = self.gateway_mode =='test',
+                                                is_test = self.gateway_mode == 'test',
                                                 authorization = self.result.transaction.processor_authorization_code
                                                 )
         return self.response
