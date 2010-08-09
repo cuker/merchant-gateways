@@ -20,8 +20,8 @@ class Gateway(object):
     options = {}
 
     def __init__(self, **options):
-        self.gateway_mode = options.get('gateway_mode', 'live')
-        self.is_test = options.get('is_test', False)
+        self.gateway_mode = options.get('gateway_mode', 'live') #the gateway we point to
+        self.is_test = options.get('is_test', False) #the nature of the individual transactions
         self.options = options
 
     def supports(self, card_type):

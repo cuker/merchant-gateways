@@ -40,7 +40,7 @@ class Payflow(Gateway):
         request = self.build_request(request_body, request_type)
         headers = self.build_headers(len(request))  #  TODO  glyph length or byte length???
 
-        url = self.is_test and self.TEST_URL or self.LIVE_URL  #  TODO  test the live url is live
+        url = (self.gateway_mode == 'live') and self.LIVE_URL or self.TEST_URL
         self.result = self.parse(self.post_webservice(url, request, headers))
 
         # self.result = parse(ssl_post(test? ? TEST_URL : LIVE_URL, request, headers))'''
