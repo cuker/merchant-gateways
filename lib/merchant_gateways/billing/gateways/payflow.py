@@ -134,14 +134,8 @@ xmlns="http://www.paypal.com/XMLPay">
                           XML.TotalAmt(formatted_amount, Currency=str(money.currency.code))
                       ),
                       XML.Tender(
-                          XML.Card(
-                              XML.CardType(credit_card.type_name()),
-                              XML.CardNum(credit_card.number),
-                              XML.ExpDate('%04d%02d' % (credit_card.year, credit_card.month)),
-                              XML.NameOnCard(credit_card.name()),
-                              XML.CVNum(credit_card.verification_value),
-                              XML.ExtData(Name="LASTNAME", Value=credit_card.last_name )
-                          ))))
+                          self.add_credit_card(credit_card)
+                      )))
         return xStr(request)
 
     def add_address(self, _where_to, **address):
@@ -214,7 +208,7 @@ xmlns="http://www.paypal.com/XMLPay">
 
                 #  TODO  format(credit_card.issue_number, :two_digits))
 
-        return xStr(XML.Card(*fields))
+        return XML.Card(*fields)
 #          xml.tag! 'ExpDate', expdate(credit_card)
 #          xml.tag! 'NameOnCard', credit_card.first_name
 #          xml.tag! 'CVNum', credit_card.verification_value if credit_card.verification_value?
@@ -495,7 +489,14 @@ CARD_MAPPING = dict(
         jcb='JCB',
         diners_club='DinersClub',
         switch='Switch',
-        solo='Solo'
+        solo='Solo',
+        v='Visa',
+        m='MasterCard',
+        d='Discover',
+        ax='Amex',
+        dx='DinersClub',
+        sw='Switch',
+        s='Solo',
       )
 
 CVV_CODE = {

@@ -28,7 +28,7 @@ class Gateway(object):
         return (card_type in self.supported_cardtypes)
 
     def card_brand(self, source):
-        return source.card_type
+        return str(source.card_type).lower()
         try:
             result = source.brand  # TODO  use or lose all this
         except AttributeError:

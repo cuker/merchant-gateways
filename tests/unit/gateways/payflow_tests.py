@@ -364,7 +364,7 @@ class PayflowTests( MerchantGatewaysPayflowSuite,
                                       <CVNum>123</CVNum>
                                       <ExtData Name="LASTNAME" Value="Longsen"/>
                                       <ExtData Name="CardIssue" Value="01"/>
-                                    </Card>''', xml )
+                                    </Card>''', xStr(xml) )
 
     def test_expdate(self):
         self.assert_equal('209012', self.gateway.expdate(self.credit_card))
