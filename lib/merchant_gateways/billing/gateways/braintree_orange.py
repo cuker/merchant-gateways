@@ -31,10 +31,17 @@ class BraintreeOrange(Gateway):
         request = {}
         self.commit(request, **options)
 
-    def parse(self, data):
-        return {}
+    def parse(self, urlencoded):  #  TODO  dry me
+        import cgi
+        qsparams = cgi.parse_qs(urlencoded)
+
+        for k,v in qsparams.items():  #  TODO  have we seen this before..?
+            if len(v) == 1:
+                qsparams[k] = v[0] # easier to manipulate, because most real-life params are singular
+
+        return qsparams
 
     def commit(self, request, **options):
         url = 'https://TODO'
         self.result = self.parse(self.post_webservice(url, request))
-        self.response = BraintreeOrange.Response('TODO', 'TODO', is_test=True, transaction='TODO')  #  TODO
+        self.response = BraintreeOrange.Response('TODO', 'TODO', {}, authorization=self.result['authcode'], is_test=True, transaction='TODO')  #  TODO
