@@ -36,6 +36,8 @@ class BraintreeGateway(Gateway):  # CONSIDER most of this belongs in a class Sma
 
         # print self.options
 
+        braintree.Configuration.configure(braintree.Environment.Sandbox, 'vixsw', '1632859', '2TyFqF68hEF43z84wsu8Rs5H24RbW52V' )    #  TODO  remove me
+
         braintree.Configuration.configure(
             braintree.Environment.Sandbox,  #  TODO the vaunted is_test should key this!!
             self.options.get('merchant_id', 'config_error TODO'),
@@ -46,7 +48,15 @@ class BraintreeGateway(Gateway):  # CONSIDER most of this belongs in a class Sma
     class Response(response.Response):
         pass
 
+
+        info = {        "amount": '2.0',
+                "credit_card": {
+                    "number": '41111111111111111111',
+                    "expiration_date": '2011/06'
+                }}  #  TODO  remove me
+
     def generate_payment_info(self, money, credit_card):
+        braintree.Configuration.use_unsafe_ssl = True  #  TODO  either remove this, or call it early and often
         exp = '%02i/%i' % (credit_card.month, credit_card.year)
         info = {
                 "amount": '%.02f' % money.amount,

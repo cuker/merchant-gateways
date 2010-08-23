@@ -43,13 +43,13 @@ class PayflowTests( MerchantGatewaysPayflowSuite,
                         last_name='Granger',
                         username='LOGIN',
                         password='Y')
-        
+
         #~ assert response = self.gateway.authorize(self.money, self.credit_card)
 
         # TODO  test these        print self.response.params
         #        self.assertEqual('508141794', self.response.params['authorization'])  #  TODO  also self.response.authorization
         self.assertEqual('VUJN1A6E11D9', self.response.authorization)
-    
+
     def assert_successful_purchase(self):
         pass
         #TODO
@@ -91,7 +91,7 @@ class PayflowTests( MerchantGatewaysPayflowSuite,
 
     def test_successful_credit(self):
         authorization = 'Mobiliarbus'
-        
+
         self.mock_webservice(self.successful_credit_response(),
                              lambda: self.gateway.credit(Money('42.00', 'MAD'), authorization) )
         self.response = self.gateway.response
@@ -271,7 +271,7 @@ class PayflowTests( MerchantGatewaysPayflowSuite,
         options = { 'address': { 'name': 'Ron Weasley' } }  #  TODO  change stuff; then test it
         sample = self.gateway.build_credit_card_request('purchase', Money('1.00', 'USD'), self.credit_card, **options)
         self.assert_xml(sample, '//Sale/PayData')
-    
+
     def test_build_referenced_transaction_request(self):
         sample = self.gateway.build_reference_sale_or_authorization_request('purchase', Money('1.00', 'USD'), 'VUJN1A6E11D9')
         self.assert_xml(sample, '//Sale/PayData') #TODO look for our ref
@@ -350,6 +350,7 @@ class PayflowTests( MerchantGatewaysPayflowSuite,
         self.deny_xml(card, 'ExtData[ @Name = "CardIssue" ]')
 
     def test_add_credit_card_with_card_issue(self):
+
         cc = CreditCard(verification_value="123", number="5641820000000005", year=2011, issue_number=1,
                         card_type="switch",
                         month=9, last_name="Longsen", first_name="Longbob")
@@ -364,7 +365,7 @@ class PayflowTests( MerchantGatewaysPayflowSuite,
                                       <CVNum>123</CVNum>
                                       <ExtData Name="LASTNAME" Value="Longsen"/>
                                       <ExtData Name="CardIssue" Value="01"/>
-                                    </Card>''', xStr(xml) )
+                                    </Card>''', xml )
 
     def test_expdate(self):
         self.assert_equal('209012', self.gateway.expdate(self.credit_card))
