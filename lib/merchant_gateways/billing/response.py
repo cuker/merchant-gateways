@@ -3,6 +3,7 @@ from merchant_gateways.billing.avs_result import AVSResult
 from merchant_gateways.billing.cvv_result import CVVResult
 from merchant_gateways.billing.gateways.gateway import default_dict
 
+
 class Response(object):
     def __init__(self, success, message, result={}, **options):
         self.success = success
