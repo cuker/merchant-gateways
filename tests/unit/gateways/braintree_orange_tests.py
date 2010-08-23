@@ -37,6 +37,15 @@ class BraintreeOrangeTests( MerchantGatewaysBraintreeOrangeSuite, MerchantGatewa
         self.assert_equal('Unknown ()', self.response.message)  #  CONSIDER  what the heck is that??
 
     def assert_successful_purchase(self):
+        self.assert_equal(BraintreeOrange.TEST_URI, self.call_args[0])
+        print self.call_args[1]
+        print self.credit_card.number
+        params = self.call_args[1]
+        self.assert_equal('4242424242424242', params['ccnumber'])
+#        username=demoapi&password=password1&ccnumber=4111111111111111&ccexp=1010&type=sale&amount=10.00
+
+        #  TODO  check that it actually goes over the wire urlencoded
+
         self.assert_equal('123456',   self.response.authorization)  #  TODO  self.response.transaction_id in braintree_blue.rb !
         self.assert_equal('SUCCESS',  self.response.message)
         self.assert_equal('sale',     self.response.result['type'])

@@ -17,18 +17,18 @@ from merchant_gateways.lib.post import post  #  CONSIDER  move me to gateway.py
 
 from pprint import pprint
 
-TEST_URI = 'sandbox.braintreegateway.com'  #  uh, where?
-LIVE_URI = 'secure.braintreepaymentgateway.com'
-
 #  TODO  rename the other one to BraintreeBlue
 
 class BraintreeOrange(Gateway):
+
+    TEST_URI = 'https://secure.braintreepaymentgateway.com/api/transact.php'  #  TODO  real test url
+    LIVE_URI = 'https://secure.braintreepaymentgateway.com/api/transact.php'  #  TODO  put other URIs inside their gateways
 
     class Response(response.Response):
         pass
 
     def purchase(self, money, credit_card, **options):
-        request = {}
+        request = dict(ccnumber=credit_card.number)
         self.commit(request, **options)
 
     def parse(self, urlencoded):  #  TODO  dry me
@@ -43,7 +43,7 @@ class BraintreeOrange(Gateway):
         return qsparams
 
     def commit(self, request, **options):
-        url = 'https://TODO'
+        url = BraintreeOrange.TEST_URI  #  TODO  or LIVE_URI
         self.result = self.parse(self.post_webservice(url, request))
 
         message = self.result['responsetext']
@@ -52,4 +52,4 @@ class BraintreeOrange(Gateway):
         self.response = BraintreeOrange.Response(success, message, self.result,
                                                   authorization=self.result['authcode'],
                                                   is_test=True,  #  TODO
-                                                  transaction='TODO' )  
+                                                  transaction='TODO' )

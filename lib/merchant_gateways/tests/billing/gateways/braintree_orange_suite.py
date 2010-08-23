@@ -6,17 +6,17 @@ class MerchantGatewaysBraintreeOrangeSuite:
 
     def mock_webservice(self, returns, lamb):
         from mock import patch
-        call_args = None
+        self.call_args = None
 
         with patch.object(merchant_gateways.billing.gateways.gateway.Gateway, 'post_webservice') as mock_do:
             mock_do.return_value = returns
             lamb()
-            call_args = mock_do.call_args[0]
-            print call_args
+            self.call_args = mock_do.call_args[0]
+
              # TODO https://secure.braintreepaymentgateway.com/api/transact.php
 
         self.response = getattr(self.gateway, 'response', {})  #  TODO  all web service mockers do this
-        return call_args
+        return self.call_args  #  CONSIDER  all call_args should be self
 
 #  TODO  trust nothing from here down
 
