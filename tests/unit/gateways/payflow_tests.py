@@ -355,7 +355,10 @@ class PayflowTests( MerchantGatewaysPayflowSuite,
                         card_type="switch",
                         month=9, last_name="Longsen", first_name="Longbob")
 
-        xml = self.gateway.add_credit_card(cc)
+        xml = self.gateway.add_credit_card(cc)  #  TODO why sometimes a doc and sometimes a str???
+
+        if not getattr(xml, 'split', False):
+            xml = xStr(xml)
 
         self.assert_match_xml( '''<Card>
                                       <CardType>Switch</CardType>
