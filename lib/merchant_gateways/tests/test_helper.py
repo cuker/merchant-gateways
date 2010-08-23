@@ -281,6 +281,7 @@ class MerchantGatewaysTestSuite( MerchantGatewaysUtilitiesTestSuite,
 
             self.response = self.gateway.response  #  CONSIDER move inside ??
             assert self.response.is_test
+            self.assert_success()
             self.assert_successful_purchase()
 
 nil = None # C-;

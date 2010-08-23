@@ -45,5 +45,11 @@ class BraintreeOrange(Gateway):
     def commit(self, request, **options):
         url = 'https://TODO'
         self.result = self.parse(self.post_webservice(url, request))
-        self.response = BraintreeOrange.Response( False, self.result['responsetext'], self.result,
-                                                  authorization=self.result['authcode'], is_test=True, transaction='TODO' )  #  TODO
+
+        message = self.result['responsetext']
+        success = self.result['response'] == '1'  #  TODO  what about 2 or 3?
+
+        self.response = BraintreeOrange.Response(success, message, self.result,
+                                                  authorization=self.result['authcode'],
+                                                  is_test=True,  #  TODO
+                                                  transaction='TODO' )  
