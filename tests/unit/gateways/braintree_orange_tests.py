@@ -22,8 +22,6 @@ class BraintreeOrangeTests( MerchantGatewaysBraintreeOrangeSuite, MerchantGatewa
     def test_successful_authorization(self):  'TODO'
     def test_failed_authorization(self):  'TODO'
 
-    # def test_successful_purchase(self):  'TODO'
-
     def assert_successful_authorization(self):
         return # TODO
         self.assert_equal('fbyrfg',   self.response.result.transaction.id)
