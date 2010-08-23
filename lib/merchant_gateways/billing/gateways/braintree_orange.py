@@ -39,9 +39,11 @@ class BraintreeOrange(Gateway):
             if len(v) == 1:
                 qsparams[k] = v[0] # easier to manipulate, because most real-life params are singular
 
+        print qsparams
         return qsparams
 
     def commit(self, request, **options):
         url = 'https://TODO'
         self.result = self.parse(self.post_webservice(url, request))
-        self.response = BraintreeOrange.Response('TODO', 'TODO', {}, authorization=self.result['authcode'], is_test=True, transaction='TODO')  #  TODO
+        self.response = BraintreeOrange.Response( False, self.result['responsetext'], self.result,
+                                                  authorization=self.result['authcode'], is_test=True, transaction='TODO' )  #  TODO

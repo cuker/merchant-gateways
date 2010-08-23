@@ -40,10 +40,8 @@ class BraintreeOrangeTests( MerchantGatewaysBraintreeOrangeSuite, MerchantGatewa
 
     def assert_successful_purchase(self):
         self.assert_equal('123456',   self.response.authorization)  #  TODO  self.response.transaction_id in braintree_blue.rb !
-        return # TODO
-
-        self.assert_equal('Approved', self.response.message)
-        self.assert_equal('1000',     self.response.result.transaction.processor_response_code)
+        self.assert_equal('SUCCESS',  self.response.message)
+        self.assert_equal('sale',     self.response.result['type'])
 
     def test_build_authorization_request_with_alternative_money(self):
         return # TODO
