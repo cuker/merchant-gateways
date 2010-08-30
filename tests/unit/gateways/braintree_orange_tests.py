@@ -38,30 +38,30 @@ class BraintreeOrangeTests( MerchantGatewaysBraintreeOrangeSuite, MerchantGatewa
 
     def assert_successful_purchase(self):
         self.assert_equal(BraintreeOrange.TEST_URI, self.call_args[0])
-        print self.call_args[1]
-        print self.credit_card.__dict__
+        # print self.call_args[1]
+        # print self.credit_card.__dict__
         params = self.call_args[1]
 
-        pprint(self.gateway.__dict__)
+#        pprint(self.gateway.__dict__)
+#        pprint(self. __dict__)
         assert 'X' == self.gateway.options['login']  #  CONSIDER  less unimaginative name and password!
         assert 'Y' == self.gateway.options['password']
-
-        borrowed_example = "type=sale&firstname=Longbob&lastname=Longsen&cvv=123&username=LOGIN&amount=1.00&ccnumber=4242424242424242&currency=USD&orderid=&ccexp=0911&password=PASSWORD"
-
-        keys = [ x.split('=')[0] for x in borrowed_example.split('&') ]
-        keys.sort()
-#        for key in keys:
- # TODO           assert key in params
 
         # post[:username]      = @options[:login]
         # post[:password]   = @options[:password]
 
-        self.assert_equal('X', params['username'])
-        self.assert_equal('Y', params['password'])
-        self.assert_equal('sale', params['type'])
+        self.assert_equal('X',      params['username'])
+        self.assert_equal('Y',      params['password'])
+        self.assert_equal('sale',   params['type'])
+        self.assert_equal('100.00', params['amount'])
+        self.assert_equal('USD',    params['currency'])
 
         self.assert_equal('4242424242424242', params['ccnumber'])
-        self.assert_equal('1290', params['ccexp'])
+        self.assert_equal('1290',   params['ccexp'])
+        self.assert_equal('456',    params['cvv'])
+        self.assert_equal('Hermione', params['firstname'])
+        self.assert_equal('Granger', params['lastname'])
+        self.assert_equal(str(self.options['order_id']), params['orderid'])
 
 #        username=demoapi&password=password1&ccnumber=4111111111111111&ccexp=1010&type=sale&amount=10.00
 
@@ -70,6 +70,11 @@ class BraintreeOrangeTests( MerchantGatewaysBraintreeOrangeSuite, MerchantGatewa
         self.assert_equal('123456',   self.response.authorization)  #  TODO  self.response.transaction_id in braintree_blue.rb !
         self.assert_equal('SUCCESS',  self.response.message)
         self.assert_equal('sale',     self.response.result['type'])
+        borrowed_example = "type=sale&firstname=Longbob&lastname=Longsen&cvv=123&username=LOGIN&amount=1.00&ccnumber=4242424242424242&currency=USD&orderid=&ccexp=0911&password=PASSWORD"
+
+        keys = [ x.split('=')[0] for x in borrowed_example.split('&') ]
+        keys.sort()
+        for key in keys:  self.assert_contains(key, params.keys())
 
     def test_build_authorization_request_with_alternative_money(self):
 

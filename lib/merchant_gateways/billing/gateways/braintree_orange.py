@@ -29,9 +29,12 @@ class BraintreeOrange(Gateway):
 
     def purchase(self, money, credit_card, **options):
         request = dict(ccnumber=credit_card.number,
-                       ccexp='%02i%s' % (credit_card.month, str(credit_card.year)[2:4]) # TODO  real date formatter
+                       ccexp='%02i%s' % (credit_card.month, str(credit_card.year)[2:4]), # TODO  real date formatter
+                       cvv=credit_card.verification_value,
+                       firstname=credit_card.first_name,
+                       lastname=credit_card.last_name,
                       )
-        self.commit('sale', request, **options)
+        self.commit('sale', money, request, **options)
 
     def parse(self, urlencoded):  #  TODO  dry me
         import cgi
@@ -41,20 +44,26 @@ class BraintreeOrange(Gateway):
             if len(v) == 1:
                 qsparams[k] = v[0] # easier to manipulate, because most real-life params are singular
 
-        print qsparams
+        # print qsparams
         return qsparams
 
-    def commit(self, action, request, **options):
+    def commit(self, action, money, request, **options):
         url = BraintreeOrange.TEST_URI  #  TODO  or LIVE_URI
 
-        request['username'] = self.options['login']
-        request['password'] = self.options['password']
+        request['username'] = self.options['login']  #  TODO  rename request to parameters
+        request['password'] = self.options['password']  #  TODO  use the default_dict
         request['type']     = action  #  TODO  if action
+        request['orderid']  = str(options['order_id'])
+
+        if money:
+            request['amount'] = '%.02f' % money.amount  #  TODO  less floating point error risk
+            request['currency'] = money.currency.code
 
         self.result = self.parse(self.post_webservice(url, request))
 
         message = self.result['responsetext']
         success = self.result['response'] == '1'  #  TODO  what about 2 or 3?
+
 
         self.response = BraintreeOrange.Response(success, message, self.result,
                                                   authorization=self.result['authcode'],
