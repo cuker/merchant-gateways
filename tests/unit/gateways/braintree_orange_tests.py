@@ -18,6 +18,8 @@ class BraintreeOrangeTests( MerchantGatewaysBraintreeOrangeSuite, MerchantGatewa
         return BraintreeOrange
 
     def test_successful_authorization(self):  'TODO'
+      # "address1=1234+My+Street&company=Widgets+Inc&city=Ottawa&type=auth&firstname=Longbob&address2=Apt+1&zip=K1C2N6&country=CA&lastname=Longsen&cvv=123&username=LOGIN&phone=%28555%29555-5555&amount=1.00&ccnumber=4242424242424242&currency=USD&orderid=&ccexp=0911&state=ON&password=PASSWORD"
+
     def test_failed_authorization(self):  'TODO'
 
     def assert_successful_authorization(self):
@@ -43,11 +45,20 @@ class BraintreeOrangeTests( MerchantGatewaysBraintreeOrangeSuite, MerchantGatewa
         pprint(self.gateway.__dict__)
         assert 'X' == self.gateway.options['login']  #  CONSIDER  less unimaginative name and password!
         assert 'Y' == self.gateway.options['password']
+
+        borrowed_example = "type=sale&firstname=Longbob&lastname=Longsen&cvv=123&username=LOGIN&amount=1.00&ccnumber=4242424242424242&currency=USD&orderid=&ccexp=0911&password=PASSWORD"
+
+        keys = [ x.split('=')[0] for x in borrowed_example.split('&') ]
+        keys.sort()
+#        for key in keys:
+ # TODO           assert key in params
+
         # post[:username]      = @options[:login]
         # post[:password]   = @options[:password]
 
         self.assert_equal('X', params['username'])
         self.assert_equal('Y', params['password'])
+        self.assert_equal('sale', params['type'])
 
         self.assert_equal('4242424242424242', params['ccnumber'])
         self.assert_equal('1290', params['ccexp'])

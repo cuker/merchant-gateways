@@ -48,7 +48,6 @@ class BraintreeGateway(Gateway):  # CONSIDER most of this belongs in a class Sma
     class Response(response.Response):
         pass
 
-
         info = {        "amount": '2.0',
                 "credit_card": {
                     "number": '41111111111111111111',
