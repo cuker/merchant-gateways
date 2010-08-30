@@ -38,32 +38,20 @@ class BraintreeOrangeTests( MerchantGatewaysBraintreeOrangeSuite, MerchantGatewa
 
     def assert_successful_purchase(self):
         self.assert_equal(BraintreeOrange.TEST_URI, self.call_args[0])
-        # print self.call_args[1]
-        # print self.credit_card.__dict__
         params = self.call_args[1]
-
-#        pprint(self.gateway.__dict__)
-#        pprint(self. __dict__)
         assert 'X' == self.gateway.options['login']  #  CONSIDER  less unimaginative name and password!
         assert 'Y' == self.gateway.options['password']
-
-        # post[:username]      = @options[:login]
-        # post[:password]   = @options[:password]
-
         self.assert_equal('X',      params['username'])
         self.assert_equal('Y',      params['password'])
         self.assert_equal('sale',   params['type'])
         self.assert_equal('100.00', params['amount'])
         self.assert_equal('USD',    params['currency'])
-
         self.assert_equal('4242424242424242', params['ccnumber'])
         self.assert_equal('1290',   params['ccexp'])
         self.assert_equal('456',    params['cvv'])
         self.assert_equal('Hermione', params['firstname'])
         self.assert_equal('Granger', params['lastname'])
         self.assert_equal(str(self.options['order_id']), params['orderid'])
-
-#        username=demoapi&password=password1&ccnumber=4111111111111111&ccexp=1010&type=sale&amount=10.00
 
         #  TODO  check that it actually goes over the wire urlencoded
 
@@ -81,23 +69,12 @@ class BraintreeOrangeTests( MerchantGatewaysBraintreeOrangeSuite, MerchantGatewa
         Yemeni_rial = 'YER'
 
         self.money = Money('200.00', Yemeni_rial)
-        return
-        billing_address = self.assemble_billing_address()
-        message = self.gateway.build_authorization_request(self.money, self.credit_card, **self.options)
-        return
-        self.assert_xml(message, lambda x:
-                             x.Request(
-                                 x.AC(
-                                    XML.CommonData(
-                                      XML.CommonMandatory(
-                                        XML.Currency(CurrencyCode=Nuevo_Sol_numeric,
-                                                     CurrencyExponent='2'  #  TODO  vary this
-                                        )
-                                        )
-                                      )
-                                    )
-                                 )
-                             )
+        request = {}
+        self.gateway._add_currency(self.money, request)
+        self.assert_equal('200.00', request['amount'])
+        self.assert_equal('YER', request['currency'])
+
+
 
 ruby_sample = '''
 

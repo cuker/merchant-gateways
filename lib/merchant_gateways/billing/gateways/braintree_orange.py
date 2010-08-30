@@ -34,6 +34,8 @@ class BraintreeOrange(Gateway):
                        firstname=credit_card.first_name,
                        lastname=credit_card.last_name,
                       )
+        self._add_currency(money, request)
+          #  TODO  move more into here
         self.commit('sale', money, request, **options)
 
     def parse(self, urlencoded):  #  TODO  dry me
@@ -55,10 +57,6 @@ class BraintreeOrange(Gateway):
         request['type']     = action  #  TODO  if action
         request['orderid']  = str(options['order_id'])
 
-        if money:
-            request['amount'] = '%.02f' % money.amount  #  TODO  less floating point error risk
-            request['currency'] = money.currency.code
-
         self.result = self.parse(self.post_webservice(url, request))
 
         message = self.result['responsetext']
@@ -69,3 +67,9 @@ class BraintreeOrange(Gateway):
                                                   authorization=self.result['authcode'],
                                                   is_test=True,  #  TODO
                                                   transaction='TODO' )
+
+    def _add_currency(self, money, request):  #  TODO  all internal methods should use _
+        if money:
+            request['amount'] = '%.02f' % money.amount  #  TODO  less floating point error risk
+            request['currency'] = money.currency.code
+
