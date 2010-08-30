@@ -28,7 +28,9 @@ class BraintreeOrange(Gateway):
         pass
 
     def purchase(self, money, credit_card, **options):
-        request = dict(ccnumber=credit_card.number)
+        request = dict(ccnumber=credit_card.number,
+                       ccexp='%02i%s' % (credit_card.month, str(credit_card.year)[2:4]) # TODO  real date formatter
+                      )
         self.commit(request, **options)
 
     def parse(self, urlencoded):  #  TODO  dry me
@@ -44,6 +46,11 @@ class BraintreeOrange(Gateway):
 
     def commit(self, request, **options):
         url = BraintreeOrange.TEST_URI  #  TODO  or LIVE_URI
+
+        request['username'] = self.options['login']
+        request['password'] = self.options['password']
+        #  TODO  action here
+
         self.result = self.parse(self.post_webservice(url, request))
 
         message = self.result['responsetext']
