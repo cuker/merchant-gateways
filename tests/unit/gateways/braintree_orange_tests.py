@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from merchant_gateways.billing.gateways.braintree_orange import BraintreeOrange
-from merchant_gateways.billing.gateways.gateway import xStr
-from merchant_gateways.billing.credit_card import CreditCard
-from merchant_gateways.tests.test_helper import *
+from merchant_gateways.tests.test_helper import MerchantGatewaysTestSuite
 from merchant_gateways.tests.billing.gateways.braintree_orange_suite import MerchantGatewaysBraintreeOrangeSuite
 from pprint import pprint
 from money import Money
