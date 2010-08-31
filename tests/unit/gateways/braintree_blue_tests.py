@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from merchant_gateways.billing.gateways.braintree_gateway import BraintreeGateway
+from merchant_gateways.billing.gateways.braintree_blue import BraintreeBlue
 from merchant_gateways.billing.gateways.gateway import xStr
 from merchant_gateways.billing.credit_card import CreditCard
 from merchant_gateways.tests.test_helper import *
-from merchant_gateways.tests.billing.gateways.braintree_gateway_suite import MerchantGatewaysBraintreeGatewaySuite
+from merchant_gateways.tests.billing.gateways.braintree_blue_suite import MerchantGatewaysBraintreeBlueSuite
 from pprint import pprint
 from money import Money
 import os
@@ -13,11 +13,11 @@ import sys
 
 # TODO use this? XmlUtil.dict_from_xml(data)
 
-class BraintreeGatewayTests( MerchantGatewaysBraintreeGatewaySuite, MerchantGatewaysTestSuite,
+class BraintreeBlueTests( MerchantGatewaysBraintreeBlueSuite, MerchantGatewaysTestSuite,
                               MerchantGatewaysTestSuite.CommonTests ):
 
     def gateway_type(self):
-        return BraintreeGateway
+        return BraintreeBlue
 
     def assert_successful_authorization(self):
         self.assert_equal('fbyrfg',   self.response.result.transaction.id)

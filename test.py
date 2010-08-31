@@ -12,7 +12,7 @@ from tests.unit.cvv_result_test import *
 from tests.unit.credit_card_tests import *
 from tests.unit.gateways.authorize_net_tests import *  #  TODO  import all in tests?
 from tests.unit.gateways.bogus_tests import *
-from tests.unit.gateways.braintree_gateway_tests import *
+from tests.unit.gateways.braintree_blue_tests import *
 from tests.unit.gateways.braintree_orange_tests import *
 from tests.unit.gateways.cybersource_tests import *
 from tests.unit.gateways.payflow_tests import *

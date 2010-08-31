@@ -2,7 +2,7 @@
 import datetime
 
 
-class MerchantGatewaysBraintreeGatewaySuite:
+class MerchantGatewaysBraintreeBlueSuite:
 
     def mock_webservice(self, returns, lamb):
         from mock import patch

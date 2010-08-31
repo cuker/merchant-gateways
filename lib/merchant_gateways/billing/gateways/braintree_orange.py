@@ -17,7 +17,60 @@ from merchant_gateways.lib.post import post  #  CONSIDER  move me to gateway.py
 
 from pprint import pprint
 
-#  TODO  rename the other one to BraintreeBlue
+#  TODO  bake all this:
+'''
+Hi Phlip,
+
+I've added you as a user to the Vix Swimwear Orange test account. I've also included information specific to your Orange test account below:
+
+Test transactions can be submitted with the following information:
+
+Visa 4111111111111111
+MasterCard 5431111111111111
+DiscoverCard 6011601160116611
+American Express 341111111111111
+Credit Card Expiration 10/10
+eCheck Acct & Routing 123123123
+Amount >1.00
+
+Triggering Matches, Failures and Errors in Test Mode
+
+To cause a transaction to decline, pass an amount less than 1.00. This only applies to test mode. In live mode, all transaction amounts are allowed.
+
+To trigger a fatal error, pass an invalid card number.
+
+To simulate a CVV Match, pass 999 in the cvv field. Anything else will simulate a mismatch.
+
+To simulate an AVS Match
+- Pass 77777 in the zip field for a ‘Z – 5 Character Zip match only’.
+- Pass 888 in the address1 field to generate an ‘A – Address match only’.
+- Pass both of the above for a ‘Y – Exact match, 5-character numeric ZIP’ match.
+- Anything else will simulate a AVS mismatch.
+
+Note specifically configured AVS and CVV settings in a test environment do not work. Use the above information to trigger the desired match or mismatch.
+
+Test Mode Limitations
+
+The test mode allows you to test nearly all of the capabilities of the API. However, since test mode never communicates with the bank, there are some things that you are not able to test:
+
+
+Recurring billing
+
+You can test the API to add the customer to a plan (using "plantest"), but it will not run the subsequent transactions in that plan.
+
+AVS/CVV
+
+Since you are not actually connecting with the issuing bank, you will not be able to test real AVS/CVV restrictions with real cards. All test transactions will go through regardless of your AVS/CVV rules, though you can test AVS/CVV responses using the above values.
+
+When issuing a transaction while adding the customer to the vault in live mode, the vault record will not be created if the transaction is rejected based on AVS or CVV rules. However, in test mode, the vault record will be created regardless of AVS/CVV response.
+
+Please let me know if you have any questions as you test against this account.
+
+Kind Regards,
+
+Ryan Gabriel
+'''
+
 
 class BraintreeOrange(Gateway):
 
@@ -26,6 +79,17 @@ class BraintreeOrange(Gateway):
 
     class Response(response.Response):
         pass
+
+    def authorize(self, money, credit_card, **options):
+        request = dict(ccnumber=credit_card.number,
+                       ccexp='%02i%s' % (credit_card.month, str(credit_card.year)[2:4]), # TODO  real date formatter
+                       cvv=credit_card.verification_value,
+                       firstname=credit_card.first_name,
+                       lastname=credit_card.last_name,
+                      )
+        self._add_currency(money, request)
+          #  TODO  move more into here
+        self.commit('auth', money, request, **options)
 
     def purchase(self, money, credit_card, **options):
         request = dict(ccnumber=credit_card.number,
@@ -57,13 +121,16 @@ class BraintreeOrange(Gateway):
         request['type']     = action  #  TODO  if action
         request['orderid']  = str(options['order_id'])
 
-        self.result = self.parse(self.post_webservice(url, request))
+        # print request  #  TODO
+        request['currency'] = 'USD'  #  TODO fix higher up
 
-        message = self.result['responsetext']
+        self.result = self.parse(self.post_webservice(url, request))
+        # print self.result
+
+        message = self.result.get('responsetext', '')  #  TODO  what is this for auth?
         success = self.result['response'] == '1'  #  TODO  what about 2 or 3?
 
-
-        self.response = BraintreeOrange.Response(success, message, self.result,
+        self.response = BraintreeOrange.Response( success, message, self.result,
                                                   authorization=self.result['authcode'],
                                                   is_test=True,  #  TODO
                                                   transaction='TODO' )

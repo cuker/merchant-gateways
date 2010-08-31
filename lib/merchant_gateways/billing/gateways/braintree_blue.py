@@ -25,7 +25,7 @@ TEST_URI = 'sandbox.braintreegateway.com'
 
 LIVE_URI = 'secure.braintreepaymentgateway.com'
 
-class BraintreeGateway(Gateway):  # CONSIDER most of this belongs in a class SmartPs, which is Braintree's actual implementation
+class BraintreeBlue(Gateway):  # CONSIDER most of this belongs in a class SmartPs, which is Braintree's actual implementation
 
     def _configure(self):
         if getattr(self, 'configured', False):  return
@@ -402,7 +402,7 @@ class BraintreeGateway(Gateway):  # CONSIDER most of this belongs in a class Sma
 ##require File.join(File.dirname(__FILE__),'smart_ps.rb')
 ##module ActiveMerchant #:nodoc:
 ##  module Billing #:nodoc:
-##    class BraintreeGateway < SmartPs
+##    class BraintreeBlue < SmartPs
 ##
 ##      self.supported_countries = ['US']
 ##      self.supported_cardtypes = [:visa, :master, :american_express, :discover]
