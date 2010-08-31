@@ -9,6 +9,7 @@ def post(url, data, headers={}):
         data = urllib.urlencode(data)
 
     request = urllib2.Request(url=url, data=data, headers=headers)
+    # print url, data
     response = urllib2.urlopen(request)
     rebound = response.read()
     # print rebound #  TODO  clean out these prints

@@ -17,32 +17,29 @@ class BraintreeOrangeTests( MerchantGatewaysBraintreeOrangeSuite, MerchantGatewa
     def gateway_type(self):
         return BraintreeOrange
 
-    def TODO_test_remote_successful_authorization(self):
+    def _test_remote_successful_authorization(self):
         '''All gateways authorize with these inputs and outputs'''
 
         self.options['description'] = 'Chamber of Secrets'
-        self.gateway.authorize(self.money, self.credit_card, **self.options)
+        self.gateway.options['login'] = 'PhlipTest'  #  TODO  or username
+        self.gateway.options['password'] = ''
+        self.credit_card.number = '4111111111111111'
+        self.gateway.authorize(self.money, self.credit_card, **self.options)  #  TODO  the options can also transport the username & password
         self.response = self.gateway.response
-
-    def test_successful_authorization(self):  # 'TODO'
-        'print self.successful_authorization_response()'
-
-    def test_failed_authorization(self):  # 'TODO'
-        'print self.successful_authorization_response()'
 
     def assert_successful_authorization(self):
 
-        self.assert_equal('510695343', self.response.authorization)
+        self.assert_equal('123456', self.response.authorization)
 #        self.assert_equal('fbyrfg',   self.response.result.transaction.id)
 #        self.assert_equal('54173',    self.response.authorization)
 #        self.assert_equal('Approved', self.response.message)
 #        self.assert_equal('1000',     self.response.result.transaction.processor_response_code)
 
     def successful_authorization_response(self):
+        return "response=1&responsetext=SUCCESS&authcode=123456&transactionid=1274650052&avsresponse=&cvvresponse=N&orderid=1&type=auth&response_code=100"
 
-        #  TODO  get a real one type=auth
-
-        return "address1=1234+My+Street&company=Widgets+Inc&city=Ottawa&type=auth&firstname=Longbob&address2=Apt+1&zip=K1C2N6&country=CA&lastname=Longsen&cvv=123&username=LOGIN&phone=%28555%29555-5555&amount=1.00&ccnumber=4242424242424242&currency=USD&orderid=&ccexp=0911&state=ON&password=PASSWORD"
+    def failed_authorization_response(self):
+        return "response=2&responsetext=DECLINE&authcode=&transactionid=1274647575&avsresponse=&cvvresponse=N&orderid=1&type=auth&response_code=200"
 
     def assert_failed_authorization(self):
         return # TODO

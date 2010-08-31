@@ -104,11 +104,13 @@ class BraintreeOrange(Gateway):
 
     def parse(self, urlencoded):  #  TODO  dry me
         import cgi
-        qsparams = cgi.parse_qs(urlencoded)
+        qsparams = cgi.parse_qs(urlencoded, keep_blank_values=True)
 
         for k,v in qsparams.items():  #  TODO  have we seen this before..?
             if len(v) == 1:
                 qsparams[k] = v[0] # easier to manipulate, because most real-life params are singular
+            else:
+                qsparams[k] = v
 
         # print qsparams
         return qsparams
