@@ -24,6 +24,12 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
 
         return self.assertEqual(None, *args, **kwargs)
 
+    def assert_empty(self, *args, **kwargs):
+        "assert you have nothin'"
+
+        if args[0] != '':
+            return self.assertEqual(None, *args, **kwargs)
+
     def assert_equal(self, *args, **kwargs):
         'Assert that two values are equal'
 

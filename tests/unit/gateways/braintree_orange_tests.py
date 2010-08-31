@@ -28,12 +28,9 @@ class BraintreeOrangeTests( MerchantGatewaysBraintreeOrangeSuite, MerchantGatewa
         self.response = self.gateway.response
 
     def assert_successful_authorization(self):
-
-        self.assert_equal('123456', self.response.authorization)
-#        self.assert_equal('fbyrfg',   self.response.result.transaction.id)
-#        self.assert_equal('54173',    self.response.authorization)
-#        self.assert_equal('Approved', self.response.message)
-#        self.assert_equal('1000',     self.response.result.transaction.processor_response_code)
+        self.assert_equal('123456',     self.response.authorization)
+        self.assert_equal('1274650052', self.response.result['transactionid'])
+        self.assert_equal('SUCCESS',    self.response.message)
 
     def successful_authorization_response(self):
         return "response=1&responsetext=SUCCESS&authcode=123456&transactionid=1274650052&avsresponse=&cvvresponse=N&orderid=1&type=auth&response_code=100"
@@ -45,10 +42,9 @@ class BraintreeOrangeTests( MerchantGatewaysBraintreeOrangeSuite, MerchantGatewa
         self.assert_equal('', self.response.authorization)
         self.assert_equal('1274647575', self.response.result['transactionid'])
         self.assert_equal('1274647575', self.response.transaction)
-        return # TODO
+        self.assert_equal('DECLINE',    self.response.message)
         self.assert_none(self.response.fraud_review)
-        self.assert_none(self.response.authorization)
-        self.assert_equal('Unknown ()', self.response.message)  #  CONSIDER  what the heck is that??
+        self.assert_empty(self.response.authorization)  #  TODO promulgate meaning of "empty"
 
     def assert_successful_purchase(self):
         self.assert_equal(BraintreeOrange.TEST_URI, self.call_args[0])
