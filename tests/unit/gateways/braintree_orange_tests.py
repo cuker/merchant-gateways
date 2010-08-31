@@ -481,6 +481,4 @@ module ActiveMerchant #:nodoc:
   end
 end
 
-
-
 '''
