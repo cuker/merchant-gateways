@@ -42,8 +42,10 @@ class BraintreeOrangeTests( MerchantGatewaysBraintreeOrangeSuite, MerchantGatewa
         return "response=2&responsetext=DECLINE&authcode=&transactionid=1274647575&avsresponse=&cvvresponse=N&orderid=1&type=auth&response_code=200"
 
     def assert_failed_authorization(self):
+        self.assert_equal('', self.response.authorization)
+        self.assert_equal('1274647575', self.response.result['transactionid'])
+        self.assert_equal('1274647575', self.response.transaction)
         return # TODO
-        self.assert_equal('kb3k4w', self.response.result.transaction.id)
         self.assert_none(self.response.fraud_review)
         self.assert_none(self.response.authorization)
         self.assert_equal('Unknown ()', self.response.message)  #  CONSIDER  what the heck is that??

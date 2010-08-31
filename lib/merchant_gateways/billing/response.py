@@ -17,6 +17,7 @@ class Response(object):
         self.is_test    = self.options['is_test']
         self.avs_result = self.options['avs_result']
         self.cvv_result = self.options['cvv_result']
+        self.transaction = self.options.get('transaction', None)  #  TODO  everyone needs this
 
         if self.avs_result:  self.avs_result = AVSResult(code=self.avs_result)  #  TODO  document if it was not in the inbound message it's None
         if self.cvv_result:  self.cvv_result = CVVResult(code=self.cvv_result)

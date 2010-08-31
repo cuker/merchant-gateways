@@ -135,7 +135,7 @@ class BraintreeOrange(Gateway):
         self.response = BraintreeOrange.Response( success, message, self.result,
                                                   authorization=self.result['authcode'],
                                                   is_test=True,  #  TODO
-                                                  transaction='TODO' )
+                                                  transaction=self.result['transactionid'] )
 
     def _add_currency(self, money, request):  #  TODO  all internal methods should use _
         if money:
