@@ -64,11 +64,6 @@ Since you are not actually connecting with the issuing bank, you will not be abl
 
 When issuing a transaction while adding the customer to the vault in live mode, the vault record will not be created if the transaction is rejected based on AVS or CVV rules. However, in test mode, the vault record will be created regardless of AVS/CVV response.
 
-Please let me know if you have any questions as you test against this account.
-
-Kind Regards,
-
-Ryan Gabriel
 '''
 
 
@@ -90,6 +85,7 @@ class BraintreeOrange(Gateway):
         self._add_currency(money, request)
           #  TODO  move more into here
         self.commit('auth', money, request, **options)
+        return self.response  #  FIXME  more actions need to do this
 
     def purchase(self, money, credit_card, **options):
         request = dict(ccnumber=credit_card.number,
@@ -101,6 +97,7 @@ class BraintreeOrange(Gateway):
         self._add_currency(money, request)
           #  TODO  move more into here
         self.commit('sale', money, request, **options)
+        return self.response  #  FIXME  more actions need to do this
 
     def parse(self, urlencoded):  #  TODO  dry me
         import cgi
