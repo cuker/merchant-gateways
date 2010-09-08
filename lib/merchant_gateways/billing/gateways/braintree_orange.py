@@ -127,7 +127,7 @@ class BraintreeOrange(Gateway):
         # print self.result
 
         message = self.result.get('responsetext', '')  #  TODO  what is this for auth?
-        success = self.result['response'] == '1'  #  TODO  what about 2 or 3?
+        success = self.result.get('response', '') == '1'  #  TODO  what about 2 or 3?
 
         self.response = BraintreeOrange.Response( success, message, self.result,
                                                   authorization=self.result['authcode'],
