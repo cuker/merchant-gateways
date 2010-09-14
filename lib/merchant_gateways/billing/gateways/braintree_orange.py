@@ -112,7 +112,7 @@ class BraintreeOrange(Gateway):
         # print qsparams
         return qsparams
 
-    def commit(self, action, money, request, **options):
+    def commit(self, action, money, request, **options):  #  TODO  why we pass money here?
         url = BraintreeOrange.TEST_URI  #  TODO  or LIVE_URI
 
         request['username'] = self.options['login']  #  TODO  rename request to parameters
@@ -122,6 +122,10 @@ class BraintreeOrange(Gateway):
 
         # print request  #  TODO
         request['currency'] = 'USD'  #  TODO fix higher up
+
+        for key, value in options.items():
+            if 'merchant_defined_field_' in key:  #  FIXME  have we seen this before?
+                request[key] = value
 
         self.result = self.parse(self.post_webservice(url, request))
         # print self.result
