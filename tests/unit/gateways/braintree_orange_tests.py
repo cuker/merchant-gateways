@@ -28,7 +28,7 @@ class BraintreeOrangeTests( MerchantGatewaysBraintreeOrangeSuite, MerchantGatewa
         self.response = self.gateway.response
 
     def assert_successful_authorization(self):
-        self.assert_equal('123456',     self.response.authorization)
+        self.assert_equal('1274650052',     self.response.authorization)
         self.assert_equal('1274650052', self.response.result['transactionid'])
         self.assert_equal('SUCCESS',    self.response.message)
 
@@ -55,7 +55,7 @@ class BraintreeOrangeTests( MerchantGatewaysBraintreeOrangeSuite, MerchantGatewa
         self.assert_failed_capture()
 
     def assert_successful_capture(self):
-        self.assert_equal('123456',     self.response.authorization)
+        self.assert_equal('1274650052', self.response.authorization)
         self.assert_equal('1274650052', self.response.result['transactionid'])
         self.assert_equal('SUCCESS',    self.response.message)
 
@@ -74,17 +74,16 @@ class BraintreeOrangeTests( MerchantGatewaysBraintreeOrangeSuite, MerchantGatewa
         return "response=2&responsetext=DECLINE&authcode=&transactionid=1274647575&avsresponse=&cvvresponse=N&orderid=1&type=auth&response_code=200"
 
     def assert_failed_capture(self):
-        self.assert_equal('', self.response.authorization)
+        self.assert_equal('1274647575', self.response.authorization)
         self.assert_equal('1274647575', self.response.result['transactionid'])
 
     def assert_failed_authorization(self):
-        self.assert_equal('', self.response.authorization)
+        self.assert_equal('1274647575', self.response.authorization)
         self.assert_equal('1274647575', self.response.result['transactionid'])
         self.assert_equal('1274647575', self.response.transaction)
         self.assert_equal('DECLINE',    self.response.message)
         self.assert_none(self.response.fraud_review)
-        self.assert_empty(self.response.authorization)  #  TODO promulgate meaning of "empty"
-
+        
     def assert_successful_purchase(self):
         self.assert_equal(BraintreeOrange.TEST_URI, self.call_args[0])
         params = self.call_args[1]
@@ -104,9 +103,9 @@ class BraintreeOrangeTests( MerchantGatewaysBraintreeOrangeSuite, MerchantGatewa
 
         #  TODO  check that it actually goes over the wire urlencoded
 
-        self.assert_equal('123456',   self.response.authorization)  #  TODO  self.response.transaction_id in braintree_blue.rb !
-        self.assert_equal('SUCCESS',  self.response.message)
-        self.assert_equal('sale',     self.response.result['type'])
+        self.assert_equal('510695343', self.response.authorization)  #  TODO  self.response.transaction_id in braintree_blue.rb !
+        self.assert_equal('SUCCESS',   self.response.message)
+        self.assert_equal('sale',      self.response.result['type'])
         borrowed_example = "type=sale&firstname=Longbob&lastname=Longsen&cvv=123&username=LOGIN&amount=1.00&ccnumber=4242424242424242&currency=USD&orderid=&ccexp=0911&password=PASSWORD"
 
         keys = [ x.split('=')[0] for x in borrowed_example.split('&') ]

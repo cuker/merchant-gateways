@@ -141,7 +141,7 @@ class BraintreeOrange(Gateway):
         success = self.result.get('response', '') == '1'  #  TODO  what about 2 or 3?
 
         self.response = BraintreeOrange.Response( success, message, self.result,
-                                                  authorization=self.result['authcode'],
+                                                  authorization=self.result['transactionid'],
                                                   is_test=True,  #  TODO
                                                   transaction=self.result['transactionid'] )
 
