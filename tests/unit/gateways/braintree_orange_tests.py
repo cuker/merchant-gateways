@@ -83,7 +83,7 @@ class BraintreeOrangeTests( MerchantGatewaysBraintreeOrangeSuite, MerchantGatewa
         self.assert_equal('1274647575', self.response.transaction)
         self.assert_equal('DECLINE',    self.response.message)
         self.assert_none(self.response.fraud_review)
-        
+
     def assert_successful_purchase(self):
         self.assert_equal(BraintreeOrange.TEST_URI, self.call_args[0])
         params = self.call_args[1]
