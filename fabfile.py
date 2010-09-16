@@ -91,7 +91,7 @@ def soak():
     test()
     test('--xml')
   #  document('../reports/merchant-gateways_docs/')
-    report()
+   # report()
 
 def _convert_test_output_to_report(test_output = 'temp/xml/test_output.xml'):
     import os

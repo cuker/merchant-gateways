@@ -97,7 +97,12 @@ class BraintreeOrange(Gateway):
         self._add_currency(money, request)
           #  TODO  move more into here
         self.commit('sale', money, request, **options)
-        return self.response  #  FIXME  more actions need to do this
+        return self.response
+
+    def capture(self, money, authorization, **options):
+        post = dict(transactionid=authorization)
+        self.commit('capture', money, post, **options)
+        return self.response
 
     def parse(self, urlencoded):  #  TODO  dry me
         import cgi
@@ -127,7 +132,9 @@ class BraintreeOrange(Gateway):
             if 'merchant_defined_field_' in key:  #  FIXME  have we seen this before?
                 request[key] = value
 
-        self.result = self.parse(self.post_webservice(url, request))
+        raw_result = self.post_webservice(url, request)
+        print repr(raw_result)
+        self.result = self.parse(raw_result)
         # print self.result
 
         message = self.result.get('responsetext', '')  #  TODO  what is this for auth?

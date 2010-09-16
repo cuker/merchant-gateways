@@ -32,11 +32,50 @@ class BraintreeOrangeTests( MerchantGatewaysBraintreeOrangeSuite, MerchantGatewa
         self.assert_equal('1274650052', self.response.result['transactionid'])
         self.assert_equal('SUCCESS',    self.response.message)
 
+    def test_successful_capture(self):
+        '''TODO All gateways authorize with these inputs and outputs'''
+
+        self.options['description'] = 'Hogwarts Express'
+
+        self.mock_webservice(self.successful_capture_response(),
+            lambda: self.gateway.capture(self.money, '1234', **self.options) )
+
+        self.response = self.gateway.response
+        assert self.response.is_test
+        self.assert_success()
+        self.assert_successful_capture()
+
+    def test_failed_capture(self):
+        self.mock_webservice( self.failed_capture_response(),
+            lambda:  self.gateway.capture(self.money, '1234', **self.options) )
+
+        self.response = self.gateway.response
+        assert self.response.is_test
+        self.assert_failure()
+        self.assert_failed_capture()
+
+    def assert_successful_capture(self):
+        self.assert_equal('123456',     self.response.authorization)
+        self.assert_equal('1274650052', self.response.result['transactionid'])
+        self.assert_equal('SUCCESS',    self.response.message)
+
     def successful_authorization_response(self):
         return "response=1&responsetext=SUCCESS&authcode=123456&transactionid=1274650052&avsresponse=&cvvresponse=N&orderid=1&type=auth&response_code=100"
 
     def failed_authorization_response(self):
         return "response=2&responsetext=DECLINE&authcode=&transactionid=1274647575&avsresponse=&cvvresponse=N&orderid=1&type=auth&response_code=200"
+
+    def successful_capture_response(self):
+        #  TODO  get real samples
+        return "response=1&responsetext=SUCCESS&authcode=123456&transactionid=1274650052&avsresponse=&cvvresponse=N&orderid=1&type=auth&response_code=100"
+
+    def failed_capture_response(self):
+        #  TODO  get real samples
+        return "response=2&responsetext=DECLINE&authcode=&transactionid=1274647575&avsresponse=&cvvresponse=N&orderid=1&type=auth&response_code=200"
+
+    def assert_failed_capture(self):
+        self.assert_equal('', self.response.authorization)
+        self.assert_equal('1274647575', self.response.result['transactionid'])
 
     def assert_failed_authorization(self):
         self.assert_equal('', self.response.authorization)
@@ -259,12 +298,6 @@ module ActiveMerchant #:nodoc:
         add_currency(post, money, options)
         add_processor(post, options)
         commit('sale', money, post)
-      end
-
-      def capture(money, authorization, options = {})
-        post ={}
-        post[:transactionid] = authorization
-        commit('capture', money, post)
       end
 
       def void(authorization, options = {})
