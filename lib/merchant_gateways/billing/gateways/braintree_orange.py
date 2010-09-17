@@ -19,10 +19,6 @@ from pprint import pprint
 
 #  TODO  bake all this:
 '''
-Hi Phlip,
-
-I've added you as a user to the Vix Swimwear Orange test account. I've also included information specific to your Orange test account below:
-
 Test transactions can be submitted with the following information:
 
 Visa 4111111111111111
