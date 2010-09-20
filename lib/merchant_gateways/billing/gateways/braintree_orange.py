@@ -129,17 +129,18 @@ class BraintreeOrange(Gateway):
                 request[key] = value
 
         raw_result = self.post_webservice(url, request)
-        print repr(raw_result)
+        # print repr(raw_result)
         self.result = self.parse(raw_result)
         # print self.result
 
-        message = self.result.get('responsetext', '')  #  TODO  what is this for auth?
-        success = self.result.get('response', '') == '1'  #  TODO  what about 2 or 3?
+        message  = self.result.get('responsetext', '')  #  TODO  what is this for auth? (And use a default_dict already)
+        success  = self.result.get('response', '') == '1'  #  TODO  what about 2 or 3?
+        trans_id = self.result.get('transactionid', '')
 
         self.response = BraintreeOrange.Response( success, message, self.result,
-                                                  authorization=self.result['transactionid'],
+                                                  authorization=trans_id,
                                                   is_test=True,  #  TODO
-                                                  transaction=self.result['transactionid'] )
+                                                  transaction=trans_id )
 
     def _add_currency(self, money, request):  #  TODO  all internal methods should use _
         if money:
