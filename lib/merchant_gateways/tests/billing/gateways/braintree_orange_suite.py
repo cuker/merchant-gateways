@@ -21,9 +21,13 @@ class MerchantGatewaysBraintreeOrangeSuite:
     def successful_purchase_response(self):
         return 'response=1&responsetext=SUCCESS&authcode=123456&transactionid=510695343&avsresponse=N&cvvresponse=N&orderid=ea1e0d50dcc8cfc6e4b55650c592097e&type=sale&response_code=100'
 
+#    def successful_authorization_response(self):
+#        return 'response=1&responsetext=SUCCESS&authcode=123456&transactionid=510695343&avsresponse=N&cvvresponse=N&orderid=ea1e0d50dcc8cfc6e4b55650c592097e&type=sale&response_code=100'
+#         # TODO get a real one!
+
     def successful_authorization_response(self):
-        return 'response=1&responsetext=SUCCESS&authcode=123456&transactionid=510695343&avsresponse=N&cvvresponse=N&orderid=ea1e0d50dcc8cfc6e4b55650c592097e&type=sale&response_code=100'
-         # TODO get a real one!
+        return "response=1&responsetext=SUCCESS&authcode=123456&transactionid=1274650052&avsresponse=&cvvresponse=N&orderid=1&type=auth&response_code=100"
 
     def failed_authorization_response(self):
-        return 'TODO'
+        return "response=2&responsetext=DECLINE&authcode=&transactionid=1274647575&avsresponse=&cvvresponse=N&orderid=1&type=auth&response_code=200"
+

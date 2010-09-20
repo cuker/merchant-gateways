@@ -59,12 +59,6 @@ class BraintreeOrangeTests( MerchantGatewaysBraintreeOrangeSuite, MerchantGatewa
         self.assert_equal('1274650052', self.response.result['transactionid'])
         self.assert_equal('SUCCESS',    self.response.message)
 
-    def successful_authorization_response(self):
-        return "response=1&responsetext=SUCCESS&authcode=123456&transactionid=1274650052&avsresponse=&cvvresponse=N&orderid=1&type=auth&response_code=100"
-
-    def failed_authorization_response(self):
-        return "response=2&responsetext=DECLINE&authcode=&transactionid=1274647575&avsresponse=&cvvresponse=N&orderid=1&type=auth&response_code=200"
-
     def successful_capture_response(self):
         #  TODO  get real samples
         return "response=1&responsetext=SUCCESS&authcode=123456&transactionid=1274650052&avsresponse=&cvvresponse=N&orderid=1&type=auth&response_code=100"
