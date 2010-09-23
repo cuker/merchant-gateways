@@ -15,7 +15,10 @@ class MerchantGatewaysBraintreeOrangeSuite:
 
              # TODO https://secure.braintreepaymentgateway.com/api/transact.php
 
-        self.response = getattr(self.gateway, 'response', {})  #  TODO  all web service mockers do this
+        try:
+            self.response = getattr(self.gateway, 'response', {})  #  TODO  all web service mockers do this
+        except AttributeError:  pass
+        
         return self.call_args  #  CONSIDER  all call_args should be self
 
     def successful_purchase_response(self):
