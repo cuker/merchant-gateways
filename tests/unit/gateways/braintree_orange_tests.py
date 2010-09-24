@@ -17,6 +17,14 @@ class BraintreeOrangeTests( MerchantGatewaysBraintreeOrangeSuite, MerchantGatewa
     def gateway_type(self):
         return BraintreeOrange
 
+    #    customer_vault=add_customer
+    #    ccnumber Valid credit card number. Pass if adding a credit card.
+    #    ccexp Credit card
+    #    expiration date if adding a credit card. Format: MMYY ( 1010 = October, 2010 )
+    #    customer_vault_id Specifies the name of the vault ID to be created. Values can be up to 32
+    #    alphanumeric characters. If you do not pass a customer_vault_id,
+    #    the Vault will randomly generate one and return it in the response.
+
     def _test_remote_successful_authorization(self):
         '''All gateways authorize with these inputs and outputs'''
 

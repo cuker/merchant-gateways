@@ -63,10 +63,10 @@ class Gateway(object):
             return True
         return False
 
-    def authorize(self, money, creditcard, **kwargs):
+    def authorize(self, money, credit_card, **kwargs):
         raise NotImplementedError
 
-    def purchase(self, money, creditcard, **kwargs):
+    def purchase(self, money, credit_card, **kwargs):
         raise NotImplementedError
 
     def capture(self, money, authorization, **kwargs):
@@ -78,10 +78,10 @@ class Gateway(object):
     def credit(self, money, identification, **kwargs):
         raise NotImplementedError
 
-    def recurring(self, money, creditcard, **kwargs):
+    def recurring(self, money, credit_card, **kwargs):
         raise NotImplementedError
 
-    def store(self, creditcard, **kwargs):
+    def store(self, credit_card, **kwargs):
         raise NotImplementedError
 
     def unstore(self, indentification, **kwargs):
