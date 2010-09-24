@@ -72,24 +72,24 @@ class BraintreeOrange(Gateway):
         pass
 
     def authorize(self, money, credit_card, **options):
-        request = dict(ccnumber=credit_card.number,
-                       ccexp='%02i%s' % (credit_card.month, str(credit_card.year)[2:4]), # TODO  real date formatter
-                       cvv=credit_card.verification_value,
-                       firstname=credit_card.first_name,
-                       lastname=credit_card.last_name,
-                      )
+        request = dict( ccnumber=credit_card.number,
+                        ccexp='%02i%s' % (credit_card.month, str(credit_card.year)[2:4]), # TODO  real date formatter
+                        cvv=credit_card.verification_value,
+                        firstname=credit_card.first_name,
+                        lastname=credit_card.last_name )
+
         self._add_currency(money, request)
           #  TODO  move more into here
         self.commit('auth', money, request, **options)
         return self.response  #  FIXME  more actions need to do this
 
     def purchase(self, money, credit_card, **options):
-        request = dict(ccnumber=credit_card.number,
-                       ccexp='%02i%s' % (credit_card.month, str(credit_card.year)[2:4]), # TODO  real date formatter
-                       cvv=credit_card.verification_value,
-                       firstname=credit_card.first_name,
-                       lastname=credit_card.last_name,
-                      )
+        request = dict( ccnumber=credit_card.number,
+                        ccexp='%02i%s' % (credit_card.month, str(credit_card.year)[2:4]), # TODO  real date formatter
+                        cvv=credit_card.verification_value,
+                        firstname=credit_card.first_name,
+                        lastname=credit_card.last_name )
+        
         self._add_currency(money, request)
           #  TODO  move more into here
         self.commit('sale', money, request, **options)
