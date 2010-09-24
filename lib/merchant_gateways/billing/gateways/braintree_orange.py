@@ -89,7 +89,7 @@ class BraintreeOrange(Gateway):
                         cvv=credit_card.verification_value,
                         firstname=credit_card.first_name,
                         lastname=credit_card.last_name )
-        
+
         self._add_currency(money, request)
           #  TODO  move more into here
         self.commit('sale', money, request, **options)
@@ -105,9 +105,9 @@ class BraintreeOrange(Gateway):
 
         post = dict( customer_vault='add_customer',
                      ccnumber=credit_card.number,
-                     ccexp=ccexp )
+                     ccexp=ccexp )  #  TODO  also some first-and-last-name action
 
-        self.commit('TODO', None, post, **options)  # TODO  take out the money if not used
+        self.commit(None, None, post, **options)  #  TODO  take out the money if not used
         return self.response
 
     def parse(self, urlencoded):  #  TODO  dry me
@@ -128,10 +128,10 @@ class BraintreeOrange(Gateway):
 
         request['username'] = self.options['login']  #  TODO  rename request to parameters
         request['password'] = self.options['password']  #  TODO  use the default_dict
-        request['type']     = action  #  TODO  if action
+        if action:  request['type'] = action
         request['orderid']  = str(options['order_id'])
 
-        # print request  #  TODO
+#        print request  #  TODO
         request['currency'] = 'USD'  #  TODO fix higher up
 
         for key, value in options.items():
@@ -139,9 +139,9 @@ class BraintreeOrange(Gateway):
                 request[key] = value
 
         raw_result = self.post_webservice(url, request)
-        # print repr(raw_result)
+#        print repr(raw_result)
         self.result = self.parse(raw_result)
-        # print self.result
+#        print self.result
 
         message  = self.result.get('responsetext', '')  #  TODO  what is this for auth? (And use a default_dict already)
         success  = self.result.get('response', '') == '1'  #  TODO  what about 2 or 3?

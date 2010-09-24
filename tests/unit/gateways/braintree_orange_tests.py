@@ -25,14 +25,14 @@ class BraintreeOrangeTests( MerchantGatewaysBraintreeOrangeSuite, MerchantGatewa
     #    alphanumeric characters. If you do not pass a customer_vault_id,
     #    the Vault will randomly generate one and return it in the response.
 
-    def _test_remote_successful_authorization(self):
-        '''All gateways authorize with these inputs and outputs'''
+    def _test_remote_successful_store(self):
 
+        print 'OMG'
         self.options['description'] = 'Chamber of Secrets'
-        self.gateway.options['login'] = 'PhlipTest'  #  TODO  or username
+        self.gateway.options['login'] = 'nada'  #  TODO  or username
         self.gateway.options['password'] = ''
         self.credit_card.number = '4111111111111111'
-        self.gateway.authorize(self.money, self.credit_card, **self.options)  #  TODO  the options can also transport the username & password
+        self.gateway.store(self.credit_card, **self.options)  #  TODO  the options can also transport the username & password
         self.response = self.gateway.response
 
     def assert_successful_authorization(self):
@@ -43,13 +43,30 @@ class BraintreeOrangeTests( MerchantGatewaysBraintreeOrangeSuite, MerchantGatewa
     def test_successful_store(self):
         self.options['description'] = 'Dobby'
 
-        self.mock_webservice( self.successful_capture_response(),
+        self.mock_webservice( self.successful_store_response(),
             lambda: self.gateway.store(self.credit_card, **self.options) )
 
         self.response = self.gateway.response
         assert self.response.is_test
         self.assert_success()
         self.assert_successful_store()
+
+    def test_successful_store(self):
+        self.options['description'] = 'Snape'
+
+        self.mock_webservice( self.failed_store_response(),
+            lambda: self.gateway.store(self.credit_card, **self.options) )
+
+        self.response = self.gateway.response
+        assert self.response.is_test
+        self.assert_failure()
+        self.assert_failed_store()
+
+    def successful_store_response(self):
+        return 'response=1&responsetext=Customer Added&authcode=&transactionid=&avsresponse=&cvvresponse=&orderid=1&type=&response_code=100&customer_vault_id=463260156'
+
+    def failed_store_response(self):
+        return 'response=3&responsetext=Authentication Failed&authcode=&transactionid=&avsresponse=&cvvresponse=&orderid=1&type=&response_code=300'
 
     def assert_successful_store(self):
         params = self.call_args[1]
@@ -58,10 +75,14 @@ class BraintreeOrangeTests( MerchantGatewaysBraintreeOrangeSuite, MerchantGatewa
         self.assert_equal(self.credit_card.number, params['ccnumber'])
 
         ccexp = '%02i%s' % (self.credit_card.month, str(self.credit_card.year)[2:4])
-        print ccexp
-        self.assert_equal(ccexp, params['ccexp'])
 
-        print params
+        self.assert_equal(ccexp, params['ccexp'])  #  TODO  what about the verification_value??
+        assert 'type' not in params.keys()
+
+        print params # TODO knock it off
+
+    def assert_failed_store(self):
+        'TODO'
 
     def test_successful_capture(self):
         '''TODO All gateways authorize with these inputs and outputs'''
