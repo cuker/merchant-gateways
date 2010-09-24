@@ -40,12 +40,35 @@ class BraintreeOrangeTests( MerchantGatewaysBraintreeOrangeSuite, MerchantGatewa
         self.assert_equal('1274650052', self.response.result['transactionid'])
         self.assert_equal('SUCCESS',    self.response.message)
 
+    def test_successful_store(self):
+        self.options['description'] = 'Dobby'
+
+        self.mock_webservice( self.successful_capture_response(),
+            lambda: self.gateway.store(self.credit_card, **self.options) )
+
+        self.response = self.gateway.response
+        assert self.response.is_test
+        self.assert_success()
+        self.assert_successful_store()
+
+    def assert_successful_store(self):
+        params = self.call_args[1]
+        self.assert_equal('add_customer', params['customer_vault'])
+        print self.credit_card.__dict__
+        self.assert_equal(self.credit_card.number, params['ccnumber'])
+
+        ccexp = '%02i%s' % (self.credit_card.month, str(self.credit_card.year)[2:4])
+        print ccexp
+        self.assert_equal(ccexp, params['ccexp'])
+
+        print params
+
     def test_successful_capture(self):
         '''TODO All gateways authorize with these inputs and outputs'''
 
         self.options['description'] = 'Hogwarts Express'
 
-        self.mock_webservice(self.successful_capture_response(),
+        self.mock_webservice( self.successful_capture_response(),
             lambda: self.gateway.capture(self.money, '1234', **self.options) )
 
         self.response = self.gateway.response

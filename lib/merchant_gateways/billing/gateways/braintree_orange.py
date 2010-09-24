@@ -100,6 +100,16 @@ class BraintreeOrange(Gateway):
         self.commit('capture', money, post, **options)
         return self.response
 
+    def store(self, credit_card, **options):
+        ccexp = '%02i%s' % (credit_card.month, str(credit_card.year)[2:4])
+
+        post = dict( customer_vault='add_customer',
+                     ccnumber=credit_card.number,
+                     ccexp=ccexp )
+
+        self.commit('TODO', None, post, **options)  # TODO  take out the money if not used
+        return self.response
+
     def parse(self, urlencoded):  #  TODO  dry me
         import cgi
         qsparams = cgi.parse_qs(urlencoded, keep_blank_values=True)
