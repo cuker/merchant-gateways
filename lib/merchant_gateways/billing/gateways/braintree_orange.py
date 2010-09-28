@@ -112,7 +112,7 @@ class BraintreeOrange(Gateway):
                      ccexp=ccexp )  #  TODO  also some first-and-last-name action
 
         self.commit(None, None, post, **options)  #  TODO  take out the money if not used
-        self.response.customer_vault_id = self.response.result.get('customer_vault_id', '')  #  FIXME  me should be a default_dict
+        self.response.card_store_id = self.response.result.get('customer_vault_id', '')  #  FIXME  me should be a default_dict
         return self.response
 
     def parse(self, urlencoded):  #  TODO  dry me
@@ -142,8 +142,8 @@ class BraintreeOrange(Gateway):
             if 'merchant_defined_field_' in key:  #  FIXME  have we seen this before?
                 request[key] = value
 
-        if options.has_key('customer_vault_id'):  #  FIXME  make me more standard and generic
-            request['customer_vault_id'] = options['customer_vault_id']
+        if options.has_key('card_store_id'):  #  FIXME  make me more standard and generic
+            request['customer_vault_id'] = options['card_store_id']
 
         raw_result = self.post_webservice(url, request)
         self.result = self.parse(raw_result)
