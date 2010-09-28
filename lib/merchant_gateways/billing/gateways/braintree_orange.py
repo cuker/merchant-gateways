@@ -73,11 +73,14 @@ class BraintreeOrange(Gateway):
         pass
 
     def authorize(self, money, credit_card, **options):
-        request = dict( ccnumber=credit_card.number,
-                        ccexp='%02i%s' % (credit_card.month, str(credit_card.year)[2:4]), # TODO  real date formatter
-                        cvv=credit_card.verification_value,
-                        firstname=credit_card.first_name,
-                        lastname=credit_card.last_name )
+        request = {}
+
+        if credit_card:
+            request = dict( ccnumber=credit_card.number,
+                            ccexp='%02i%s' % (credit_card.month, str(credit_card.year)[2:4]), # TODO  real date formatter
+                            cvv=credit_card.verification_value,
+                            firstname=credit_card.first_name,
+                            lastname=credit_card.last_name )
 
         self._add_currency(money, request)
           #  TODO  move more into here
@@ -142,7 +145,7 @@ class BraintreeOrange(Gateway):
         raw_result = self.post_webservice(url, request)
 #        print repr(raw_result)
         self.result = self.parse(raw_result)
-#        print self.result
+        print self.result
 
         message  = self.result.get('responsetext', '')  #  TODO  what is this for auth? (And use a default_dict already)
         success  = self.result.get('response', '') == '1'  #  TODO  what about 2 or 3?

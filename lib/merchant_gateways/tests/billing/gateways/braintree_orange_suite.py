@@ -3,6 +3,7 @@
 import datetime
 import merchant_gateways
 
+
 class MerchantGatewaysBraintreeOrangeSuite:
 
     def mock_webservice(self, returns, lamb):
@@ -19,7 +20,7 @@ class MerchantGatewaysBraintreeOrangeSuite:
         try:
             self.response = getattr(self.gateway, 'response', {})  #  TODO  all web service mockers do this
         except AttributeError:  pass
-        
+
         return self.call_args  #  CONSIDER  all call_args should be self
 
     def successful_purchase_response(self):
