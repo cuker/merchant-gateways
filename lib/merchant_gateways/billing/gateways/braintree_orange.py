@@ -67,6 +67,7 @@ class BraintreeOrange(Gateway):
 
     TEST_URI = 'https://secure.braintreepaymentgateway.com/api/transact.php'  #  TODO  real test url
     LIVE_URI = 'https://secure.braintreepaymentgateway.com/api/transact.php'  #  TODO  put other URIs inside their gateways
+    CARD_STORE = True
 
     class Response(response.Response):
         pass
@@ -81,7 +82,7 @@ class BraintreeOrange(Gateway):
         self._add_currency(money, request)
           #  TODO  move more into here
         self.commit('auth', money, request, **options)
-        return self.response  #  FIXME  more actions need to do this
+        return self.response  #  TODO  more actions need to do this
 
     def purchase(self, money, credit_card, **options):
         request = dict( ccnumber=credit_card.number,
