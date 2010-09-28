@@ -104,7 +104,7 @@ class BraintreeOrange(Gateway):
         self.commit('capture', money, post, **options)
         return self.response
 
-    def store(self, credit_card, **options):
+    def store(self, credit_card, **options):  #  FIXME  -> card_store
         ccexp = '%02i%s' % (credit_card.month, str(credit_card.year)[2:4])
 
         post = dict( customer_vault='add_customer',
@@ -112,6 +112,7 @@ class BraintreeOrange(Gateway):
                      ccexp=ccexp )  #  TODO  also some first-and-last-name action
 
         self.commit(None, None, post, **options)  #  TODO  take out the money if not used
+        self.response.customer_vault_id = self.response.result.get('customer_vault_id', '')  #  FIXME  me should be a default_dict
         return self.response
 
     def parse(self, urlencoded):  #  TODO  dry me
