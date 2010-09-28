@@ -6,7 +6,7 @@ import merchant_gateways
 
 class MerchantGatewaysBraintreeOrangeSuite:
 
-    def mock_webservice(self, returns, lamb):
+    def mock_webservice(self, returns, lamb, **assert_params):
         from mock import patch
         self.call_args = None
 
@@ -18,8 +18,13 @@ class MerchantGatewaysBraintreeOrangeSuite:
              # TODO https://secure.braintreepaymentgateway.com/api/transact.php
 
         try:
-            self.response = getattr(self.gateway, 'response', {})  #  TODO  all web service mockers do this
+            self.response = getattr(self.gateway, 'response', {})  #  TODO  all web service mockers do all these things!
         except AttributeError:  pass
+
+        params = self.call_args[1]
+
+        for key, reference in assert_params.items():
+            self.assert_equal(reference, params[key])
 
         return self.call_args  #  CONSIDER  all call_args should be self
 

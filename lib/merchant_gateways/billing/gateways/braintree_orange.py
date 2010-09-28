@@ -139,7 +139,7 @@ class BraintreeOrange(Gateway):
         request['currency'] = 'USD'  #  FIXME  fix higher up
 
         for key, value in options.items():
-            if 'merchant_defined_field_' in key:  #  FIXME  have we seen this before?
+            if 'merchant_defined_field_' in key:  #  CONSIDER  have we seen this before?
                 request[key] = value
 
         if options.has_key('card_store_id'):  #  FIXME  make me more standard and generic
