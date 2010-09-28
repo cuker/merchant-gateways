@@ -135,18 +135,17 @@ class BraintreeOrange(Gateway):
         if action:  request['type'] = action
         request['orderid']  = str(options['order_id'])
 
-#        print request  #  TODO
-        request['currency'] = 'USD'  #  TODO fix higher up
+        request['currency'] = 'USD'  #  FIXME  fix higher up
 
         for key, value in options.items():
             if 'merchant_defined_field_' in key:  #  FIXME  have we seen this before?
                 request[key] = value
 
-        raw_result = self.post_webservice(url, request)
-#        print repr(raw_result)
-        self.result = self.parse(raw_result)
-        print self.result
+        if options.has_key('customer_vault_id'):  #  FIXME  make me more standard and generic
+            request['customer_vault_id'] = options['customer_vault_id']
 
+        raw_result = self.post_webservice(url, request)
+        self.result = self.parse(raw_result)
         message  = self.result.get('responsetext', '')  #  TODO  what is this for auth? (And use a default_dict already)
         success  = self.result.get('response', '') == '1'  #  TODO  what about 2 or 3?
         trans_id = self.result.get('transactionid', '')
