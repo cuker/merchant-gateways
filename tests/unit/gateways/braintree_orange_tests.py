@@ -62,12 +62,6 @@ class BraintreeOrangeTests( MerchantGatewaysBraintreeOrangeSuite, MerchantGatewa
         self.assert_failure()
         self.assert_failed_store()
 
-    def successful_store_response(self):
-        return 'response=1&responsetext=Customer Added&authcode=&transactionid=&avsresponse=&cvvresponse=&orderid=1&type=&response_code=100&customer_vault_id=463260156'
-
-    def failed_store_response(self):
-        return 'response=3&responsetext=Authentication Failed&authcode=&transactionid=&avsresponse=&cvvresponse=&orderid=1&type=&response_code=300'
-
     def assert_successful_store(self):
         params = self.call_args[1]
         self.assert_equal('add_customer', params['customer_vault'])

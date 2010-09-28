@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 import datetime
 import merchant_gateways
@@ -33,4 +34,10 @@ class MerchantGatewaysBraintreeOrangeSuite:
 
     def failed_authorization_response(self):
         return "response=2&responsetext=DECLINE&authcode=&transactionid=1274647575&avsresponse=&cvvresponse=N&orderid=1&type=auth&response_code=200"
+
+    def successful_store_response(self):
+        return 'response=1&responsetext=Customer Added&authcode=&transactionid=&avsresponse=&cvvresponse=&orderid=1&type=&response_code=100&customer_vault_id=463260156'
+
+    def failed_store_response(self):
+        return 'response=3&responsetext=Authentication Failed&authcode=&transactionid=&avsresponse=&cvvresponse=&orderid=1&type=&response_code=300'
 
