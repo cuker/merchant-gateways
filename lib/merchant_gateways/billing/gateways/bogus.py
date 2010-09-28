@@ -76,7 +76,7 @@ class BogusGateway(Gateway):
         end
       end
 
-      def store(creditcard, options = {})
+      def card_store(creditcard, options = {})
         case creditcard.number
         when '1'
           Response.new(true, SUCCESS_MESSAGE, {:billingid => '1'}, :test => true, :authorization => AUTHORIZATION )

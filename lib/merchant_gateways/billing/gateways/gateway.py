@@ -81,7 +81,7 @@ class Gateway(object):
     def recurring(self, money, credit_card, **kwargs):
         raise NotImplementedError
 
-    def store(self, credit_card, **kwargs):
+    def card_store(self, credit_card, **kwargs):
         raise NotImplementedError
 
     def unstore(self, indentification, **kwargs):

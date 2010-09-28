@@ -47,7 +47,7 @@ class BogusGatewayTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
   end
 
   def  test_store
-    @gateway.store(@creditcard)
+    @gateway.card_store(@creditcard)
   end
 
   def test_unstore

@@ -104,7 +104,7 @@ class BraintreeOrange(Gateway):
         self.commit('capture', money, post, **options)
         return self.response
 
-    def store(self, credit_card, **options):  #  FIXME  -> card_store
+    def card_store(self, credit_card, **options):
         ccexp = '%02i%s' % (credit_card.month, str(credit_card.year)[2:4])
 
         post = dict( customer_vault='add_customer',

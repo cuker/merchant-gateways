@@ -509,7 +509,7 @@ class BraintreeBlue(Gateway):  # CONSIDER most of this belongs in a class SmartP
 ##
 ##      # To match the other stored-value gateways, like TrustCommerce,
 ##      # store and unstore need to be defined
-##      def store(payment_source, options = {})
+##      def card_store(payment_source, options = {})
 ##        post = {}
 ##        billing_id = options.delete(:billing_id).to_s || true
 ##        add_payment_source(post, payment_source, :store => billing_id)

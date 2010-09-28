@@ -32,7 +32,7 @@ class BraintreeOrangeTests( MerchantGatewaysBraintreeOrangeSuite, MerchantGatewa
         self.gateway.options['login'] = 'nada'  #  TODO  or username
         self.gateway.options['password'] = ''
         self.credit_card.number = '4111111111111111'
-        self.gateway.store(self.credit_card, **self.options)  #  TODO  the options can also transport the username & password
+        self.gateway.card_store(self.credit_card, **self.options)  #  TODO  the options can also transport the username & password
         self.response = self.gateway.response
 
     def assert_successful_authorization(self):
@@ -44,7 +44,7 @@ class BraintreeOrangeTests( MerchantGatewaysBraintreeOrangeSuite, MerchantGatewa
         self.options['description'] = 'Dobby'
 
         self.mock_webservice( self.successful_store_response(),
-            lambda: self.gateway.store(self.credit_card, **self.options) )
+                              lambda: self.gateway.card_store(self.credit_card, **self.options) )
 
         self.response = self.gateway.response
         assert self.response.is_test
@@ -55,7 +55,7 @@ class BraintreeOrangeTests( MerchantGatewaysBraintreeOrangeSuite, MerchantGatewa
         self.options['description'] = 'Snape'
 
         self.mock_webservice( self.failed_store_response(),
-            lambda: self.gateway.store(self.credit_card, **self.options) )
+            lambda: self.gateway.card_store(self.credit_card, **self.options) )
 
         self.response = self.gateway.response
         assert self.response.is_test
