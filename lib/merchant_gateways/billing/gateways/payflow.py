@@ -141,7 +141,7 @@ xmlns="http://www.paypal.com/XMLPay">
     def add_address(self, _where_to, **address):
         if not address:  return ''
         address = default_dict(address)
-        
+
         return XML(_where_to,
                       XML.Name(address['name']),
                       XML.Phone('(555)555-5555'), #TODO don't hardcode this
@@ -258,8 +258,8 @@ xmlns="http://www.paypal.com/XMLPay">
           '# TODO request = build_credit_card_request(:credit, money, identification_or_credit_card, options)'
 
         return self.commit(request)
-    
-    def capture(self, money, authorization):
+
+    def capture(self, money, authorization, **options):
         request = self.build_reference_request('capture', money, authorization)
         return self.commit(request)
 

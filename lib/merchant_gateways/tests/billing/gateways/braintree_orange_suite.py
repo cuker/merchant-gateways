@@ -28,6 +28,12 @@ class MerchantGatewaysBraintreeOrangeSuite:
 
         return self.call_args  #  CONSIDER  all call_args should be self
 
+    def successful_store_response(self):
+        return 'response=1&responsetext=Customer Added&authcode=&transactionid=&avsresponse=&cvvresponse=&orderid=1&type=&response_code=100&customer_vault_id=463260156'
+
+    def failed_store_response(self):
+        return 'response=3&responsetext=Authentication Failed&authcode=&transactionid=&avsresponse=&cvvresponse=&orderid=1&type=&response_code=300'
+
     def successful_purchase_response(self):
         return 'response=1&responsetext=SUCCESS&authcode=123456&transactionid=510695343&avsresponse=N&cvvresponse=N&orderid=ea1e0d50dcc8cfc6e4b55650c592097e&type=sale&response_code=100'
 
@@ -41,9 +47,4 @@ class MerchantGatewaysBraintreeOrangeSuite:
     def failed_authorization_response(self):
         return "response=2&responsetext=DECLINE&authcode=&transactionid=1274647575&avsresponse=&cvvresponse=N&orderid=1&type=auth&response_code=200"
 
-    def successful_store_response(self):
-        return 'response=1&responsetext=Customer Added&authcode=&transactionid=&avsresponse=&cvvresponse=&orderid=1&type=&response_code=100&customer_vault_id=463260156'
-
-    def failed_store_response(self):
-        return 'response=3&responsetext=Authentication Failed&authcode=&transactionid=&avsresponse=&cvvresponse=&orderid=1&type=&response_code=300'
-
+    def successful_capture_response(self):  return self.successful_authorization_response()  #  FIXME  get a real one!

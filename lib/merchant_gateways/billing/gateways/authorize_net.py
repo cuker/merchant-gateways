@@ -130,7 +130,7 @@ class AuthorizeNet(Gateway):
       #
       # * <tt>money</tt> -- The amount to be captured. Either an Integer value in cents or a Money object.
       # * <tt>authorization</tt> -- The authorization returned from the previous authorize request.
-    def capture(self, money, authorization, options = {}):
+    def capture(self, money, authorization, options = {}, order_id=None): # FIXME  this MUST use **options!!!
         post = {'trans_id': authorization}
         self.add_customer_data(post, options)
         self.commit('PRIOR_AUTH_CAPTURE', money, post)
