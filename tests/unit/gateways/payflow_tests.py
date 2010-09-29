@@ -65,7 +65,7 @@ class PayflowTests( MerchantGatewaysPayflowSuite,
 
     def test_failed_authorization(self):
         try:
-            self.mock_webservice( self.failed_authorization_response(),
+            self.mock_gateway_webservice( self.failed_authorization_response(),
                 lambda:  self.gateway.authorize(self.money, self.credit_card, **self.options) )
         except MerchantGatewayError, error:
             self.response = error.args[1]
@@ -77,7 +77,7 @@ class PayflowTests( MerchantGatewaysPayflowSuite,
 
     def test_successful_purchase_with_reference(self):
         authorization = 'Mobiliarbus'
-        self.mock_webservice(self.successful_purchase_response(),
+        self.mock_gateway_webservice(self.successful_purchase_response(),
                              lambda: self.gateway.purchase(self.money, authorization) )
         self.response = self.gateway.response
 
@@ -85,21 +85,21 @@ class PayflowTests( MerchantGatewaysPayflowSuite,
         authorization = 'Mobiliarbus'
 
 
-        self.mock_webservice(self.successful_void_response(),
+        self.mock_gateway_webservice(self.successful_void_response(),
                              lambda: self.gateway.void(authorization) )
         self.response = self.gateway.response
 
     def test_successful_credit(self):
         authorization = 'Mobiliarbus'
 
-        self.mock_webservice(self.successful_credit_response(),
+        self.mock_gateway_webservice(self.successful_credit_response(),
                              lambda: self.gateway.credit(Money('42.00', 'MAD'), authorization) )
         self.response = self.gateway.response
 
     def test_bad_configuration_raises_proper_eception(self):
         authorization = 'Mobiliarbus'
         try:
-            self.mock_webservice(self.invalid_configuration_response(),
+            self.mock_gateway_webservice(self.invalid_configuration_response(),
                                  lambda: self.gateway.credit(Money('42.00', 'MAD'), authorization) )
         except MerchantGatewayError:
             pass

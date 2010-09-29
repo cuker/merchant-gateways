@@ -8,7 +8,7 @@ class BogusGatewayTests(MerchantGatewaysTestSuite, MerchantGatewaysTestSuite.Com
     def gateway_type(self):
         return BogusGateway
 
-    def mock_webservice(self, response, lamb):
+    def mock_gateway_webservice(self, response, lamb):
         pass
 
     def test_successful_authorization(self):

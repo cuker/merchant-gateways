@@ -4,7 +4,7 @@ import datetime
 
 class MerchantGatewaysBraintreeBlueSuite:
 
-    def mock_webservice(self, returns, lamb):
+    def mock_gateway_webservice(self, returns, lamb):
         from mock import patch
         call_args = None
 

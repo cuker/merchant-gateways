@@ -215,7 +215,7 @@ class MerchantGatewaysUtilitiesTestSuite(unittest.TestCase):
 
 class MerchantGatewaysWebserviceTestSuite(object):
 
-    def mock_webservice(self, returns, lamb):
+    def mock_gateway_webservice(self, returns, lamb):
         self.gateway.post_webservice = Mock(return_value=returns)  #  TODO  stop relying on this member!
         lamb()
         self.response = self.gateway.response  #  TODO  take out redundant occurences of this
@@ -265,7 +265,7 @@ class MerchantGatewaysTestSuite( MerchantGatewaysUtilitiesTestSuite,
 
             self.options['description'] = 'Chamber of Secrets'
 
-            self.mock_webservice(self.successful_authorization_response(),
+            self.mock_gateway_webservice(self.successful_authorization_response(),
                 lambda: self.gateway.authorize(self.money, self.credit_card, **self.options) )
 
             self.response = self.gateway.response
@@ -274,7 +274,7 @@ class MerchantGatewaysTestSuite( MerchantGatewaysUtilitiesTestSuite,
             self.assert_successful_authorization()
 
         def test_failed_authorization(self):
-            self.mock_webservice( self.failed_authorization_response(),
+            self.mock_gateway_webservice( self.failed_authorization_response(),
                 lambda:  self.gateway.authorize(self.money, self.credit_card, **self.options) )
 
             self.response = self.gateway.response
@@ -283,7 +283,7 @@ class MerchantGatewaysTestSuite( MerchantGatewaysUtilitiesTestSuite,
             self.assert_failed_authorization()
 
         def test_successful_purchase(self):
-            self.mock_webservice(self.successful_purchase_response(),
+            self.mock_gateway_webservice(self.successful_purchase_response(),
                 lambda: self.gateway.purchase(self.money, self.credit_card, **self.options) )
 
             self.response = self.gateway.response  #  CONSIDER move inside ??

@@ -6,7 +6,7 @@ import merchant_gateways
 
 class MerchantGatewaysBraintreeOrangeSuite:
 
-    def mock_webservice(self, returns, lamb, **assert_params):
+    def mock_gateway_webservice(self, returns, lamb, **assert_params):
         from mock import patch
         self.call_args = None
 

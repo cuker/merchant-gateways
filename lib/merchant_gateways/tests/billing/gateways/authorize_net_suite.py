@@ -4,7 +4,7 @@
 
 class MerchantGatewaysAuthorizeNetSuite:
 
-    # TODO  mock_webservice here!
+    # TODO  mock_gateway_webservice here!
 
     def successful_authorization_response(self):
         return ( '$1$,$1$,$1$,$This transaction has been approved.$,$advE7f$,$Y$,$508141794$,$5b3fe66005f3da0ebe51$,$$,$1.00$,' + #  TODO  pass in same delim as we set
