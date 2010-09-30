@@ -28,10 +28,10 @@ class MerchantGatewaysBraintreeOrangeSuite:
 
         return self.call_args  #  CONSIDER  all call_args should be self
 
-    def successful_store_response(self):
+    def successful_card_store_response(self):
         return 'response=1&responsetext=Customer Added&authcode=&transactionid=&avsresponse=&cvvresponse=&orderid=1&type=&response_code=100&customer_vault_id=463260156'
 
-    def failed_store_response(self):
+    def failed_card_store_response(self):
         return 'response=3&responsetext=Authentication Failed&authcode=&transactionid=&avsresponse=&cvvresponse=&orderid=1&type=&response_code=300'
 
     def successful_purchase_response(self):

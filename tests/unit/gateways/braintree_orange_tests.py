@@ -43,7 +43,7 @@ class BraintreeOrangeTests( MerchantGatewaysBraintreeOrangeSuite, MerchantGatewa
     def test_successful_store(self):
         self.options['description'] = 'Dobby'
 
-        self.mock_gateway_webservice( self.successful_store_response(),
+        self.mock_gateway_webservice( self.successful_card_store_response(),
                               lambda: self.gateway.card_store(self.credit_card, **self.options) )
 
         self.response = self.gateway.response
@@ -54,7 +54,7 @@ class BraintreeOrangeTests( MerchantGatewaysBraintreeOrangeSuite, MerchantGatewa
     def test_successful_store(self):
         self.options['description'] = 'Snape'
 
-        self.mock_gateway_webservice( self.failed_store_response(),
+        self.mock_gateway_webservice( self.failed_card_store_response(),
             lambda: self.gateway.card_store(self.credit_card, **self.options) )
 
         self.response = self.gateway.response
