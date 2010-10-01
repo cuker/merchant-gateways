@@ -48,3 +48,4 @@ class MerchantGatewaysBraintreeOrangeSuite:
         return "response=2&responsetext=DECLINE&authcode=&transactionid=1274647575&avsresponse=&cvvresponse=N&orderid=1&type=auth&response_code=200"
 
     def successful_capture_response(self):  return self.successful_authorization_response()  #  FIXME  get a real one!
+    def failed_capture_response(self):      return self.failed_authorization_response()  #  FIXME  get a real one!
