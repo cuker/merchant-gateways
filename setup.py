@@ -22,5 +22,6 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Topic :: Software Development :: Testing',
-    ]
+    ],
+    test_suite='tests.testrunner.runtests',
 )
