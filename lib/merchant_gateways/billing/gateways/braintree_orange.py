@@ -76,26 +76,32 @@ class BraintreeOrange(Gateway):
     def authorize(self, money, credit_card, **options):
         request = self.adapt_credit_card(credit_card)
         request.update(self.adapt_currency(money))
-        response = self.commit('auth', money, request, **options)
-        return response
+        return self.commit('auth', request, **options)
 
     def purchase(self, money, credit_card, **options):
         request = self.adapt_credit_card(credit_card)
         request.update(self.adapt_currency(money))
-        response = self.commit('sale', money, request, **options)
-        return response
+        return self.commit('sale', request, **options)
 
     def capture(self, money, authorization, **options):
         request = {'transactionid':authorization}
-        response = self.commit('capture', money, request, **options)
-        return response
+        return self.commit('capture', request, **options)
 
     def card_store(self, credit_card, **options):
         request = self.adapt_credit_card(credit_card)
         request['customer_vault'] = 'add_customer'
-        response = self.commit(None, None, request, **options)
+        response = self.commit(None, request, **options)
         response.card_store_id = response.result.get('customer_vault_id', '')  #  FIXME  me should be a default_dict
         return response
+
+    def void(self, authorization, **options):
+        request = {'transactionid':authorization}
+        return self.commit('void', request, **options)
+    
+    def credit(self, money, authorization, **options):
+        request = {'transactionid':authorization}
+        request.update(self.adapt_currency(money))
+        return self.commit('refund', request, **options)
 
     def parse(self, urlencoded):  #  TODO  dry me
         import cgi
@@ -110,7 +116,7 @@ class BraintreeOrange(Gateway):
         # print qsparams
         return qsparams
 
-    def commit(self, action, money, request, **options):  #  TODO  why we pass money here?
+    def commit(self, action, request, **options):
         url = BraintreeOrange.LIVE_URI  #  TODO  or LIVE_URI
 
         request['username'] = self.options['login']  #  TODO  rename request to parameters
