@@ -127,7 +127,7 @@ class BraintreeOrange(Gateway):
             if 'merchant_defined_field_' in key:  #  CONSIDER  have we seen this before?
                 request[key] = value
 
-        if options.has_key('card_store_id'):  #  FIXME  make me more standard and generic
+        if options.get('card_store_id', None):  #  FIXME  make me more standard and generic
             request['customer_vault_id'] = options['card_store_id']
 
         raw_result = self.post_webservice(url, request)
