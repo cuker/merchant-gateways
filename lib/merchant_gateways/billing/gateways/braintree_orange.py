@@ -1,21 +1,7 @@
 # -*- coding: utf-8 -*-
-
-
-from gateway import Gateway, default_dict, xStr
+from gateway import Gateway
 
 from merchant_gateways.billing import response
-from merchant_gateways.billing.avs_result import AVSResult  #  TODO  need all these?
-from merchant_gateways.billing.cvv_result import CVVResult
-from lxml import etree
-from urllib import urlencode
-from lxml.builder import ElementMaker
-XML = ElementMaker()
-from money import Money
-import sys
-sys.path.insert(0, '/home/phlip/tools/braintree-2.2.1')
-from merchant_gateways.lib.post import post  #  CONSIDER  move me to gateway.py
-
-from pprint import pprint
 
 #  TODO  bake all this:
 '''
@@ -72,48 +58,44 @@ class BraintreeOrange(Gateway):
     class Response(response.Response):
         pass
 
-    def authorize(self, money, credit_card, **options):
-        request = {}
-
+    def adapt_credit_card(self, credit_card):
         if credit_card:
-            request = dict( ccnumber=credit_card.number,
-                            ccexp='%02i%s' % (credit_card.month, str(credit_card.year)[2:4]), # TODO  real date formatter
-                            cvv=credit_card.verification_value,
-                            firstname=credit_card.first_name,
-                            lastname=credit_card.last_name )
+            return {'ccnumber':credit_card.number,
+                    'ccexp':'%02i%s' % (credit_card.month, str(credit_card.year)[2:4]), # TODO  real date formatter
+                    'cvv':credit_card.verification_value,
+                    'firstname':credit_card.first_name,
+                    'lastname':credit_card.last_name}
+        return {}
+    
+    def adapt_currency(self, money):
+        if money is not None:
+            return {'amount': '%.02f' % money.amount,  #  TODO  less floating point error risk
+                    'currency': money.currency.code}
+        return {}
 
-        self._add_currency(money, request)
-          #  TODO  move more into here
-        self.commit('auth', money, request, **options)
-        return self.response  #  TODO  more actions need to do this
+    def authorize(self, money, credit_card, **options):
+        request = self.adapt_credit_card(credit_card)
+        request.update(self.adapt_currency(money))
+        response = self.commit('auth', money, request, **options)
+        return response
 
     def purchase(self, money, credit_card, **options):
-        request = dict( ccnumber=credit_card.number,
-                        ccexp='%02i%s' % (credit_card.month, str(credit_card.year)[2:4]), # TODO  real date formatter
-                        cvv=credit_card.verification_value,
-                        firstname=credit_card.first_name,
-                        lastname=credit_card.last_name )
-
-        self._add_currency(money, request)
-          #  TODO  move more into here
-        self.commit('sale', money, request, **options)
-        return self.response
+        request = self.adapt_credit_card(credit_card)
+        request.update(self.adapt_currency(money))
+        response = self.commit('sale', money, request, **options)
+        return response
 
     def capture(self, money, authorization, **options):
-        post = dict(transactionid=authorization)
-        self.commit('capture', money, post, **options)
-        return self.response
+        request = {'transactionid':authorization}
+        response = self.commit('capture', money, request, **options)
+        return response
 
     def card_store(self, credit_card, **options):
-        ccexp = '%02i%s' % (credit_card.month, str(credit_card.year)[2:4])
-
-        post = dict( customer_vault='add_customer',
-                     ccnumber=credit_card.number,
-                     ccexp=ccexp )  #  TODO  also some first-and-last-name action
-
-        self.commit(None, None, post, **options)  #  TODO  take out the money if not used
-        self.response.card_store_id = self.response.result.get('customer_vault_id', '')  #  FIXME  me should be a default_dict
-        return self.response
+        request = self.adapt_credit_card(credit_card)
+        request['customer_vault'] = 'add_customer'
+        response = self.commit(None, None, request, **options)
+        response.card_store_id = response.result.get('customer_vault_id', '')  #  FIXME  me should be a default_dict
+        return response
 
     def parse(self, urlencoded):  #  TODO  dry me
         import cgi
@@ -129,14 +111,11 @@ class BraintreeOrange(Gateway):
         return qsparams
 
     def commit(self, action, money, request, **options):  #  TODO  why we pass money here?
-        url = BraintreeOrange.TEST_URI  #  TODO  or LIVE_URI
+        url = BraintreeOrange.LIVE_URI  #  TODO  or LIVE_URI
 
         request['username'] = self.options['login']  #  TODO  rename request to parameters
         request['password'] = self.options['password']  #  TODO  use the default_dict
         if action:  request['type'] = action
-        request['orderid']  = str(options['order_id'])
-
-        request['currency'] = 'USD'  #  FIXME  fix higher up
 
         for key, value in options.items():
             if 'merchant_defined_field_' in key:  #  CONSIDER  have we seen this before?
@@ -146,18 +125,12 @@ class BraintreeOrange(Gateway):
             request['customer_vault_id'] = options['card_store_id']
 
         raw_result = self.post_webservice(url, request)
-        self.result = self.parse(raw_result)
-        message  = self.result.get('responsetext', '')  #  TODO  what is this for auth? (And use a default_dict already)
-        success  = self.result.get('response', '') == '1'  #  TODO  what about 2 or 3?
-        trans_id = self.result.get('transactionid', '')
+        result = self.parse(raw_result)
+        message  = result.get('responsetext', '')  #  TODO  what is this for auth? (And use a default_dict already)
+        success  = result.get('response', '') == '1'  #  TODO  what about 2 or 3?
+        trans_id = result.get('transactionid', '')
 
-        self.response = BraintreeOrange.Response( success, message, self.result,
-                                                  authorization=trans_id,
-                                                  is_test=True,  #  TODO
-                                                  transaction=trans_id )
-
-    def _add_currency(self, money, request):  #  TODO  all internal methods should use _
-        if money:
-            request['amount'] = '%.02f' % money.amount  #  TODO  less floating point error risk
-            request['currency'] = money.currency.code
-
+        return BraintreeOrange.Response(success, message, result,
+                                        authorization=trans_id,
+                                        is_test=False,  #  TODO
+                                        transaction=trans_id )

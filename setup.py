@@ -15,6 +15,7 @@ setup(
     install_requires=[
         'setuptools',
         'lxml'  #  TODO  what else?
+        #python-money
     ],
     classifiers = [
         "Intended Audience :: Developers",  # TODO  do these!

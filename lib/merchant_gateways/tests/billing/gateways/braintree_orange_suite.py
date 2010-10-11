@@ -49,3 +49,90 @@ class MerchantGatewaysBraintreeOrangeSuite:
 
     def successful_capture_response(self):  return self.successful_authorization_response()  #  FIXME  get a real one!
     def failed_capture_response(self):      return self.failed_authorization_response()  #  FIXME  get a real one!
+
+import urlparse
+import urllib
+
+class BrainTreeOrangeMockServer(object):
+    def __init__(self, failure=None):
+        self.failure = failure
+
+    def __call__(self, url, msg):
+        return self.receive(urllib.urlencode(msg))
+
+    def receive(self, msg):
+        if self.failure:
+            return self.failure
+        data = dict(urlparse.parse_qsl(msg))
+        assert data['username']
+        assert data['password']
+        if 'type' not in data and data.get('customer_vault', None) == 'add_customer':
+            self.validate_payment_info(data)
+            return self.simple_vault_store(data)
+        try:
+            assert data['type'] in ('auth', 'sale', 'capture', 'void', 'refund')
+        except:
+            print data
+            raise
+        return getattr(self, data['type'])(data)
+    
+    def failure_message(self):
+        return {'response':'2',
+                'responsetext':'DECLINE',
+                'response_code':'200',}
+    
+    def success_message(self):
+        return {'response':'1',
+                'responsetext':'SUCCESS',
+                'authcode':'123456',
+                'transactionid':'123456789',
+                'response_code':'100',}
+    
+    def send(self, data):
+        return urllib.urlencode(data)
+    
+    def validate_payment_info(self, data):
+        assert ('customer_vault_id' in data or
+                    ('ccnumber' in data and
+                     'ccexp' in data))
+    
+    def simple_vault_store(self, data):
+        return self.send({'response':'1', 
+                          'responsetext':'Customer Added',
+                          'response_code':'100',
+                          'customer_vault_id': '99999999'})
+    
+    def auth(self, data):
+        response = self.success_message()
+        if data.get('customer_vault', None) == 'add_customer':
+            response.update(self.card_store(data))
+        self.validate_payment_info(data)
+        assert 'amount' in data
+        return self.send(response)
+    
+    def sale(self, data):
+        response = self.success_message()
+        if data.get('customer_vault', None) == 'add_customer':
+            response.update(self.card_store(data))
+        self.validate_payment_info(data)
+        assert 'amount' in data
+        return self.send(response)
+    
+    def capture(self, data):
+        assert 'transactionid' in data
+        response = self.success_message()
+        return self.send(response)
+    
+    def void(self, data):
+        assert 'transactionid' in data
+        response = self.success_message()
+        return self.send(response)
+    
+    def refund(self, data):
+        assert 'transactionid' in data
+        response = self.success_message()
+        return self.send(response)
+    
+    def card_store(self, data):
+        return {'customer_vault_id':'999999'}
+
