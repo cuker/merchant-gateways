@@ -1,2 +1,8 @@
 *.pyc
 *.swp
+bin/
+include/
+src/
+lib/python2.6/
+lib/merchant_gateways.egg-info/
+TEST-unittest.TestSuite.xml

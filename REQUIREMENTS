@@ -1,0 +1,2 @@
+lxml
+-e git+git://github.com/cuker/python-money.git#egg=python-money

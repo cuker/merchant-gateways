@@ -1,4 +1,5 @@
 import unittest
+import os
 import sys
 
 def runtests():
@@ -12,8 +13,7 @@ def runtests():
                                                            'tests.unit.gateways.cybersource_tests',
                                                            'tests.unit.gateways.payflow_tests',
                                                            'tests.unit.gateways.paymentech_orbital_tests',])
-    if sys.argv.count('--xml'):
-        sys.argv.remove('--xml')
+    if os.environ.get('XML_OUTPUT', False):
         from xmlrunner import XMLTestRunner
         runner = XMLTestRunner()
     else:

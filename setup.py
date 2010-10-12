@@ -1,5 +1,11 @@
 from setuptools import setup, find_packages
 
+if __name__ == '__main__':
+    import sys, os
+    if sys.argv.count('--xml'):
+        sys.argv.remove('--xml')
+        os.environ['XML_OUTPUT'] = 'True'
+
 setup(
     name = "merchant_gateways",  #  TODO  merchant-gateways ?
     version = "0.0.1",
@@ -13,8 +19,7 @@ setup(
     keywords = "django creditcard merchant authorization purchase",
     description = "Unifying the diversity of gateways into a common interface",
     install_requires=[
-        'setuptools',
-        'lxml'  #  TODO  what else?
+        'lxml',  #  TODO  what else?
         #python-money
     ],
     classifiers = [
