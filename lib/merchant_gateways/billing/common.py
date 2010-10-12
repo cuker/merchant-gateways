@@ -1,6 +1,6 @@
 """
 Provides a poor man's xml <=> python translactions
-Meant to be dead simple!
+Meant to be dead simple, but the ordered multi value dict is not!
 """
 from types import GeneratorType
 try:
@@ -251,6 +251,12 @@ class XMLDict(OrderedMultiValueDict):
     def to_xml(self, parent):
         dicttoxml(self, parent)
 
+class _ShowEmpty(unicode):
+    def __nonzero__(self):
+        return True
+
+SHOW_EMPTY = _ShowEmpty(u'')
+
 def _handle_attrib(element, obj):
     if hasattr(obj, 'attrib'):
         element.attrib.update(obj.attrib)
@@ -273,7 +279,10 @@ def pytoxml(key, obj, parent):
         container = ET.SubElement(parent, key)
         _handle_attrib(container, obj)
         if obj is not None:
-            container.text = unicode(obj)
+            if isinstance(obj, basestring):
+                container.text = obj
+            else:
+                container.text = unicode(obj)
 
 def dicttoxml(dictionary, parent):
     if hasattr(dictionary, 'iterlists'):
@@ -313,6 +322,8 @@ class ElementMaker(object):
         elements = list(elements)
         if elements and not isinstance(elements[0], ElementMaker):
             self.value = unicode(elements.pop(0))
+            if self.value == u'':
+                self.value = SHOW_EMPTY
         for element in elements:
             if element.value is not None:
                 self.children.appendlist(element.key, element.value)

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-from gateway import Gateway, default_dict, xStr
+from gateway import Gateway, default_dict
+from merchant_gateways.billing.common import xStr, ElementMaker
 from merchant_gateways.billing import response
 import logging
 from lxml import etree
-from lxml.builder import ElementMaker
 XML = ElementMaker()
 from money import Money
 
