@@ -1,7 +1,7 @@
 
 from gateway import Gateway, default_dict
-from merchant_gateways.billing.common import xStr, ElementMaker
 from merchant_gateways.billing import response
+from merchant_gateways.billing.common import xStr, ElementMaker
 from lxml import etree
 XML = ElementMaker()
 from money import Money

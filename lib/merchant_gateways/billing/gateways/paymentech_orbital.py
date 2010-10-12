@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 from gateway import Gateway, default_dict
-from merchant_gateways.billing.common import xStr, ElementMaker
+from merchant_gateways.billing.common import xStr, ElementMaker, ET
 from merchant_gateways.billing import response
 import logging
-from lxml import etree
 XML = ElementMaker()
 from money import Money
 
@@ -126,10 +125,10 @@ class PaymentechOrbital(Gateway):
     def parse(self, soap):
         result = {}
         keys  = self.soap_keys()
-        doc  = etree.XML(soap)
+        doc  = ET.fromstring(soap)
 
         for key in keys:
-            nodes = doc.xpath('//' + key)
+            nodes = doc.findall('.//' + key)
             result[key] = len(nodes) and nodes[0].text or None
 
         return result
