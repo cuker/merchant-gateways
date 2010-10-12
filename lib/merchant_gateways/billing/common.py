@@ -2,7 +2,7 @@
 Provides a poor man's xml <=> python translactions
 Meant to be dead simple!
 """
-
+from types import GeneratorType
 try:
     from xml.etree import ElementTree as ET
 except ImportError:
@@ -11,7 +11,7 @@ except ImportError:
 class MultiValueDictKeyError(KeyError):
     pass
 
-class MultiValueDict(dict): #Shameless copy from django, Thank you django devs!
+class OrderedMultiValueDict(dict): #Shameless copy from django, Thank you django devs!
     """
     A subclass of dictionary customized to handle multiple values for the
     same key.
@@ -29,12 +29,26 @@ class MultiValueDict(dict): #Shameless copy from django, Thank you django devs!
     which returns a list for every key, even though most Web forms submit
     single name-value pairs.
     """
-    def __init__(self, key_to_list_mapping=()):
-        super(MultiValueDict, self).__init__(key_to_list_mapping)
+    def __init__(self, data=()):
+        if isinstance(data, GeneratorType):
+            # Unfortunately we need to be able to read a generator twice.  Once
+            # to get the data into self with our super().__init__ call and a
+            # second time to setup keyOrder correctly
+            data = list(data)
+        super(OrderedMultiValueDict, self).__init__(data)
+        if hasattr(data, 'keyOrder'):
+            self.keyOrder = list(data.keyOrder)
+        elif isinstance(data, dict):
+            self.keyOrder = data.keys()
+        else:
+            self.keyOrder = []
+            for key, value in data:
+                if key not in self.keyOrder:
+                    self.keyOrder.append(key)
 
     def __repr__(self):
         return "<%s: %s>" % (self.__class__.__name__,
-                             super(MultiValueDict, self).__repr__())
+                             super(OrderedMultiValueDict, self).__repr__())
 
     def __getitem__(self, key):
         """
@@ -42,7 +56,7 @@ class MultiValueDict(dict): #Shameless copy from django, Thank you django devs!
         raises KeyError if not found.
         """
         try:
-            list_ = super(MultiValueDict, self).__getitem__(key)
+            list_ = super(OrderedMultiValueDict, self).__getitem__(key)
         except KeyError:
             raise MultiValueDictKeyError("Key %r not found in %r" % (key, self))
         try:
@@ -51,10 +65,19 @@ class MultiValueDict(dict): #Shameless copy from django, Thank you django devs!
             return []
 
     def __setitem__(self, key, value):
-        super(MultiValueDict, self).__setitem__(key, [value])
+        if key not in self:
+            self.keyOrder.append(key)
+        super(OrderedMultiValueDict, self).__setitem__(key, [value])
+
+    def __delitem__(self, key):
+        super(OrderedMultiValueDict, self).__delitem__(key)
+        self.keyOrder.remove(key)
+
+    def __iter__(self):
+        return iter(self.keyOrder)
 
     def __copy__(self):
-        return self.__class__(super(MultiValueDict, self).items())
+        return self.__class__(super(OrderedMultiValueDict, self).items())
 
     def __deepcopy__(self, memo=None):
         import django.utils.copycompat as copy
@@ -77,6 +100,12 @@ class MultiValueDict(dict): #Shameless copy from django, Thank you django devs!
         for k, v in data.items():
             self.setlist(k, v)
         self.__dict__.update(obj_dict)
+    
+    def keys(self):
+        return self.keyOrder[:]
+
+    def iterkeys(self):
+        return iter(self.keyOrder)
 
     def get(self, key, default=None):
         """
@@ -97,15 +126,18 @@ class MultiValueDict(dict): #Shameless copy from django, Thank you django devs!
         then an empty list is returned.
         """
         try:
-            return super(MultiValueDict, self).__getitem__(key)
+            return super(OrderedMultiValueDict, self).__getitem__(key)
         except KeyError:
             return []
 
     def setlist(self, key, list_):
-        super(MultiValueDict, self).__setitem__(key, list_)
+        if key not in self:
+            self.keyOrder.append(key)
+        super(OrderedMultiValueDict, self).__setitem__(key, list_)
 
     def setdefault(self, key, default=None):
         if key not in self:
+            self.keyOrder.append(key)
             self[key] = default
         return self[key]
 
@@ -117,7 +149,7 @@ class MultiValueDict(dict): #Shameless copy from django, Thank you django devs!
     def appendlist(self, key, value):
         """Appends an item to the internal list associated with key."""
         self.setlistdefault(key, [])
-        super(MultiValueDict, self).__setitem__(key, self.getlist(key) + [value])
+        super(OrderedMultiValueDict, self).__setitem__(key, self.getlist(key) + [value])
 
     def items(self):
         """
@@ -131,16 +163,17 @@ class MultiValueDict(dict): #Shameless copy from django, Thank you django devs!
         Yields (key, value) pairs, where value is the last item in the list
         associated with the key.
         """
-        for key in self.keys():
+        for key in self.iterkeys():
             yield (key, self[key])
 
     def lists(self):
         """Returns a list of (key, list) pairs."""
-        return super(MultiValueDict, self).items()
+        return super(OrderedMultiValueDict, self).items()
 
     def iterlists(self):
         """Yields (key, list) pairs."""
-        return super(MultiValueDict, self).iteritems()
+        for key in self.iterkeys():
+            yield (key, self.getlist(key))
 
     def values(self):
         """Returns a list of the last value on every key list."""
@@ -164,7 +197,7 @@ class MultiValueDict(dict): #Shameless copy from django, Thank you django devs!
             raise TypeError("update expected at most 1 arguments, got %d" % len(args))
         if args:
             other_dict = args[0]
-            if isinstance(other_dict, MultiValueDict):
+            if isinstance(other_dict, OrderedMultiValueDict):
                 for key, value_list in other_dict.lists():
                     self.setlistdefault(key, []).extend(value_list)
             else:
@@ -176,13 +209,44 @@ class MultiValueDict(dict): #Shameless copy from django, Thank you django devs!
         for key, value in kwargs.iteritems():
             self.setlistdefault(key, []).append(value)
 
-class XMLDict(MultiValueDict):
+    def clear(self):
+        super(OrderedMultiValueDict, self).clear()
+        self.keyOrder = []
+    
+    def pop(self, k, *args):
+        result = super(OrderedMultiValueDict, self).pop(k, *args)
+        try:
+            self.keyOrder.remove(k)
+        except ValueError:
+            # Key wasn't in the dictionary in the first place. No problem.
+            pass
+        return result
+
+    def value_for_index(self, index):
+        """Returns the value of the item at the given zero-based index."""
+        return self[self.keyOrder[index]]
+
+    def insert(self, index, key, value):
+        """Inserts the key, value pair before the item with the given index."""
+        if key in self.keyOrder:
+            n = self.keyOrder.index(key)
+            del self.keyOrder[n]
+            if n < index:
+                index -= 1
+        self.keyOrder.insert(index, key)
+        super(OrderedMultiValueDict, self).__setitem__(key, value)
+
+class XMLDict(OrderedMultiValueDict):
     def __init__(self, key_to_list_mapping=(), attrib={}):
         super(XMLDict, self).__init__(key_to_list_mapping)
         self.attrib = attrib
     
     def __nonzero__(self):
         return bool(len(self) or len(self.attrib))
+    
+    def __repr__(self):
+        return "<%s (%s)>" % (super(OrderedMultiValueDict, self).__repr__(), 
+                              self.attrib)
     
     def to_xml(self, parent):
         dicttoxml(self, parent)
@@ -212,7 +276,11 @@ def pytoxml(key, obj, parent):
             container.text = unicode(obj)
 
 def dicttoxml(dictionary, parent):
-    for key, value in dictionary.iteritems():
+    if hasattr(dictionary, 'iterlists'):
+        iterator = dictionary.iterlists()
+    else:
+        iterator = dictionary.iteritems()
+    for key, value in iterator:
         pytoxml(key, value, parent)
 
 def listtoxml(iterable, parent):
@@ -264,3 +332,4 @@ class ElementMaker(object):
 
 def xStr(element_maker):
     return ET.tostring(element_maker.to_xml())
+
