@@ -8,9 +8,7 @@
 
 #  CONSIDER  exception handling, logging, conversation recording, signals for exceptions, success, & fail
 
-from money import Money  #  TODO  add cuker/python-money to the requirements
 from merchant_gateways.lib.post import post  #  CONSIDER  move me to gateway.py
-
 
 class Gateway(object):
     DEBIT_CARDS = ('switch', 'solo')  #  TODO  use this
@@ -65,27 +63,35 @@ class Gateway(object):
 
     def authorize(self, money, credit_card, **kwargs):
         raise NotImplementedError
+    authorize.supported = False
 
     def purchase(self, money, credit_card, **kwargs):
         raise NotImplementedError
+    purchase.supported = False
 
     def capture(self, money, authorization, **kwargs):
         raise NotImplementedError
+    capture.supported = False
 
-    def void(self, identification, **kwargs):
+    def void(self, authorization, **kwargs):
         raise NotImplementedError
+    void.supported = False
 
-    def credit(self, money, identification, **kwargs):
+    def credit(self, money, authorization, **kwargs):
         raise NotImplementedError
+    credit.supported = False
 
     def recurring(self, money, credit_card, **kwargs):
         raise NotImplementedError
+    recurring.supported = False
 
     def card_store(self, credit_card, **kwargs):
         raise NotImplementedError
+    card_store.supported = False
 
     def unstore(self, indentification, **kwargs):
         raise NotImplementedError
+    unstore.supported = False
 
     def require(self, kwargs_hash, *args):
         for arg in args:
