@@ -158,3 +158,82 @@ class MerchantGatewaysPayflowSuite:
                     )
                 )
             )
+
+from merchant_gateways.billing.common import xmltodict, dicttoxml, ET
+
+class PayflowProMockServer(object):
+    def __init__(self, failure=None):
+        self.failure = failure
+
+    def __call__(self, url, msg, headers):
+        msg = msg.replace('xmlns="http://www.paypal.com/XMLPay"', '')
+        data = xmltodict(ET.fromstring(msg))
+        response = self.receive(data)
+        return ET.tostring(self.send(data, response))
+
+    def receive(self, data):
+        if self.failure:
+            return self.failure
+        assert data['RequestAuth']['UserPass']['User']
+        assert data['RequestAuth']['UserPass']['Password']
+        transaction_data = data['RequestData']['Transactions']['Transaction']
+        for key in ['Sale', 'Authorization', 'Capture', 'Void', 'Credit']:
+            if key in transaction_data:
+                return getattr(self, key.lower())(transaction_data[key])
+        assert False, 'Unrecognized action'
+
+    def send(self, data, response):
+        root = ET.Element('XMLPayResponse', {'xmlns':'http://www.paypal.com/XMLPay'})
+        msg = {'ResponseData': {'Vendor':data['RequestData']['Vendor'],
+                                'Partner':data['RequestData']['Partner'],
+                                'TransactionResults': {'TransactionResult': response }}}
+        dicttoxml(msg, root)
+        return root
+    
+    def failure_message(self, data):
+        return {'Result':12,
+                'Message':'Declined',
+                'Partner':'verisign',
+                'HostCode':'000',
+                'ResponseText':'AP',
+                'PNRef':'VUJN1A6E11D9',}
+    
+    def success_message(self, data):
+        return {'Result':0,
+                'Message':'Approved',
+                'Partner':'verisign',
+                'HostCode':'000',
+                'ResponseText':'AP',
+                'PNRef':'VUJN1A6E11D9',
+                'Vendor':'ActiveMerchant',}
+
+    def avs_success_message(self, data):
+        return {'IavsResult':'N',
+                'ZipMatch':'Match',
+                'AvsResult':'Y',
+                'StreetMatch':'Match',
+                'CvResult':'Match',}
+
+    def credit(self, data):
+        assert 'PNRef' in data
+        return self.success_message(data)
+    
+    def void(self, data):
+        assert 'PNRef' in data
+        return self.success_message(data)
+
+    def authorization(self, data):
+        tender = data['PayData']['Tender']['Card']
+        if 'CardNum' in tender:
+            assert 'CardType' in tender
+            assert 'CardNum' in tender
+            assert 'ExpDate' in tender
+        else:
+            assert tender['ExtData']['_attributes']['Name'] == 'ORIGID'
+            assert 'Value' in tender['ExtData']['_attributes']
+        response = self.success_message(data)
+        response.update(self.avs_success_message(data))
+        return response
+    
+    sale = authorization
+

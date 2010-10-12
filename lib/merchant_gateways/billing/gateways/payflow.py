@@ -25,8 +25,8 @@ class Payflow(Gateway):
     TEST_URL = 'https://pilot-payflowpro.paypal.com'
     LIVE_URL = 'https://payflowpro.paypal.com'
 
-    def authorize(self, money, credit_card_or_reference, **options):  #  TODO  rename money to amount, everywhere
-        assert isinstance(money, Money), 'TODO  always pass in a Money object - no exceptions!'
+    def authorize(self, money, credit_card, card_store_id=None, **options):  #  TODO  rename money to amount, everywhere
+        credit_card_or_reference = credit_card or card_store_id
         self.request = self.build_sale_or_authorization_request('authorization', money, credit_card_or_reference, **options)
         return self.commit(self.request)
 
@@ -58,8 +58,8 @@ class Payflow(Gateway):
         self.response.result = self.result
         return self.response
 
-    def purchase(self, money, credit_card_or_reference, **options):  #  TODO every purchase can work on a cc or ref!
-        assert isinstance(money, Money), 'TODO  always pass in a Money object - no exceptions!'
+    def purchase(self, money, credit_card, card_store_id=None, **options):  #  TODO every purchase can work on a cc or ref!
+        credit_card_or_reference = credit_card or card_store_id
         self.message = self.build_sale_or_authorization_request('purchase', money, credit_card_or_reference, **options)
         return self.commit(self.message)  #  TODO  test we return something
 

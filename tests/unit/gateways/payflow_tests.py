@@ -1,402 +1,89 @@
-from merchant_gateways import MerchantGatewayError
-from merchant_gateways.billing.gateways.payflow import Payflow, format
-from merchant_gateways.billing.gateways.gateway import xStr
+import unittest
+
+from merchant_gateways.billing.gateways.payflow import Payflow
 from merchant_gateways.billing.credit_card import CreditCard
-from merchant_gateways.tests.test_helper import *
-from merchant_gateways.tests.billing.gateways.payflow_suite import MerchantGatewaysPayflowSuite
-from pprint import pprint
+from merchant_gateways.tests.billing.gateways.payflow_suite import PayflowProMockServer
+
 from money import Money
+from mock import Mock, patch
 
-class PayflowTests( MerchantGatewaysPayflowSuite,
-                    MerchantGatewaysTestSuite,
-                    MerchantGatewaysTestSuite.CommonTests ):
+class PayflowTests(unittest.TestCase):
 
-    def gateway_type(self):
-        return Payflow
+    def get_gateway(self):
+        return Payflow(**{'login':'username',
+                          'password':'password'})
 
-    def assert_successful_authorization(self):
-        '''
-        All gateways must pass the common test,
-        L{tests.test_helper.MerchantGatewaysTestSuite.CommonTests.test_successful_authorization}.
+    def get_success_mock(self):
+        return Mock(side_effect=PayflowProMockServer())
 
-        That calls this assertion, in each concrete test suite, to assert
-        this gateway's specific details.
+    def get_dummy_credit_card(self):
+        return CreditCard(number='4111111111111111',
+                          month='10',
+                          year='2020',
+                          card_type='V',
+                          verification_value='111',
+                          first_name='John',
+                          last_name='Smith')
 
-        See U{http://broadcast.oreilly.com/2010/05/abstract-tests.html} for more on the the
-        Abstract Test pattern
-        '''
-
-        assert self.response.is_test
-        self.assertEqual('Approved', self.response.message)
-
-        # TODO  assert the response is None if we epic-fail (oh, and trap exceptions)
-        self.assert_webservice_called( # vendor, amount, currency card_type, cc_number, exp_date, cv_num,
-                        self.gateway.post_webservice,
-                                       'LOGIN',
-                        '100.00',
-                        'USD',  #  TODO  use self.money.currency here
-                        'Visa',
-                        '4242424242424242',
-                        '209012',
-                        self.credit_card.verification_value,
-                        first_name='Hermione',
-                        last_name='Granger',
-                        username='LOGIN',
-                        password='Y')
-
-        #~ assert response = self.gateway.authorize(self.money, self.credit_card)
-
-        # TODO  test these        print self.response.params
-        #        self.assertEqual('508141794', self.response.params['authorization'])  #  TODO  also self.response.authorization
-        self.assertEqual('VUJN1A6E11D9', self.response.authorization)
-
-    def assert_successful_purchase(self):
-        pass
-        #TODO
-
-    def assert_failed_authorization(self):
-        self.assertEqual( "Declined", self.response.message)  #  TODO  what's the other message?
-        # TODO assert self.response.params == {}
-        self.assert_none(self.response.fraud_review)
-        assert self.response.avs_result.__dict__ == {'message': 'Street address and 5-digit postal code match.', 'code': 'Y', 'postal_match': 'Y', 'street_match': 'Y'}
-        assert self.response.message == 'Declined'
-        assert self.response.authorization == 'VUJN1A6E11D9'
-        assert self.response.is_test
-
-    def test_failed_authorization(self):
-        try:
-            self.mock_gateway_webservice( self.failed_authorization_response(),
-                lambda:  self.gateway.authorize(self.money, self.credit_card, **self.options) )
-        except MerchantGatewayError, error:
-            self.response = error.args[1]
-        else:
-            self.fail('No epic fail on declined auth')
-        #assert self.response.is_test
-        #self.assert_failure()
-        #self.assert_failed_authorization()
-
-    def test_successful_purchase_with_reference(self):
-        authorization = 'Mobiliarbus'
-        self.mock_gateway_webservice(self.successful_purchase_response(),
-                             lambda: self.gateway.purchase(self.money, authorization) )
-        self.response = self.gateway.response
-
+    def test_successful_card_store(self):
+        return #SKIPPED, not supported as a direct action
+        gateway = self.get_gateway()
+        mock_server = self.get_success_mock()
+        credit_card = self.get_dummy_credit_card()
+        with patch.object(gateway, 'post_webservice', mock_server) as mock_do:
+            response = gateway.card_store(credit_card)
+        self.assertTrue(response.card_store_id)
+        self.assertTrue(response.success)
+    
+    def test_successful_authorize(self):
+        gateway = self.get_gateway()
+        mock_server = self.get_success_mock()
+        credit_card = self.get_dummy_credit_card()
+        with patch.object(gateway, 'post_webservice', mock_server) as mock_do:
+            response = gateway.authorize(Money(100, 'USD'), credit_card)
+        self.assertTrue(response.authorization)
+        self.assertTrue(response.success)
+    
+    def test_successful_authorize_with_card_store(self):
+        gateway = self.get_gateway()
+        mock_server = self.get_success_mock()
+        with patch.object(gateway, 'post_webservice', mock_server) as mock_do:
+            response = gateway.authorize(Money(100, 'USD'), credit_card=None, card_store_id='12345')
+        self.assertTrue(response.authorization)
+        self.assertTrue(response.success)
+    
+    def test_successful_purchase(self):
+        gateway = self.get_gateway()
+        mock_server = self.get_success_mock()
+        credit_card = self.get_dummy_credit_card()
+        with patch.object(gateway, 'post_webservice', mock_server) as mock_do:
+            response = gateway.purchase(Money(100, 'USD'), credit_card)
+        self.assertTrue(response.authorization)
+        self.assertTrue(response.success)
+    
+    def test_successful_purchase_with_card_store(self):
+        gateway = self.get_gateway()
+        mock_server = self.get_success_mock()
+        with patch.object(gateway, 'post_webservice', mock_server) as mock_do:
+            response = gateway.purchase(Money(100, 'USD'), credit_card=None, card_store_id='12345')
+        self.assertTrue(response.authorization)
+        self.assertTrue(response.success)
+    
     def test_successful_void(self):
-        authorization = 'Mobiliarbus'
-
-
-        self.mock_gateway_webservice(self.successful_void_response(),
-                             lambda: self.gateway.void(authorization) )
-        self.response = self.gateway.response
-
+        gateway = self.get_gateway()
+        mock_server = self.get_success_mock()
+        with patch.object(gateway, 'post_webservice', mock_server) as mock_do:
+            response = gateway.void('999999999')
+        self.assertTrue(response.authorization)
+        self.assertTrue(response.success)
+    
     def test_successful_credit(self):
-        authorization = 'Mobiliarbus'
-
-        self.mock_gateway_webservice(self.successful_credit_response(),
-                             lambda: self.gateway.credit(Money('42.00', 'MAD'), authorization) )
-        self.response = self.gateway.response
-
-    def test_bad_configuration_raises_proper_eception(self):
-        authorization = 'Mobiliarbus'
-        try:
-            self.mock_gateway_webservice(self.invalid_configuration_response(),
-                                 lambda: self.gateway.credit(Money('42.00', 'MAD'), authorization) )
-        except MerchantGatewayError:
-            pass
-        else:
-            self.fail('Did not raise proper error') #TODO assert raises?
-
-    def invalid_configuration_response(self):
-        return '''<XMLPayResponse xmlns="http://www.paypal.com/XMLPay">
-                    <ResponseData>
-                        <Vendor>LOGIN</Vendor>
-                        <Partner>paypal</Partner>
-                        <TransactionResults>
-                            <TransactionResult>
-                                <Result>26</Result>
-                                <Message>Invalid vendor account</Message>
-                            </TransactionResult>
-                        </TransactionResults>
-                    </ResponseData>
-                </XMLPayResponse>'''
-
-    def successful_purchase_response(self):  #  TODO  this is bogus! What does a real one look like???
-        return '''<XMLPayResponse xmlns="http://www.paypal.com/XMLPay">
-                  <ResponseData>
-                    <Vendor>LOGIN</Vendor>
-                    <Partner>paypal</Partner>
-                    <TransactionResults>
-                        <TransactionResult>
-                            <Result>0</Result>
-                            <Message>Approved</Message>
-                            <Partner>verisign</Partner>
-                            <HostCode>000</HostCode>
-                            <ResponseText>AP</ResponseText>
-                            <PNRef>VUJN1A6E11D9</PNRef>
-                            <IavsResult>N</IavsResult>
-                            <AuthCode>094016</AuthCode>
-                            <Vendor>ActiveMerchant</Vendor>
-                            <AvsResult>
-                                <ZipMatch>Match</ZipMatch>
-                                <StreetMatch>Match</StreetMatch>
-                            </AvsResult>
-                            <CvResult>Match</CvResult>
-                        </TransactionResult>
-                    </TransactionResults>
-                </ResponseData>
-                </XMLPayResponse>'''
-
-    def test_avs_result(self):
-        self.test_successful_authorization()  #  no jury would convict me
-        avs = self.response.avs_result
-        self.assert_equal( 'Y', avs.code )
-        self.assert_equal( 'Y', avs.street_match )
-        self.assert_equal( 'Y', avs.postal_match )
-
-    def test_cvv_result(self):
-        self.test_failed_authorization()
-        #self.assert_equal('M', self.response.cvv_result.code) #TODO wth is this for?
-
-    def test_build_headers(self):
-        headers = self.gateway.build_headers(42)
-        del headers['X-VPS-Request-ID']
-        self.assertEqual({'Content-Length': '42',
-                             'Content-Type': 'text/xml',
-                             'X-VPS-Client-Timeout': '30',
-                             'X-VPS-VIT-Integration-Product': "TODO what's my name",
-                             'X-VPS-VIT-Runtime-Version': '4.2'},
-                         headers)
-
-    def test_build_request(self):
-        sample = self.gateway.build_request(reference)
-        self.assert_match_xml(sample, xml_pay_request)
-
-    def test_add_address_bill_to(self):
-        address = self.gateway.add_address('BillTo',
-                                           name= 'Severus Snape',
-                                           phone='(555)555-5555',
-                                           address1='1234 My Street',  #  TODO  address2 ?
-                                           city='Ottowa',
-                                           state='ON',
-                                           country='CA',
-                                           zip='K1C2N6'
-                                            )
-        address = xStr(address)
-        self.assert_xml_text(address, '/BillTo/Name', 'Severus Snape')
-
-        self.assert_match_xml('''<BillTo>
-                                   <Name>Severus Snape</Name>
-                                   <Phone>(555)555-5555</Phone>
-                                   <Address>
-                                     <Street>1234 My Street</Street>
-                                     <City>Ottowa</City>
-                                     <State>ON</State>
-                                     <Country>CA</Country>
-                                     <Zip>K1C2N6</Zip>
-                                   </Address>
-                                 </BillTo>''', address)  #  TODO  cover the email!
-
-        self.assert_xml(address, lambda xml:
-                xml.BillTo(
-                       xml.Name('Severus Snape'),
-                       xml.Address(
-                           xml.State('ON'),
-                           xml.Country('CA'),
-                           xml.Zip('K1C2N6')
-                       )
-                    )
-                )
-
-    def test_add_address_ship_to(self):
-        address = self.gateway.add_address('ShipTo', name= 'Regulus Black',
-                                           phone='(555)555-5555',
-                                           address1='1234 My Street',
-                                           city='Ottowa',
-                                           state='ON',
-                                           country='CA',
-                                           zip='K1C2N6'
-                                            )
-        address = xStr(address)
-        self.assert_xml_text(address, '/ShipTo/Name', 'Regulus Black')
-
-        self.assert_match_xml('''<ShipTo>
-                                   <Name>Regulus Black</Name>
-                                   <Phone>(555)555-5555</Phone>
-                                   <Address>
-                                     <Street>1234 My Street</Street>
-                                     <City>Ottowa</City>
-                                     <State>ON</State>
-                                     <Country>CA</Country>
-                                     <Zip>K1C2N6</Zip>
-                                   </Address>
-                                 </ShipTo>''', address)  #  TODO  cover the other variables
-
-    def test_add_different_address(self):
-        address = self.gateway.add_address( 'ShipTo',
-                                            name='Dumbledore',
-                                            address1='39446 Hogwart Avenue',
-                                            city='London',
-                                            state='England', # so?
-                                            country='UK',
-                                            zip='N1 0',
-                                            email='dumbledore@hogwarts.edu',
-                                            phone='1-526-865-8896' )
-
-        self.assert_xml_text(address, '/ShipTo/Name', 'Dumbledore')
-        addy = self.assert_xml(address, '/ShipTo/Address')
-        self.assert_xml_text(addy, 'Street', '39446 Hogwart Avenue')
-        self.assert_xml_text(addy, 'City', 'London')
-        self.assert_xml_text(addy, 'State', 'England')
-        self.assert_xml_text(addy, 'Country', 'UK')
-        self.assert_xml_text(addy, 'Zip', 'N1 0')
-
-    #          xml.tag! 'Name', address[:name] unless address[:name].blank?
-#          xml.tag! 'EMail', options[:email] unless options[:email].blank?
-#          xml.tag! 'Phone', address[:phone] unless address[:phone].blank?
-# TODO!         xml.tag! 'CustCode', options[:customer] if !options[:customer].blank? && tag == 'BillTo'
-#
-#          xml.tag! 'Address' do # TODO etc!
-#            xml.tag! 'Street', address[:address1] unless address[:address1].blank?
-#            xml.tag! 'City', address[:city] unless address[:city].blank?
-#            xml.tag! 'State', address[:state].blank? ? "N/A" : address[:state]
-#            xml.tag! 'Country', address[:country] unless address[:country].blank?
-#            xml.tag! 'Zip', address[:zip] unless address[:zip].blank?
-
-    def test_build_credit_card_request(self):
-        options = { 'address': { 'name': 'Ron Weasley' } }
-        sample = self.gateway.build_credit_card_request('authorization', Money('1.00', 'USD'), self.credit_card, **options)
-        self.assert_match_xml(reference, sample)
-
-    def test_build_credit_card_request(self):
-        options = { 'address': { 'name': 'Ron Weasley' } }  #  TODO  change stuff; then test it
-        sample = self.gateway.build_credit_card_request('purchase', Money('1.00', 'USD'), self.credit_card, **options)
-        self.assert_xml(sample, '//Sale/PayData')
-
-    def test_build_referenced_transaction_request(self):
-        sample = self.gateway.build_reference_sale_or_authorization_request('purchase', Money('1.00', 'USD'), 'VUJN1A6E11D9')
-        self.assert_xml(sample, '//Sale/PayData') #TODO look for our ref
-
-    def test_build_credit_card_request_without_an_address(self):
-        sample = self.gateway.build_credit_card_request('authorization', Money('1.00', 'USD'), self.credit_card)  # TODO options is not optional
-        self.deny_xml(sample, '//BillTo')
-
-    def test_build_credit_card_request_with_an_address_but_without_a_name(self):
-        sample = self.gateway.build_credit_card_request('authorization', Money('1.00', 'USD'), self.credit_card, address= {'city': 'TODO'})
-        #self.assert_match_xml(reference.replace('Ron Weasley', ''), sample)
-        name = self.assert_xml(sample, '//BillTo/Name')  #  TODO  find empty name
-        # self.assertNone(name.text)
-
-        #  CONSIDER  hallow as a feature if the address is a empty {}, it disappears anyway
-
-    def test_build_credit_card_request_and_check_all_its_xml_in_nauseating_detail(self):
-        sample = self.gateway.build_credit_card_request( 'authorization',
-                                                         Money('1.00', 'USD'),  #  TODO  use self.money
-                                                         self.credit_card,
-                                                         address= {'city': 'TODO'})
-
-        self.assert_xml(sample, lambda XML:
-                XML.Authorization(
-          XML.PayData(
-            XML.Invoice(
-              XML.BillTo(
-                XML.Name(),
-                XML.Phone('(555)555-5555'),
-                XML.Address(
-                  XML.Street(),
-                  XML.City('TODO'),
-                  XML.State(),
-                  XML.Country(),
-                  XML.Zip())),
-              XML.TotalAmt('1.00', Currency='USD')),
-            XML.Tender(
-              XML.Card(
-                XML.CardType('Visa'),
-                XML.CardNum('4242424242424242'),
-                XML.ExpDate('209012'),
-                XML.NameOnCard('Hermione'),
-                XML.CVNum('456'),
-                XML.ExtData(Name='LASTNAME', Value='Granger')))))
-            )  #  CONSIDER  make this the dominant test of its ilk
-
-    def test_build_credit_card_request_with_a_foreign_currency_TODO_abstract_me(self):
-
-        Moroccan_Dirham = 'MAD'  #  What, Moor worry? [ C-: ]
-
-        sample = self.gateway.build_credit_card_request( 'authorization',
-                                                         Money('21.00', Moroccan_Dirham),
-                                                         self.credit_card,
-                                                         address= {'city': 'TODO'} )
-        self.assert_xml(sample, lambda XML:
-                                    XML.Authorization(
-                                      XML.PayData(
-                                        XML.Invoice(
-                                          XML.TotalAmt('1.00', Currency=Moroccan_Dirham)),
-                                      )))
-
-    def test_add_credit_card(self):
-        cc = CreditCard(verification_value="123", number="4242424242424242", year=2011, card_type="visa",
-                                month=9, last_name="Longsen", first_name="Longbob")
-
-        xml = self.gateway.add_credit_card(cc)
-
-        card = self.assert_xml(xml, '/Card')
-        self.assert_xml_text(card, 'CardType', 'Visa')
-        self.assert_xml_text(card, 'CardNum', '4242424242424242')
-        self.assert_xml_text(card, 'ExpDate', '201109')
-        self.assert_xml_text(card, 'NameOnCard', 'Longbob Longsen')
-        self.assert_xml_text(card, 'CVNum', '123')
-        extdata = self.assert_xml(card, 'ExtData[ @Name = "LASTNAME" ]')
-        self.assert_equal(extdata.attrib['Value'], 'Longsen')
-        self.deny_xml(card, 'ExtData[ @Name = "CardIssue" ]')
-
-    def test_add_credit_card_with_card_issue(self):
-
-        cc = CreditCard(verification_value="123", number="5641820000000005", year=2011, issue_number=1,
-                        card_type="switch",
-                        month=9, last_name="Longsen", first_name="Longbob")
-
-        xml = self.gateway.add_credit_card(cc)  #  TODO why sometimes a doc and sometimes a str???
-
-        if not getattr(xml, 'split', False):
-            xml = xStr(xml)
-
-        self.assert_match_xml( '''<Card>
-                                      <CardType>Switch</CardType>
-                                      <CardNum>5641820000000005</CardNum>
-                                      <ExpDate>201109</ExpDate>
-                                      <NameOnCard>Longbob Longsen</NameOnCard>
-                                      <CVNum>123</CVNum>
-                                      <ExtData Name="LASTNAME" Value="Longsen"/>
-                                      <ExtData Name="CardIssue" Value="01"/>
-                                    </Card>''', xml )
-
-    def test_expdate(self):
-        self.assert_equal('209012', self.gateway.expdate(self.credit_card))
-
-    def test_format(self):
-        self.credit_card.issue_number = 9
-        self.assert_equal('09', format(self.credit_card.issue_number, two_digits=True))
-
-    def test_build_reference_request(self):
-        xml = self.gateway.build_reference_request('void', None, 'nagini')
-
-        self.assert_xml(xml, lambda xml:
-            xml.Void(
-                xml.PNRef('nagini')
-                )
-            )
-
-    def test_build_reference_request_with_money(self):
-        money = Money('42.00', 'XPD')  #  Palladium!
-        xml = self.gateway.build_reference_request('void', money, 'O.W.L.')
-
-        self.assert_xml(xml, lambda xml:
-            xml.Void(
-                xml.PNRef('O.W.L.'),
-                xml.Invoice(
-                    xml.TotalAmt( '42.00',
-                                  Currency=str(money.currency) )
-            ) ) )
+        gateway = self.get_gateway()
+        mock_server = self.get_success_mock()
+        with patch.object(gateway, 'post_webservice', mock_server) as mock_do:
+            response = gateway.credit(Money(100, 'USD'), '999999999')
+        self.assertTrue(response.authorization)
+        self.assertTrue(response.success)
 
 '''
 class PayflowTest < Test::Unit::TestCase

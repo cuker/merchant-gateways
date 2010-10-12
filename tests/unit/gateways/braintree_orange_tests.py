@@ -2,13 +2,9 @@
 import unittest
 
 from merchant_gateways.billing.gateways.braintree_orange import BraintreeOrange
-from merchant_gateways.tests.test_helper import MerchantGatewaysTestSuite
-from merchant_gateways.tests.billing.gateways.braintree_orange_suite import MerchantGatewaysBraintreeOrangeSuite, BrainTreeOrangeMockServer
+from merchant_gateways.tests.billing.gateways.braintree_orange_suite import  BrainTreeOrangeMockServer
 from merchant_gateways.billing.credit_card import CreditCard
-from pprint import pprint
 from money import Money
-import os
-import sys
 from mock import Mock, patch
 
 class BraintreeOrangeTests(unittest.TestCase):
@@ -44,7 +40,7 @@ class BraintreeOrangeTests(unittest.TestCase):
         credit_card = self.get_dummy_credit_card()
         with patch.object(BraintreeOrange, 'post_webservice', mock_server) as mock_do:
             response = gateway.authorize(Money(100, 'USD'), credit_card)
-        self.assertTrue(response.transaction)
+        self.assertTrue(response.authorization)
         self.assertTrue(response.success)
     
     def test_successful_authorize_with_card_store(self):
@@ -52,7 +48,7 @@ class BraintreeOrangeTests(unittest.TestCase):
         mock_server = self.get_success_mock()
         with patch.object(BraintreeOrange, 'post_webservice', mock_server) as mock_do:
             response = gateway.authorize(Money(100, 'USD'), credit_card=None, card_store_id='12345')
-        self.assertTrue(response.transaction)
+        self.assertTrue(response.authorization)
         self.assertTrue(response.success)
     
     def test_successful_purchase(self):
@@ -61,7 +57,7 @@ class BraintreeOrangeTests(unittest.TestCase):
         credit_card = self.get_dummy_credit_card()
         with patch.object(BraintreeOrange, 'post_webservice', mock_server) as mock_do:
             response = gateway.purchase(Money(100, 'USD'), credit_card)
-        self.assertTrue(response.transaction)
+        self.assertTrue(response.authorization)
         self.assertTrue(response.success)
     
     def test_successful_purchase_with_card_store(self):
@@ -69,7 +65,7 @@ class BraintreeOrangeTests(unittest.TestCase):
         mock_server = self.get_success_mock()
         with patch.object(BraintreeOrange, 'post_webservice', mock_server) as mock_do:
             response = gateway.purchase(Money(100, 'USD'), credit_card=None, card_store_id='12345')
-        self.assertTrue(response.transaction)
+        self.assertTrue(response.authorization)
         self.assertTrue(response.success)
     
     def test_successful_void(self):
@@ -77,7 +73,7 @@ class BraintreeOrangeTests(unittest.TestCase):
         mock_server = self.get_success_mock()
         with patch.object(BraintreeOrange, 'post_webservice', mock_server) as mock_do:
             response = gateway.void('999999999')
-        self.assertTrue(response.transaction)
+        self.assertTrue(response.authorization)
         self.assertTrue(response.success)
     
     def test_successful_credit(self):
@@ -85,6 +81,6 @@ class BraintreeOrangeTests(unittest.TestCase):
         mock_server = self.get_success_mock()
         with patch.object(BraintreeOrange, 'post_webservice', mock_server) as mock_do:
             response = gateway.credit(Money(100, 'USD'), '999999999')
-        self.assertTrue(response.transaction)
+        self.assertTrue(response.authorization)
         self.assertTrue(response.success)
-    
+
