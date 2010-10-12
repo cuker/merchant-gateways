@@ -1,21 +1,9 @@
 # -*- coding: utf-8 -*-
-
-
-from gateway import Gateway, default_dict, xStr
-
+from gateway import Gateway
 
 from merchant_gateways.billing import response
-from merchant_gateways.billing.avs_result import AVSResult
-from merchant_gateways.billing.cvv_result import CVVResult
-from lxml import etree
-from lxml.builder import ElementMaker
-XML = ElementMaker()
-from money import Money
-import sys
-sys.path.insert(0, '/home/phlip/tools/braintree-2.2.1')
 import braintree
 from braintree import Transaction, Environment
-from pprint import pprint
 
 TEST_URI = 'sandbox.braintreegateway.com'
 
@@ -614,3 +602,4 @@ class BraintreeBlue(Gateway):  # CONSIDER most of this belongs in a class SmartP
 ##  end
 ##end
 ##
+

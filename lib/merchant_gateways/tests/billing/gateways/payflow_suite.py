@@ -215,7 +215,7 @@ class PayflowProMockServer(object):
 
     def assert_amount(self, data):
         assert 'TotalAmt' in data['Invoice']
-        assert 'Currency' in data['Invoice']['TotalAmt']['_attributes']
+        assert 'Currency' in data['Invoice']['TotalAmt'].attrib
     
     def assert_payment_info(self, data):
         tender = data['PayData']['Tender']['Card']
@@ -224,8 +224,8 @@ class PayflowProMockServer(object):
             assert 'CardNum' in tender
             assert 'ExpDate' in tender
         else:
-            assert tender['ExtData']['_attributes']['Name'] == 'ORIGID'
-            assert 'Value' in tender['ExtData']['_attributes']
+            assert tender['ExtData'].attrib['Name'] == 'ORIGID'
+            assert 'Value' in tender['ExtData'].attrib
 
     def credit(self, data):
         assert 'PNRef' in data

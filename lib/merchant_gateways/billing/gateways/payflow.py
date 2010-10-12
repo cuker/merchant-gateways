@@ -2,10 +2,9 @@
 from gateway import Gateway, default_dict
 from merchant_gateways import MerchantGatewayError
 from merchant_gateways.billing import response
-from merchant_gateways.billing.gateways.gateway import xStr
 import random
 import string
-from lxml.builder import ElementMaker # TODO document we do lxml only !
+from merchant_gateways.billing.common import xStr, ElementMaker
 XML = ElementMaker()
 
 # TODO use this      XMLNS = 'http://www.paypal.com/XMLPay'
