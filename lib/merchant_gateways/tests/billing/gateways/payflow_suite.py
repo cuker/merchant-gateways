@@ -1,5 +1,4 @@
 
-from merchant_gateways.billing.gateways.gateway import xStr  #  TODO  better home for that stinker!
 from lxml.builder import ElementMaker
 XML = ElementMaker()
 
@@ -166,7 +165,7 @@ class PayflowProMockServer(object):
         self.failure = failure
 
     def __call__(self, url, msg, headers):
-        msg = msg.replace('xmlns="http://www.paypal.com/XMLPay"', '')
+        msg = msg.replace('xmlns="http://www.paypal.com/XMLPay"', '') #arghhh, don't care to deal with namespaces
         data = xmltodict(ET.fromstring(msg))
         response = self.receive(data)
         return ET.tostring(self.send(data, response))
@@ -214,15 +213,11 @@ class PayflowProMockServer(object):
                 'StreetMatch':'Match',
                 'CvResult':'Match',}
 
-    def credit(self, data):
-        assert 'PNRef' in data
-        return self.success_message(data)
+    def assert_amount(self, data):
+        assert 'TotalAmt' in data['Invoice']
+        assert 'Currency' in data['Invoice']['TotalAmt']['_attributes']
     
-    def void(self, data):
-        assert 'PNRef' in data
-        return self.success_message(data)
-
-    def authorization(self, data):
+    def assert_payment_info(self, data):
         tender = data['PayData']['Tender']['Card']
         if 'CardNum' in tender:
             assert 'CardType' in tender
@@ -231,6 +226,19 @@ class PayflowProMockServer(object):
         else:
             assert tender['ExtData']['_attributes']['Name'] == 'ORIGID'
             assert 'Value' in tender['ExtData']['_attributes']
+
+    def credit(self, data):
+        assert 'PNRef' in data
+        self.assert_amount(data)
+        return self.success_message(data)
+    
+    def void(self, data):
+        assert 'PNRef' in data
+        return self.success_message(data)
+
+    def authorization(self, data):
+        self.assert_payment_info(data)
+        self.assert_amount(data['PayData'])
         response = self.success_message(data)
         response.update(self.avs_success_message(data))
         return response
