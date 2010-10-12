@@ -1,14 +1,11 @@
 # -*- coding: utf-8 -*-
-from __future__ import with_statement
 from gateway import Gateway, default_dict, xStr
 from merchant_gateways.billing import response
-from merchant_gateways.billing.avs_result import AVSResult
-from merchant_gateways.billing.cvv_result import CVVResult
+import logging
 from lxml import etree
 from lxml.builder import ElementMaker
 XML = ElementMaker()
 from money import Money
-from pprint import pprint
 
 #  TODO  Callaway noticed on the form that was completed that Discover was selected.
 #       They no longer accept Discover. This was updated on the form, but please make
@@ -200,8 +197,8 @@ class PaymentechOrbital(Gateway):
         message = re.sub(r'\<CardSecVal\>(?P<num>.*)\<\/CardSecVal\>', replace_card_sec_val_digits, message)
         # print message
 
-        with open('/tmp/gateway.log', 'a') as f:  #  TODO  real log system
-            f.write(message)
+        logger = logging.getLogger('MerchantGateways')
+        logger.debug(message)
 
     def _generate_headers(self, request, **options):
         return {
