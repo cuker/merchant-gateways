@@ -1,17 +1,12 @@
 
 from gateway import Gateway, default_dict
 from merchant_gateways import MerchantGatewayError
-from merchant_gateways.billing.avs_result import AVSResult
-from merchant_gateways.billing.cvv_result import CVVResult
-from pprint import pprint
 from merchant_gateways.billing import response
 from merchant_gateways.billing.gateways.gateway import xStr
 import random
 import string
-from lxml import etree
 from lxml.builder import ElementMaker # TODO document we do lxml only !
 XML = ElementMaker()
-from money import Money
 
 # TODO use this      XMLNS = 'http://www.paypal.com/XMLPay'
 # TODO  actually write a real post_webservice
@@ -27,8 +22,8 @@ class Payflow(Gateway):
 
     def authorize(self, money, credit_card, card_store_id=None, **options):  #  TODO  rename money to amount, everywhere
         credit_card_or_reference = credit_card or card_store_id
-        self.request = self.build_sale_or_authorization_request('authorization', money, credit_card_or_reference, **options)
-        return self.commit(self.request)
+        request = self.build_sale_or_authorization_request('authorization', money, credit_card_or_reference, **options)
+        return self.commit(request)
 
     def build_sale_or_authorization_request(self, action, money, credit_card_or_reference, **options):  # TODO  tdd each arg
         if isinstance(credit_card_or_reference, basestring):
@@ -41,22 +36,22 @@ class Payflow(Gateway):
         headers = self.build_headers(len(request))  #  TODO  glyph length or byte length???
 
         url = (self.gateway_mode == 'live') and self.LIVE_URL or self.TEST_URL
-        self.result = self.parse(self.post_webservice(url, request, headers))
+        result = self.parse(self.post_webservice(url, request, headers))
 
         # self.result = parse(ssl_post(test? ? TEST_URL : LIVE_URL, request, headers))'''
 
-        passed = self.result['Result'] == '0'
-        self.message = passed and 'Approved' or 'Declined'
+        passed = result['Result'] == '0'
+        message = passed and 'Approved' or 'Declined'
 
-        self.response = Payflow.Response( passed, self.message, None, # TODO response[:result] == "0", response[:message], response,
+        response = Payflow.Response( passed, message, None, # TODO response[:result] == "0", response[:message], response,
             is_test=self.is_test,
             # authorization='VUJN1A6E11D9', # TODO > response[:pn_ref] || response[:rp_ref],
-            authorization=self.result.get('PNRef', self.result.get('RPRef', None)),  #  TODO  test the RPRef
-            cvv_result = CVV_CODE[self.result.get('CvResult', None)],  #  TODO  default_dict to the rescue!
-            avs_result = self.result.get('AvsResult', None)
+            authorization=result.get('PNRef', result.get('RPRef', None)),  #  TODO  test the RPRef
+            cvv_result = CVV_CODE[result.get('CvResult', None)],  #  TODO  default_dict to the rescue!
+            avs_result = result.get('AvsResult', None)
             )  #  TODO  stash the response in self.response
-        self.response.result = self.result
-        return self.response
+        response.result = result
+        return response
 
     def purchase(self, money, credit_card, card_store_id=None, **options):  #  TODO every purchase can work on a cc or ref!
         credit_card_or_reference = credit_card or card_store_id
@@ -512,8 +507,3 @@ def format(number, **options):  #  TODO  move to credit_card_formatting!
     last = ('000000000000000000000000000000' + str(number))[-2:]
     return last
 
-    # TODO if options.get('two_digits', False):
-#          when :four_digits ; sprintf("%.4i", number)[-4..-1]
-#          else number
-#        end
-#      end
