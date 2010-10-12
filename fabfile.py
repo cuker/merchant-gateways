@@ -16,4 +16,4 @@ def _pip_install(requirements='REQUIREMENTS', environment='.'):
 def test():
     local('virtualenv .')
     _pip_install()
-    local('bin/python setup.py test --xml')
+    local('bin/python setup.py test --xml', capture=False)
