@@ -227,6 +227,11 @@ class PayflowProMockServer(object):
             assert tender['ExtData'].attrib['Name'] == 'ORIGID'
             assert 'Value' in tender['ExtData'].attrib
 
+    def capture(self, data):
+        assert 'PNRef' in data
+        self.assert_amount(data)
+        return self.success_message(data)
+
     def credit(self, data):
         assert 'PNRef' in data
         self.assert_amount(data)

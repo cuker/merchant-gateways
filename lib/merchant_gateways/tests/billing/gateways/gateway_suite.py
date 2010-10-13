@@ -51,6 +51,17 @@ class GatewayTestCase(unittest.TestCase):
         self.assertTrue(response.authorization)
         self.assertTrue(response.success)
     
+    def test_successful_capture(self):
+        gateway = self.get_gateway()
+        if not gateway.supports_action('capture'):
+            return
+        mock_server = self.get_success_mock()
+        credit_card = self.get_dummy_credit_card()
+        with patch.object(gateway, 'post_webservice', mock_server) as mock_do:
+            response = gateway.capture(Money(100, 'USD'), 'transaction_ref')
+        self.assertTrue(response.authorization)
+        self.assertTrue(response.success)
+    
     def test_successful_authorize_with_card_store(self):
         gateway = self.get_gateway()
         if not gateway.supports_action('authorize') or not gateway.CARD_STORE:
