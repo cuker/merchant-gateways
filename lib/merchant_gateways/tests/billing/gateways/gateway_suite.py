@@ -31,7 +31,7 @@ class GatewayTestCase(unittest.TestCase):
 
     def test_successful_card_store(self):
         gateway = self.get_gateway()
-        if not getattr(gateway.card_store, 'supported', True):
+        if not gateway.supports_action('card_store'):
             return
         mock_server = self.get_success_mock()
         credit_card = self.get_dummy_credit_card()
@@ -42,7 +42,7 @@ class GatewayTestCase(unittest.TestCase):
     
     def test_successful_authorize(self):
         gateway = self.get_gateway()
-        if not getattr(gateway.authorize, 'supported', True):
+        if not gateway.supports_action('authorize'):
             return
         mock_server = self.get_success_mock()
         credit_card = self.get_dummy_credit_card()
@@ -53,7 +53,7 @@ class GatewayTestCase(unittest.TestCase):
     
     def test_successful_authorize_with_card_store(self):
         gateway = self.get_gateway()
-        if not getattr(gateway.authorize, 'supported', True) or not gateway.CARD_STORE:
+        if not gateway.supports_action('authorize') or not gateway.CARD_STORE:
             return
         mock_server = self.get_success_mock()
         with patch.object(gateway, 'post_webservice', mock_server) as mock_do:
@@ -63,7 +63,7 @@ class GatewayTestCase(unittest.TestCase):
     
     def test_successful_purchase(self):
         gateway = self.get_gateway()
-        if not getattr(gateway.purchase, 'supported', True):
+        if not gateway.supports_action('purchase'):
             return
         mock_server = self.get_success_mock()
         credit_card = self.get_dummy_credit_card()
@@ -74,7 +74,7 @@ class GatewayTestCase(unittest.TestCase):
     
     def test_successful_purchase_with_card_store(self):
         gateway = self.get_gateway()
-        if not getattr(gateway.purchase, 'supported', True) or not gateway.CARD_STORE:
+        if not gateway.supports_action('purchase') or not gateway.CARD_STORE:
             return
         mock_server = self.get_success_mock()
         with patch.object(gateway, 'post_webservice', mock_server) as mock_do:
@@ -84,7 +84,7 @@ class GatewayTestCase(unittest.TestCase):
     
     def test_successful_void(self):
         gateway = self.get_gateway()
-        if not getattr(gateway.void, 'supported', True):
+        if not gateway.supports_action('void'):
             return
         mock_server = self.get_success_mock()
         with patch.object(gateway, 'post_webservice', mock_server) as mock_do:
@@ -94,7 +94,7 @@ class GatewayTestCase(unittest.TestCase):
     
     def test_successful_credit(self):
         gateway = self.get_gateway()
-        if not getattr(gateway.credit, 'supported', True):
+        if not gateway.supports_action('credit'):
             return
         mock_server = self.get_success_mock()
         with patch.object(gateway, 'post_webservice', mock_server) as mock_do:

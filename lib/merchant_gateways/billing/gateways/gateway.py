@@ -48,7 +48,7 @@ class Gateway(object):
 
         return '%.2f' % money.amount
 
-    def currency(money):
+    def currency(self, money):
         try:
             return money.currency
         except AttributeError:
@@ -60,6 +60,10 @@ class Gateway(object):
         if self.card_brand(credit_card) in self.DEBIT_CARDS:
             return True
         return False
+    
+    def supports_action(self, action):
+        if not hasattr(self, action): return False
+        return getattr(getattr(self, action), 'supported', True)
 
     def authorize(self, money, credit_card, **kwargs):
         raise NotImplementedError
