@@ -2,11 +2,16 @@
 Provides a poor man's xml <=> python translactions
 Meant to be dead simple, but the ordered multi value dict is not!
 """
+import random
+import string
 from types import GeneratorType
 try:
     from xml.etree import ElementTree as ET
 except ImportError:
     from elementtree import ElementTree as ET
+
+def gencode(length=16, chars=(string.uppercase+string.lowercase+string.digits)):
+    return ''.join([random.choice(chars) for i in range(length)])
 
 class MultiValueDictKeyError(KeyError):
     pass

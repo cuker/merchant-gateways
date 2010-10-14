@@ -2,17 +2,13 @@
 from gateway import Gateway, default_dict
 from merchant_gateways import MerchantGatewayError
 from merchant_gateways.billing import response
-import random
-import string
-from merchant_gateways.billing.common import xStr, ElementMaker
+
+from merchant_gateways.billing.common import xStr, ElementMaker, gencode
 XML = ElementMaker()
 
 # TODO use this      XMLNS = 'http://www.paypal.com/XMLPay'
 # TODO  actually write a real post_webservice
 # TODO  advise NB that active_merchant has braintree - of course!
-
-def gencode(length=16, chars=(string.uppercase+string.lowercase+string.digits)):
-    return ''.join([random.choice(chars) for i in range(length)])
 
 class Payflow(Gateway):
     CARD_STORE = True

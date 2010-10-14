@@ -212,7 +212,7 @@ class PaymentechOrbitalMockServer(object):
         response = self.common_response(data)
         response.update(XMLDict([('CardBrand', 'MC'),
                                  ('AccountNum', data['AccountNum']),
-                                 ('OrderID', data.get('OrderID')),
+                                 ('OrderID', data['OrderID']),
                                  ('TxRefNum', '4A785F5106CCDC41A936BFF628BF73036FEC5401'),
                                  ('TxRefIdx', '1'),
                                  ('ProcStatus','0'),

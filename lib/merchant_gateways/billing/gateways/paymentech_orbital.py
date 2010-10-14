@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from gateway import Gateway, default_dict
-from merchant_gateways.billing.common import xStr, ElementMaker, ET
+from merchant_gateways.billing.common import xStr, ElementMaker, ET, gencode
 from merchant_gateways.billing import response
 import logging
 XML = ElementMaker()
@@ -105,7 +105,7 @@ class PaymentechOrbital(Gateway):
                         x.AVScountryCode(self.censor_countries(fields)), #  and ensure this is ISO-compliant or we get a DTD fault
                         #x.CustomerProfileFromOrderInd('A'), # TODO: make these optional
                         #x.CustomerProfileOrderOverrideInd('NO'),
-                        x.OrderID(str(fields['order_id'])),  #  TODO  do blank order_id pass validation?
+                        x.OrderID(str(fields.get('order_id',gencode()))),
                         x.Amount(grandTotalAmount)
                         )
         return xStr(XML.Request(new_order))
