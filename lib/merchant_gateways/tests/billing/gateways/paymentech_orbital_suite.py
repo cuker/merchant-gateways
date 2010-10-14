@@ -156,6 +156,6 @@ class MerchantGatewaysPaymentechOrbitalSuite(MerchantGatewaysWebserviceTestSuite
     def assert_gateway_message_schema(self, message, schema_file):
         from os import path
         here = path.dirname(__file__)
-        there = path.join(here, 'paymentech_orbital_schemas', schema_file)
+        there = path.join(here, 'schemas', 'paymentech_orbital', schema_file)
         self.assert_xml_schema(message, there)
 
