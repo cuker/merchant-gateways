@@ -245,7 +245,6 @@
 			<xs:element name="AutoAuthFlexRedeemedAmt" type="xs:string" minOccurs="0"/>
 			<xs:element name="AutoAuthAuthCode" type="xs:string" minOccurs="0"/>
 			<xs:element name="AutoAuthRespCode" type="xs:string" minOccurs="0"/>
-			<xs:element name="AutoAuthRespCode" type="xs:string" minOccurs="0"/>
 			<xs:element name="AutoAuthFlexHostTrace" type="xs:string" minOccurs="0"/>
 			<xs:element name="AutoAuthFlexAction" type="xs:string" minOccurs="0"/>
 			<xs:element name="AutoAuthRespTime" type="xs:string" minOccurs="0"/>

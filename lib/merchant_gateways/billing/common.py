@@ -35,6 +35,13 @@ class OrderedMultiValueDict(dict): #Shameless copy from django, Thank you django
             # to get the data into self with our super().__init__ call and a
             # second time to setup keyOrder correctly
             data = list(data)
+        if isinstance(data, (list, tuple)):
+            processed_data = data
+            data = list()
+            for key, value in processed_data:
+                if not isinstance(value, list):
+                    value = [value]
+                data.append((key, value))
         super(OrderedMultiValueDict, self).__init__(data)
         if hasattr(data, 'keyOrder'):
             self.keyOrder = list(data.keyOrder)
@@ -48,7 +55,7 @@ class OrderedMultiValueDict(dict): #Shameless copy from django, Thank you django
 
     def __repr__(self):
         return "<%s: %s>" % (self.__class__.__name__,
-                             super(OrderedMultiValueDict, self).__repr__())
+                             ', '.join("'%s': %s" % (key, value) for key, value in self.iteritems()))
 
     def __getitem__(self, key):
         """
@@ -156,7 +163,7 @@ class OrderedMultiValueDict(dict): #Shameless copy from django, Thank you django
         Returns a list of (key, value) pairs, where value is the last item in
         the list associated with the key.
         """
-        return [(key, self[key]) for key in self.keys()]
+        return [(key, self[key]) for key in self.iterkeys()]
 
     def iteritems(self):
         """
@@ -168,7 +175,7 @@ class OrderedMultiValueDict(dict): #Shameless copy from django, Thank you django
 
     def lists(self):
         """Returns a list of (key, list) pairs."""
-        return super(OrderedMultiValueDict, self).items()
+        return [(key, self.getlist(key)) for key in self.iterkeys()]
 
     def iterlists(self):
         """Yields (key, list) pairs."""
@@ -177,7 +184,7 @@ class OrderedMultiValueDict(dict): #Shameless copy from django, Thank you django
 
     def values(self):
         """Returns a list of the last value on every key list."""
-        return [self[key] for key in self.keys()]
+        return [self[key] for key in self.iterkeys()]
 
     def itervalues(self):
         """Yield the last value on every key list."""
@@ -246,9 +253,9 @@ class XMLDict(OrderedMultiValueDict):
     
     def __repr__(self):
         if self.attrib:
-            return "<%s (%s)>" % (super(OrderedMultiValueDict, self).__repr__(), 
+            return "<%s (%s)>" % (super(XMLDict, self).__repr__(), 
                                   self.attrib)
-        return "<%s>" % super(OrderedMultiValueDict, self).__repr__()
+        return "<%s>" % super(XMLDict, self).__repr__()
     
     def to_xml(self, parent):
         dicttoxml(self, parent)
