@@ -28,6 +28,15 @@ class GatewayTestCase(unittest.TestCase):
                           verification_value='111',
                           first_name='John',
                           last_name='Smith')
+    
+    def get_dummy_billing_address(self):
+        return {'phone':'(555) 555-5555',
+                'name':'John Smith',
+                'address1':'420 South Cedros',
+                'city':'Solona Beach',
+                'state':'CA',
+                'country':'US',
+                'zip':'90210',}
 
     def test_successful_card_store(self):
         gateway = self.get_gateway()
@@ -35,8 +44,9 @@ class GatewayTestCase(unittest.TestCase):
             return
         mock_server = self.get_success_mock()
         credit_card = self.get_dummy_credit_card()
+        address = self.get_dummy_billing_address()
         with patch.object(gateway, 'post_webservice', mock_server) as mock_do:
-            response = gateway.card_store(credit_card)
+            response = gateway.card_store(credit_card, address=address)
         self.assertTrue(response.card_store_id)
         self.assertTrue(response.success)
     
@@ -46,8 +56,9 @@ class GatewayTestCase(unittest.TestCase):
             return
         mock_server = self.get_success_mock()
         credit_card = self.get_dummy_credit_card()
+        address = self.get_dummy_billing_address()
         with patch.object(gateway, 'post_webservice', mock_server) as mock_do:
-            response = gateway.authorize(Money(100, 'USD'), credit_card)
+            response = gateway.authorize(Money(100, 'USD'), credit_card, address=address)
         self.assertTrue(response.authorization)
         self.assertTrue(response.success)
     
@@ -78,8 +89,9 @@ class GatewayTestCase(unittest.TestCase):
             return
         mock_server = self.get_success_mock()
         credit_card = self.get_dummy_credit_card()
+        address = self.get_dummy_billing_address()
         with patch.object(gateway, 'post_webservice', mock_server) as mock_do:
-            response = gateway.purchase(Money(100, 'USD'), credit_card)
+            response = gateway.purchase(Money(100, 'USD'), credit_card, address=address)
         self.assertTrue(response.authorization)
         self.assertTrue(response.success)
     

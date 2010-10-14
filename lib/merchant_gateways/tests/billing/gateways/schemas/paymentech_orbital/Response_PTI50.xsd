@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="Response">
+		<xs:annotation>
+			<xs:documentation>Response XML for all defined Request transactions</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:choice>
+				<xs:element name="FlexCacheResp" type="flexCacheRespType"/>
+				<xs:element name="NewOrderResp" type="newOrderRespType"/>
+				<xs:element name="ProfileResp" type="profileRespType"/>
+				<xs:element name="EndOfDayResp" type="endOfDayRespType"/>
+				<xs:element name="ReversalResp" type="reversalRespType"/>
+				<xs:element name="MarkForCaptureResp" type="markForCaptureRespType"/>
+				<xs:element name="QuickResp" type="quickRespType"/>
+				<xs:element name="QuickResponse" type="quickRespType_old"/>
+				<xs:element name="InquiryResp" type="inquiryRespType"/>
+				<xs:element name="AccountUpdaterResp" type="accountUpdaterRespType"/>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="newOrderRespType">
+		<xs:sequence>
+			<xs:element name="IndustryType" type="xs:string"/>
+			<xs:element name="MessageType" type="xs:string"/>
+			<xs:element name="MerchantID" type="xs:string"/>
+			<xs:element name="TerminalID" type="xs:string"/>
+			<xs:element name="CardBrand" type="xs:string"/>
+			<xs:element name="AccountNum" type="xs:string"/>
+			<xs:element name="OrderID" type="xs:string"/>
+			<xs:element name="TxRefNum" type="xs:string"/>
+			<xs:element name="TxRefIdx" type="xs:string"/>
+			<xs:element name="ProcStatus" type="xs:string"/>
+			<xs:element name="ApprovalStatus" type="xs:string"/>
+			<xs:element name="RespCode" type="xs:string"/>
+			<xs:element name="AVSRespCode" type="xs:string"/>
+			<xs:element name="CVV2RespCode" type="xs:string"/>
+			<xs:element name="AuthCode" type="xs:string"/>
+			<xs:element name="RecurringAdviceCd" type="xs:string"/>
+			<xs:element name="CAVVRespCode" type="xs:string"/>
+			<xs:element name="StatusMsg" type="xs:string"/>
+			<xs:element name="RespMsg" type="xs:string"/>
+			<xs:element name="HostRespCode" type="xs:string"/>
+			<xs:element name="HostAVSRespCode" type="xs:string"/>
+			<xs:element name="HostCVV2RespCode" type="xs:string"/>
+			<xs:element name="CustomerRefNum" type="xs:string"/>
+			<xs:element name="CustomerName" type="xs:string"/>
+			<xs:element name="ProfileProcStatus" type="xs:string"/>
+			<xs:element name="CustomerProfileMessage" type="xs:string"/>
+			<xs:element name="BillerReferenceNumber" type="xs:string" minOccurs="0"/>
+			<xs:element name="MBStatus" type="xs:string" minOccurs="0"/>
+			<xs:element name="MBMicroPaymentDaysLeft" type="xs:string" minOccurs="0"/>
+			<xs:element name="MBMicroPaymentDollarsLeft" type="xs:string" minOccurs="0"/>
+			<xs:element name="RespTime" type="xs:string"/>
+			<xs:element name="PartialAuthOccurred" type="xs:string"/>
+			<xs:element name="RequestedAmount" type="xs:string"/>
+			<xs:element name="RedeemedAmount" type="xs:string"/>
+			<xs:element name="RemainingBalance" type="xs:string"/>
+			<xs:element name="CountryFraudFilterStatus" type="xs:string"/>
+			<xs:element name="IsoCountryCode" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="inquiryRespType">
+		<xs:sequence>
+			<xs:element name="IndustryType" type="xs:string"/>
+			<xs:element name="MessageType" type="xs:string"/>
+			<xs:element name="MerchantID" type="xs:string"/>
+			<xs:element name="TerminalID" type="xs:string"/>
+			<xs:element name="CardBrand" type="xs:string"/>
+			<xs:element name="AccountNum" type="xs:string"/>
+			<xs:element name="OrderID" type="xs:string"/>
+			<xs:element name="TxRefNum" type="xs:string"/>
+			<xs:element name="TxRefIdx" type="xs:string"/>
+			<xs:element name="ProcStatus" type="xs:string"/>
+			<xs:element name="ApprovalStatus" type="xs:string"/>
+			<xs:element name="RespCode" type="xs:string"/>
+			<xs:element name="AVSRespCode" type="xs:string"/>
+			<xs:element name="CVV2RespCode" type="xs:string"/>
+			<xs:element name="AuthCode" type="xs:string"/>
+			<xs:element name="RecurringAdviceCd" type="xs:string"/>
+			<xs:element name="CAVVRespCode" type="xs:string"/>
+			<xs:element name="StatusMsg" type="xs:string"/>
+			<xs:element name="RespMsg" type="xs:string"/>
+			<xs:element name="HostRespCode" type="xs:string"/>
+			<xs:element name="HostAVSRespCode" type="xs:string"/>
+			<xs:element name="HostCVV2RespCode" type="xs:string"/>
+			<xs:element name="CustomerRefNum" type="xs:string"/>
+			<xs:element name="CustomerName" type="xs:string"/>
+			<xs:element name="ProfileProcStatus" type="xs:string"/>
+			<xs:element name="CustomerProfileMessage" type="xs:string"/>
+			<xs:element name="BillerReferenceNumber" type="xs:string" minOccurs="0"/>
+			<xs:element name="MBStatus" type="xs:string" minOccurs="0"/>
+			<xs:element name="MBMicroPaymentDaysLeft" type="xs:string" minOccurs="0"/>
+			<xs:element name="MBMicroPaymentDollarsLeft" type="xs:string" minOccurs="0"/>
+			<xs:element name="RespTime" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>	
+	<xs:complexType name="accountUpdaterRespType">
+		<xs:sequence>
+			<xs:element name="customerBin" type="xs:string"/>
+			<xs:element name="customerMerchantID" type="xs:string"/>
+			<xs:element name="CustomerRefNum" type="xs:string"/>
+			<xs:element name="CustomerProfileAction" type="xs:string"/>
+			<xs:element name="Status" type="xs:string"/>
+			<xs:element name="ScheduledDate" type="xs:string"/>
+			<xs:element name="ProfileProcStatus" type="xs:string"/>
+			<xs:element name="CustomerProfileMessage" type="xs:string"/>
+			<xs:element name="RespTime" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>	
+	<xs:complexType name="markForCaptureRespType">
+		<xs:sequence>
+			<xs:element name="MerchantID" type="xs:string"/>
+			<xs:element name="TerminalID" type="xs:string"/>
+			<xs:element name="OrderID" type="xs:string"/>
+			<xs:element name="TxRefNum" type="xs:string"/>
+			<xs:element name="TxRefIdx" type="xs:string"/>
+			<xs:element name="Amount" type="xs:string"/>
+			<xs:element name="ProcStatus" type="xs:string"/>
+			<xs:element name="StatusMsg" type="xs:string"/>
+			<xs:element name="RespTime" type="xs:string"/>
+			<xs:element name="ApprovalStatus" type="xs:string"/>
+			<xs:element name="RespCode" type="xs:string"/>
+			<xs:element name="AVSRespCode" type="xs:string"/>
+			<xs:element name="AuthCode" type="xs:string"/>
+			<xs:element name="RespMsg" type="xs:string"/>
+			<xs:element name="HostRespCode" type="xs:string"/>
+			<xs:element name="HostAVSRespCode" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="reversalRespType">
+		<xs:sequence>
+			<xs:element name="MerchantID" type="xs:string"/>
+			<xs:element name="TerminalID" type="xs:string"/>
+			<xs:element name="OrderID" type="xs:string"/>
+			<xs:element name="TxRefNum" type="xs:string"/>
+			<xs:element name="TxRefIdx" type="xs:string"/>
+			<xs:element name="OutstandingAmt" type="xs:string"/>
+			<xs:element name="ProcStatus" type="xs:string"/>
+			<xs:element name="StatusMsg" type="xs:string"/>
+			<xs:element name="RespTime" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="endOfDayRespType">
+		<xs:sequence>
+			<xs:element name="MerchantID" type="xs:string"/>
+			<xs:element name="TerminalID" type="xs:string"/>
+			<xs:element name="BatchSeqNum" type="xs:string"/>
+			<xs:element name="ProcStatus" type="xs:string"/>
+			<xs:element name="StatusMsg" type="xs:string"/>
+			<xs:element ref="SettleRejectHoldingBin" minOccurs="0"/>
+			<xs:element name="RespTime" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="profileRespType">
+		<xs:sequence>
+			<xs:element name="CustomerBin" type="xs:string"/>
+			<xs:element name="CustomerMerchantID" type="xs:string"/>
+			<xs:element name="CustomerName" type="xs:string"/>
+			<xs:element name="CustomerRefNum" type="xs:string"/>
+			<xs:element name="CustomerProfileAction" type="xs:string"/>
+			<xs:element name="ProfileProcStatus" type="xs:string"/>
+			<xs:element name="CustomerProfileMessage" type="xs:string"/>
+			<xs:element name="CustomerAddress1" type="xs:string"/>
+			<xs:element name="CustomerAddress2" type="xs:string"/>
+			<xs:element name="CustomerCity" type="xs:string"/>
+			<xs:element name="CustomerState" type="xs:string"/>
+			<xs:element name="CustomerZIP" type="xs:string"/>
+			<xs:element name="CustomerEmail" type="xs:string"/>
+			<xs:element name="CustomerPhone" type="xs:string"/>
+			<xs:element name="CustomerCountryCode" type="xs:string"/>
+			<xs:element name="CustomerProfileOrderOverrideInd" type="xs:string"/>
+			<xs:element name="OrderDefaultDescription" type="xs:string"/>
+			<xs:element name="OrderDefaultAmount" type="xs:string"/>
+			<xs:element name="CustomerAccountType" type="xs:string"/>
+			<xs:element name="Status" type="xs:string"/>
+			<xs:element name="CardBrand" type="xs:string"/>
+			<xs:element name="CCAccountNum" type="xs:string"/>
+			<xs:element name="CCExpireDate" type="xs:string"/>
+			<xs:element name="ECPAccountDDA" type="xs:string"/>
+			<xs:element name="ECPAccountType" type="xs:string"/>
+			<xs:element name="ECPAccountRT" type="xs:string"/>
+			<xs:element name="ECPBankPmtDlv" type="xs:string"/>
+			<xs:element name="SwitchSoloStartDate" type="xs:string"/>
+			<xs:element name="SwitchSoloIssueNum" type="xs:string"/>
+			<xs:element name="CustomerMBStatus" type="xs:string" minOccurs="0"/>
+			<xs:element name="MBType" type="xs:string" minOccurs="0"/>
+			<xs:element name="MBOrderIdGenerationMethod" type="xs:string" minOccurs="0"/>
+			<xs:element name="MBRecurringStartDate" type="xs:string" minOccurs="0"/>
+			<xs:element name="MBRecurringEndDate" type="xs:string" minOccurs="0"/>
+			<xs:element name="MBRecurringNoEndDateFlag" type="xs:string" minOccurs="0"/>
+			<xs:element name="MBRecurringMaxBillings" type="xs:string" minOccurs="0"/>
+			<xs:element name="MBRecurringFrequency" type="xs:string" minOccurs="0"/>
+			<xs:element name="MBDeferredBillDate" type="xs:string" minOccurs="0"/>
+			<xs:element name="MBMicroPaymentMaxDollarValue" type="xs:string" minOccurs="0"/>
+			<xs:element name="MBMicroPaymentMaxBillingDays" type="xs:string" minOccurs="0"/>
+			<xs:element name="MBMicroPaymentMaxTransactions" type="xs:string" minOccurs="0"/>
+			<xs:element name="MBCustomerStatus" type="xs:string" minOccurs="0"/>
+			<xs:element name="MBMicroPaymentDaysLeft" type="xs:string" minOccurs="0"/>
+			<xs:element name="MBMicroPaymentDollarsLeft" type="xs:string" minOccurs="0"/>
+			<xs:element name="EUDDCountryCode" type="xs:string" minOccurs="0"/>
+			<xs:element name="EUDDBankSortCode" type="xs:string" minOccurs="0"/>
+			<xs:element name="EUDDRibCode" type="xs:string" minOccurs="0"/>
+			<xs:element name="SDMerchantName" type="xs:string" minOccurs="0"/>
+			<xs:element name="SDProductDescription" type="xs:string" minOccurs="0"/>
+			<xs:element name="SDMerchantCity" type="xs:string" minOccurs="0"/>
+			<xs:element name="SDMerchantPhone" type="xs:string" minOccurs="0"/>
+			<xs:element name="SDMerchantURL" type="xs:string" minOccurs="0"/>
+			<xs:element name="SDMerchantEmail" type="xs:string" minOccurs="0"/>
+			<xs:element name="BillerReferenceNumber" type="xs:string"/>
+			<xs:element name="RespTime" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="flexCacheRespType">
+		<xs:sequence>
+			<xs:element name="MerchantID" type="xs:string"/>
+			<xs:element name="TerminalID" type="xs:string"/>
+			<xs:element name="OrderID" type="xs:string"/>
+			<xs:choice>
+				<xs:element name="AccountNum" type="xs:string"/>
+				<xs:element name="StartAccountNum" type="xs:string"/>
+			</xs:choice>
+			<xs:element name="BatchFailedAcctNum" type="xs:string" minOccurs="0"/>
+			<xs:element name="FlexRequestedAmount" type="xs:string"/>
+			<xs:element name="FlexRedeemedAmt" type="xs:string" minOccurs="0"/>
+			<xs:element name="FlexHostTrace" type="xs:string"/>
+			<xs:element name="FlexAction" type="xs:string"/>
+			<xs:element name="FlexAcctBalance" type="xs:string"/>
+			<xs:element name="FlexAcctPriorBalance" type="xs:string"/>
+			<xs:element name="FlexAcctExpireDate" type="xs:string" minOccurs="0"/>
+			<xs:element name="CardBrand" type="xs:string"/>
+			<xs:element name="TxRefNum" type="xs:string"/>
+			<xs:element name="TxRefIdx" type="xs:string"/>
+			<xs:element name="ProcStatus" type="xs:string"/>
+			<xs:element name="StatusMsg" type="xs:string"/>
+			<xs:element name="ApprovalStatus" type="xs:string"/>
+			<xs:element name="AuthCode" type="xs:string" minOccurs="0"/>
+			<xs:element name="RespCode" type="xs:string"/>
+			<xs:element name="CVV2RespCode" type="xs:string"/>
+			<xs:element name="AutoAuthTxRefIdx" type="xs:string" minOccurs="0"/>
+			<xs:element name="AutoAuthTxRefNum" type="xs:string" minOccurs="0"/>
+			<xs:element name="AutoAuthProcStatus" type="xs:string" minOccurs="0"/>
+			<xs:element name="AutoAuthStatusMsg" type="xs:string" minOccurs="0"/>
+			<xs:element name="AutoAuthApprovalStatus" type="xs:string" minOccurs="0"/>
+			<xs:element name="AutoAuthFlexRedeemedAmt" type="xs:string" minOccurs="0"/>
+			<xs:element name="AutoAuthAuthCode" type="xs:string" minOccurs="0"/>
+			<xs:element name="AutoAuthRespCode" type="xs:string" minOccurs="0"/>
+			<xs:element name="AutoAuthRespCode" type="xs:string" minOccurs="0"/>
+			<xs:element name="AutoAuthFlexHostTrace" type="xs:string" minOccurs="0"/>
+			<xs:element name="AutoAuthFlexAction" type="xs:string" minOccurs="0"/>
+			<xs:element name="AutoAuthRespTime" type="xs:string" minOccurs="0"/>
+			<xs:element name="RespTime" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="quickRespType">
+		<xs:sequence>
+			<xs:element name="MerchantID" type="xs:string" minOccurs="0"/>
+			<xs:element name="TerminalID" type="xs:string" minOccurs="0"/>
+			<xs:element name="OrderID" type="xs:string" minOccurs="0"/>
+			<xs:element name="AccountNum" type="xs:string" minOccurs="0"/>
+			<xs:element name="StartAccountNum" type="xs:string" minOccurs="0"/>
+			<xs:element name="TxRefNum" type="xs:string" minOccurs="0"/>
+			<xs:element name="TxRefIdx" type="xs:string" minOccurs="0"/>
+			<xs:element name="ProcStatus" type="xs:string"/>
+			<xs:element name="StatusMsg" type="xs:string"/>
+			<xs:element name="ApprovalStatus" type="xs:string" minOccurs="0"/>
+			<xs:element name="CustomerBin" type="xs:string" minOccurs="0"/>
+			<xs:element name="CustomerMerchantID" type="xs:string" minOccurs="0"/>
+			<xs:element name="CustomerName" type="xs:string" minOccurs="0"/>
+			<xs:element name="CustomerRefNum" type="xs:string" minOccurs="0"/>
+			<xs:element name="CustomerProfileAction" type="xs:string" minOccurs="0"/>
+			<xs:element name="ProfileProcStatus" type="xs:string" minOccurs="0"/>
+			<xs:element name="CustomerProfileMessage" type="xs:string" minOccurs="0"/>
+			<xs:element name="CustomerAddress1" type="xs:string" minOccurs="0"/>
+			<xs:element name="CustomerAddress2" type="xs:string" minOccurs="0"/>
+			<xs:element name="CustomerCity" type="xs:string" minOccurs="0"/>
+			<xs:element name="CustomerState" type="xs:string" minOccurs="0"/>
+			<xs:element name="CustomerZIP" type="xs:string" minOccurs="0"/>
+			<xs:element name="CustomerEmail" type="xs:string" minOccurs="0"/>
+			<xs:element name="CustomerPhone" type="xs:string" minOccurs="0"/>
+			<xs:element name="CustomerProfileOrderOverrideInd" type="xs:string" minOccurs="0"/>
+			<xs:element name="OrderDefaultDescription" type="xs:string" minOccurs="0"/>
+			<xs:element name="OrderDefaultAmount" type="xs:string" minOccurs="0"/>
+			<xs:element name="CustomerAccountType" type="xs:string" minOccurs="0"/>
+			<xs:element name="CCAccountNum" type="xs:string" minOccurs="0"/>
+			<xs:element name="CCExpireDate" type="xs:string" minOccurs="0"/>
+			<xs:element name="ECPAccountDDA" type="xs:string" minOccurs="0"/>
+			<xs:element name="ECPAccountType" type="xs:string" minOccurs="0"/>
+			<xs:element name="ECPAccountRT" type="xs:string" minOccurs="0"/>
+			<xs:element name="ECPBankPmtDlv" type="xs:string" minOccurs="0"/>
+			<xs:element name="SwitchSoloStartDate" type="xs:string" minOccurs="0"/>
+			<xs:element name="SwitchSoloIssueNum" type="xs:string" minOccurs="0"/>
+			<xs:element name="RespTime" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="quickRespType_old">
+		<xs:sequence>
+			<xs:element name="MerchantID" type="xs:string" minOccurs="0"/>
+			<xs:element name="TerminalID" type="xs:string" minOccurs="0"/>
+			<xs:element name="ProcStatus" type="xs:string" minOccurs="0"/>
+			<xs:element ref="StatusMsg" minOccurs="0"/>
+			<xs:element name="ApprovalStatus" type="xs:string" minOccurs="0"/>
+			<xs:element name="TxRefIdx" type="xs:string" minOccurs="0"/>
+			<xs:element name="TxRefNum" type="xs:string" minOccurs="0"/>
+			<xs:element name="OrderNumber" type="xs:string" minOccurs="0"/>
+			<xs:element name="AccountNum" type="xs:string" minOccurs="0"/>
+			<xs:element name="POSEntryMode" type="xs:string" minOccurs="0"/>
+			<xs:element name="CardType1" type="xs:string" minOccurs="0"/>
+			<xs:element name="RespTime" type="xs:string" minOccurs="0"/>
+			<xs:element name="CustomerProfileResponse" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="HcsTcsInd" default="T">
+			<xs:simpleType>
+				<xs:restriction base="xs:NMTOKEN">
+					<xs:enumeration value="T"/>
+					<xs:enumeration value="H"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="MessageType">
+			<xs:simpleType>
+				<xs:restriction base="xs:NMTOKEN">
+					<xs:enumeration value="FR"/>
+					<xs:enumeration value="PR"/>
+					<xs:enumeration value="V"/>
+					<xs:enumeration value="A"/>
+					<xs:enumeration value="AC"/>
+					<xs:enumeration value="C"/>
+					<xs:enumeration value="B"/>
+					<xs:enumeration value="UC"/>
+					<xs:enumeration value="U"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="Version" type="xs:NMTOKEN" fixed="2"/>
+		<xs:attribute name="CapStatus">
+			<xs:simpleType>
+				<xs:restriction base="xs:NMTOKEN">
+					<xs:enumeration value="0"/>
+					<xs:enumeration value="1"/>
+					<xs:enumeration value="2"/>
+					<xs:enumeration value="3"/>
+					<xs:enumeration value="4"/>
+					<xs:enumeration value="5"/>
+					<xs:enumeration value="6"/>
+					<xs:enumeration value="7"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="LangInd" default="00">
+			<xs:simpleType>
+				<xs:union>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="00"/>
+							<xs:enumeration value="01"/>
+							<xs:enumeration value="02"/>
+							<xs:enumeration value="03"/>
+							<xs:enumeration value="04"/>
+							<xs:enumeration value="05"/>
+							<xs:enumeration value="06"/>
+							<xs:enumeration value="07"/>
+						</xs:restriction>
+					</xs:simpleType>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value=""/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:union>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="TzCode" type="xs:string"/>
+	</xs:complexType>
+	<xs:element name="StatusMsg">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute name="StatusMsgLth" type="xs:NMTOKEN" use="required"/>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="SettleRejectHoldingBin">
+		<xs:complexType/>
+	</xs:element>
+</xs:schema>

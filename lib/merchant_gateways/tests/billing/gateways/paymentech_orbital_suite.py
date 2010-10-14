@@ -159,3 +159,91 @@ class MerchantGatewaysPaymentechOrbitalSuite(MerchantGatewaysWebserviceTestSuite
         there = path.join(here, 'schemas', 'paymentech_orbital', schema_file)
         self.assert_xml_schema(message, there)
 
+from merchant_gateways.billing.common import xmltodict, dicttoxml, ET
+
+class PaymentechOrbitalMockServer(object):
+    def __init__(self, failure=None):
+        self.failure = failure
+
+    def __call__(self, url, msg, headers):
+        if self.failure:
+            return self.failure
+        self.validate_request(msg)
+        data = xmltodict(ET.fromstring(msg))
+        response = self.receive(data)
+        ret = ET.tostring(self.send(data, response))
+        self.validate_response(ret)
+        return ret
+    
+    def validate_request(self, msg):
+        from lxml import etree
+        from os import path
+        location = path.join(path.dirname(__file__), 'schemas', 'paymentech_orbital', 'Request_PTI50.xsd')
+        schema_doc = etree.XMLSchema(etree.parse(open(location, 'r')))
+        xml = etree.XML(msg)
+        schema_doc.assertValid(xml)
+
+    def validate_response(self, msg):
+        return #TODO their xsd is non-deterministic
+        from lxml import etree
+        from os import path
+        location = path.join(path.dirname(__file__), 'schemas', 'paymentech_orbital', 'Response_PTI50.xsd')
+        schema_doc = etree.XMLSchema(etree.parse(open(location, 'r')))
+        xml = etree.XML(msg)
+        schema_doc.assertValid(xml)
+
+    def receive(self, data):
+        for key in ['NewOrder']:
+            if key in data:
+                return getattr(self, key.lower())(data[key])
+        assert False, 'Unrecognized action'
+
+    def send(self, data, response):
+        root = ET.Element('Response')
+        dicttoxml(response, root)
+        return root
+
+    def common_response(self, data):
+        response = dict()
+        response['IndustryType'] = data['IndustryType']
+        response['MerchantID'] = data['MerchantID']
+        response['TerminalID'] = data['TerminalID']
+        response['MessageType'] = data['MessageType']
+        return response
+    
+    def neworder(self, data):
+        response =  {'NewOrderResp':{
+                        'CardBrand':'M',
+                        'AccountNum':data['AccountNum'],
+                        'OrderID':data.get('OrderID'),
+                        'TxRefNum':'4A785F5106CCDC41A936BFF628BF73036FEC5401',
+                        'TxRefIdx':'1',
+                        'ProcStatus':'0',
+                        'ApprovalStatus':'1',
+                        'RespCode':'00',
+                        'AVSRespCode':'B',
+                        'CVV2RespCode':'M',
+                        'AuthCode':'tst554',
+                        'RecurringAdviceCd':None,
+                        'CAVVRespCode':None,
+                        'StatusMsg':'Approved',
+                        'RespMsg':None,
+                        'HostRespCode':'100',
+                        'HostAVSRespCode':'I3',
+                        'HostCVV2RespCode':'M',
+                        'CustomerRefNum':'2145108',
+                        'CustomerName':data['AVSname'],
+                        'ProfileProcStatus':'0',
+                        'CustomerProfileMessage':'Profile Created',
+                        'RespTime':'121825',
+                        'PartialAuthOccurred':'',
+                        'RequestedAmount':'',
+                        'RedeemedAmount':'',
+                        'RemainingBalance':'',
+                        'CountryFraudFilterStatus':'',
+                        'IsoCountryCode':data['AVScountryCode'],
+            }
+        }
+        response['NewOrderResp'].update(self.common_response(data))
+        return response
+

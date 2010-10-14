@@ -34,8 +34,8 @@ class PaymentechOrbital(Gateway):
         '''
 
         assert isinstance(money, Money)
-        self.options.update(options)
-        message = self.build_authorization_request(money, creditcard, **self.options)
+        options.update(self.options)
+        message = self.build_authorization_request(money, creditcard, **options)
         return self.commit(message, **self.options)
 
     def purchase(self, money, credit_card, **options):
@@ -43,9 +43,9 @@ class PaymentechOrbital(Gateway):
            You must supply an order_id in the options hash'''
 
         assert isinstance(money, Money), 'TODO  always pass in a Money object - no exceptions!'
-        self.options.update(options)
-        self.options = self.setup_address_hash(**self.options)
-        message = self.build_purchase_request(money, credit_card, **self.options)
+        options.update(self.options)
+        options = self.setup_address_hash(**options)
+        message = self.build_purchase_request(money, credit_card, **options)
         return self.commit(message, **self.options)
 
     def build_authorization_request(self, money, credit_card, **options):
@@ -62,7 +62,8 @@ class PaymentechOrbital(Gateway):
 
         grandTotalAmount = '%.2f' % money.amount  #  CONSIDER  format AMOUNT like this better, everywhere
         grandTotalAmount = grandTotalAmount.replace('.', '')  #  CONSIDER internationalize that and respect the CurrencyExponent
-        if options.has_key('billing_address'):  fields.update(options['billing_address'])  #  TODO  what about address?
+        if options.has_key('billing_address'):  fields.update(options['billing_address'])
+        if options.has_key('address'):  fields.update(options['address'])
         fields.update(options)
         exp_code = ( '%02i' % credit_card.month) + str(credit_card.year)[-2:] #  CONSIDER  credit_card_format
         numeric = money.currency.numeric
@@ -130,7 +131,6 @@ class PaymentechOrbital(Gateway):
         for key in keys:
             nodes = doc.findall('.//' + key)
             result[key] = len(nodes) and nodes[0].text or None
-
         return result
 
     def soap_keys(self):  #   CONSIDER  better name coz it's not always about the SOAP
@@ -154,7 +154,7 @@ class PaymentechOrbital(Gateway):
 
     def commit(self, request, **options):
         uri           = self.is_test and TEST_URL or LIVE_URL
-        self.request  = request  # CONSIDER  standardize this
+        request  = request  # CONSIDER  standardize this
         # request       = self.build_request(request, **options)
         headers = self._generate_headers(request, **options)
 
@@ -165,21 +165,20 @@ class PaymentechOrbital(Gateway):
    # TODO done with this yet?        print request
 
         self._log(request)
-        self.result   = self.parse(self.post_webservice(uri, request, headers))  #  CONSIDER  no version of post_webservice needs options
+        result   = self.parse(self.post_webservice(uri, request, headers))  #  CONSIDER  no version of post_webservice needs options
 
-        self.success  = self.result['ApprovalStatus'] == '1'  #  CONSIDER  these belong to the response not the gateway
-        self.message  = self.result['StatusMsg']
-        authorization = self.result['TxRefNum']
-        avs_resp_code = self.result.get('AVSRespCode', '') or ''
+        success  = result['ApprovalStatus'] == '1'  #  CONSIDER  these belong to the response not the gateway
+        message  = result['StatusMsg']
+        authorization = result['TxRefNum']
+        avs_resp_code = result.get('AVSRespCode', '') or ''
 
-        r = self.__class__.Response( self.success, self.message, self.result,
+        r = self.__class__.Response( success, message, result,
                                      is_test=self.is_test,
                                      authorization=authorization,
                                      avs_result=avs_resp_code.strip(),
-                                     cvv_result=self.result['CVV2RespCode']  #  CONSIDER  what about the 2?
+                                     cvv_result=result['CVV2RespCode']  #  CONSIDER  what about the 2?
                                     )
-        r.result = self.result  #  TODO  use params for something else
-        self.response = r
+        r.result = result  #  TODO  use params for something else
         return r
 
     def _log(self, request):
