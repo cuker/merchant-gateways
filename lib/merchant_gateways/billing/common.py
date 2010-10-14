@@ -245,8 +245,10 @@ class XMLDict(OrderedMultiValueDict):
         return bool(len(self) or len(self.attrib))
     
     def __repr__(self):
-        return "<%s (%s)>" % (super(OrderedMultiValueDict, self).__repr__(), 
-                              self.attrib)
+        if self.attrib:
+            return "<%s (%s)>" % (super(OrderedMultiValueDict, self).__repr__(), 
+                                  self.attrib)
+        return "<%s>" % super(OrderedMultiValueDict, self).__repr__()
     
     def to_xml(self, parent):
         dicttoxml(self, parent)
