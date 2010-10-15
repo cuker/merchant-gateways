@@ -215,6 +215,7 @@ class PayflowProMockServer(object):
 
     def assert_amount(self, data):
         assert 'TotalAmt' in data['Invoice']
+        assert data['Invoice']['TotalAmt']
         assert 'Currency' in data['Invoice']['TotalAmt'].attrib
     
     def assert_payment_info(self, data):

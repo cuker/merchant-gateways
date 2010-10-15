@@ -59,7 +59,7 @@ class OrderedMultiValueDict(dict): #Shameless copy from django, Thank you django
                     self.keyOrder.append(key)
 
     def __repr__(self):
-        return "<%s: %s>" % (self.__class__.__name__,
+        return "%s: %s" % (self.__class__.__name__,
                              ', '.join("'%s': %s" % (key, value) for key, value in self.iteritems()))
 
     def __getitem__(self, key):
@@ -321,40 +321,10 @@ def xmltodict(element):
                 ret.appendlist(item.tag, subitem)
     return ret
 
-# Below is all the functionality we needed from lxml, but mapped to element tree
-# lxml is no longer necessary
+#lxml quickies
 
-class ElementMaker(object):
-    def __init__(self, key=None):
-        self.key = key
-        self.value = None
-        self.children = XMLDict()
-    
-    def __call__(self, *elements, **attrib):
-        if not self.key:
-            return type(self)(elements[0])(*elements[1:], **attrib)
-        elements = list(elements)
-        if elements and not isinstance(elements[0], ElementMaker):
-            self.value = unicode(elements.pop(0))
-            if self.value == u'':
-                self.value = SHOW_EMPTY
-        for element in elements:
-            if element.value is not None:
-                self.children.appendlist(element.key, element.value)
-            if element.children:
-                self.children.appendlist(element.key, element.children)
-        self.children.attrib = attrib
-        return self
-    
-    def __getattr__(self, key):
-        return type(self)(key)
-    
-    def to_xml(self):
-        root = ET.Element(self.key)
-        root.attrib = self.children.attrib
-        dicttoxml(self.children, root)
-        return root
+from lxml.builder import ElementMaker
 
-def xStr(element_maker):
-    return ET.tostring(element_maker.to_xml())
-
+def xStr(doc):
+    from lxml import etree
+    return etree.tostring(doc, pretty_print=True)
