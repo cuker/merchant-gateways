@@ -252,6 +252,7 @@ class XMLDict(OrderedMultiValueDict):
     def __init__(self, key_to_list_mapping=(), attrib={}):
         super(XMLDict, self).__init__(key_to_list_mapping)
         self.attrib = attrib
+        self.text = None
     
     def __nonzero__(self):
         return bool(len(self) or len(self.attrib))
@@ -312,6 +313,8 @@ def listtoxml(iterable, parent):
 
 def xmltodict(element):
     ret = XMLDict(attrib=element.attrib)
+    if element.text:
+        ret.text = element.text
     for item in element.getchildren():
         if item.text:
             ret.appendlist(item.tag, item.text)
