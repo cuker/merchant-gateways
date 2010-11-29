@@ -68,6 +68,10 @@ class PaymentechOrbital(Gateway):
         exp_code = ( '%02i' % credit_card.month) + str(credit_card.year)[-2:] #  CONSIDER  credit_card_format
         numeric = money.currency.numeric
 
+        CardSecValInd = ''
+        if credit_card._lookup_card_type() in ('visa', 'discover'):
+            CardSecValInd = '1'
+
         # print money.currency.__dict__  #  CONSIDER  where'z the exponent?
 
         if 2 != len(fields['country']):
@@ -93,7 +97,7 @@ class PaymentechOrbital(Gateway):
                         x.Exp(exp_code),
                         x.CurrencyCode(numeric),
                         x.CurrencyExponent('2'),  #  CONSIDER  vary this when we vary the money type
-                        x.CardSecValInd('1'),  #  CONSIDER  visa & discover only - nullify for others
+                        x.CardSecValInd(CardSecValInd),
                         x.CardSecVal(credit_card.verification_value),
                         x.AVSzip(fields['zip']),
                         x.AVSaddress1(fields['address1']),
@@ -120,7 +124,7 @@ class PaymentechOrbital(Gateway):
 
         if permitted_country not in ('US', 'CA', 'UK', 'GB', ): # meanwhile, UK is neither United nor a Kingdom! C-;
             return ''
-            
+
         return permitted_country
 
     def parse(self, soap):
