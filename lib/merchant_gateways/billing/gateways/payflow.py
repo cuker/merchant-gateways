@@ -134,7 +134,7 @@ xmlns="http://www.paypal.com/XMLPay">
 
         return XML(_where_to,
                       XML.Name(address['name']),
-                      XML.Phone('(555)555-5555'), #TODO don't hardcode this
+                      XML.Phone(address['phone']),
                       XML.Address(
                               XML.Street(address['address1']),
                               XML.City(address['city']),
