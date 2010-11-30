@@ -1,3 +1,4 @@
+import re
 
 from gateway import Gateway, default_dict
 from merchant_gateways import MerchantGatewayError
@@ -9,6 +10,10 @@ XML = ElementMaker()
 # TODO use this      XMLNS = 'http://www.paypal.com/XMLPay'
 # TODO  actually write a real post_webservice
 # TODO  advise NB that active_merchant has braintree - of course!
+
+def strip_to_numbers(number):
+    """ remove spaces from the number """
+    return re.sub('[^0-9]+', '', number)
 
 class Payflow(Gateway):
     CARD_STORE = True
@@ -131,18 +136,23 @@ xmlns="http://www.paypal.com/XMLPay">
     def add_address(self, _where_to, **address):
         if not address:  return ''
         address = default_dict(address)
-
-        return XML(_where_to,
-                      XML.Name(address['name']),
-                      XML.Phone(address['phone']),
-                      XML.Address(
+        elements = list()
+        elements.append(XML.Name(address['name']))
+        if address.get('phone','').strip():
+            #xxx-xxx-xxxx (US numbers) +xxxxxxxxxxx (international numbers)
+            phone = strip_to_numbers(address['phone'])
+            if len(phone) == 10 and address['country'] == 'US':
+                phone = '%s-%s-%s' % (phone[0:3], phone[3:6], phone[6:10])
+            else:
+                phone = '+'+phone
+            elements.append(XML.Phone(phone))
+        elements.append(XML.Address(
                               XML.Street(address['address1']),
                               XML.City(address['city']),
                               XML.State(address['state']),
                               XML.Country(address['country']),
-                              XML.Zip(address['zip'])
-                      )
-                )
+                              XML.Zip(address['zip'])))
+        return XML(_where_to, *elements)
 
     class Response(response.Response):
         def avs_result(self):
