@@ -52,6 +52,7 @@ class MerchantGatewaysBraintreeOrangeSuite:
 
 import urlparse
 import urllib
+import cgi
 
 class BrainTreeOrangeMockServer(object):
     def __init__(self, failure=None):
@@ -63,7 +64,10 @@ class BrainTreeOrangeMockServer(object):
     def receive(self, msg):
         if self.failure:
             return self.failure
-        data = dict(urlparse.parse_qsl(msg))
+        if hasattr(urlparse, 'parse_qsl'):
+            data = dict(urlparse.parse_qsl(msg))
+        else:
+            data = dict(cgi.parse_qsl(msg))
         assert data['username']
         assert data['password']
         if 'type' not in data and data.get('customer_vault', None) == 'add_customer':
