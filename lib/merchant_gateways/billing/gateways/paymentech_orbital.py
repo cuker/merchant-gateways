@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from gateway import Gateway, default_dict
-from merchant_gateways.billing.common import xStr, ElementMaker, ET, gencode
+from gateway import Gateway
+from merchant_gateways.billing.common import xStr, ElementMaker, ET, gencode, xmltodict
 from merchant_gateways.billing import response
 import logging
 XML = ElementMaker()
@@ -26,98 +26,312 @@ LIVE_URL = 'https://orbital1.paymentech.net/authorize'
 
 class PaymentechOrbital(Gateway):
 
-    def authorize(self, money, creditcard, **options):
-        '''
-        Request an authorization for an amount from CyberSource
-
-        You must supply an :order_id in the options hash  TODO  complain if it ain't there
-        '''
-
+    def authorize(self, money, credit_card, **options):
         assert isinstance(money, Money)
         options.update(self.options)
-        message = self.build_authorization_request(money, creditcard, **options)
+        message = self.build_order_request('A', money=money, credit_card=credit_card, **options)
         return self.commit(message, **self.options)
 
     def purchase(self, money, credit_card, **options):
-        '''Purchase is an auth followed by a capture
-           You must supply an order_id in the options hash'''
-
-        assert isinstance(money, Money), 'TODO  always pass in a Money object - no exceptions!'
+        assert isinstance(money, Money)
         options.update(self.options)
-        options = self.setup_address_hash(**options)
-        message = self.build_purchase_request(money, credit_card, **options)
+        message = self.build_order_request('AC', money=money, credit_card=credit_card, **options)
         return self.commit(message, **self.options)
-
-    def build_authorization_request(self, money, credit_card, **options):
-        return self.build_request('A', money, credit_card, **options)
-
-    def build_purchase_request(self, money, credit_card, **options):
-        return self.build_request('AC', money, credit_card, **options)
-
-    def build_request(self, message_type, money, credit_card, **options):
-
-        assert isinstance(money, Money), 'TODO  always pass in a Money object - no exceptions!'
-
-        fields = default_dict(**self.options)
-
-        grandTotalAmount = '%.2f' % money.amount  #  CONSIDER  format AMOUNT like this better, everywhere
-        grandTotalAmount = grandTotalAmount.replace('.', '')  #  CONSIDER internationalize that and respect the CurrencyExponent
-        if options.has_key('billing_address'):  fields.update(options['billing_address'])
-        if options.has_key('address'):  fields.update(options['address'])
-        fields.update(options)
-        exp_code = ( '%02i' % credit_card.month) + str(credit_card.year)[-2:] #  CONSIDER  credit_card_format
-        numeric = money.currency.numeric
-
+    
+    def capture(self, money, authorization, **options):
+        assert isinstance(money, Money)
+        options.update(self.options)
+        message = self.build_order_request('FC', money=money, authorization=authorization, **options)
+        return self.commit(message, **self.options)
+    
+    def void(self, authorization, **options):
+        options.update(self.options)
+        message = self.build_order_request('R', authorization=authorization, **options)
+        return self.commit(message, **self.options)
+    
+    def credit(self, money, authorization, **options):
+        assert isinstance(money, Money)
+        options.update(self.options)
+        message = self.build_order_request('R', money=money, authorization=authorization, **options)
+        return self.commit(message, **self.options)
+    
+    def card_store(self, credit_card, **options):
+        options.update(self.options)
+        message = self.build_profile_request('C', credit_card=credit_card, **options)
+        return self.commit(message, **self.options)
+    
+    def build_order_credit_card_request(self, credit_card):
         CardSecValInd = ''
         if credit_card._lookup_card_type() in ('visa', 'discover'):
             CardSecValInd = '1'
-
-        # print money.currency.__dict__  #  CONSIDER  where'z the exponent?
-
-        if 2 != len(fields['country']):
-            raise ValueError('Country code must be 2 characters (%s)' % fields['country'])
-
-        x = XML
-
-        new_order = x.NewOrder(
-                        x.IndustryType('EC'),  #  'EC'ommerce - a web buy
-                        x.MessageType(message_type),
-                            #  A – Authorization request
-                            #  AC – Authorization and Mark for Capture
-                            #  FC – Force-Capture request
-                            #   R – Refund request
-                        x.BIN('000001'),
-                        x.MerchantID(options['merchant_id']),
-                        x.TerminalID('001'),
-                        # x.CardBrand(''),
-
-# TODO SW – Switch / Solo ED – European Direct Debit EC – Electronic Check BL – Bill Me Later DP – PINLess Debit [Generic Value Used in Requests]
-
-                        x.AccountNum(credit_card.number),
-                        x.Exp(exp_code),
-                        x.CurrencyCode(numeric),
-                        x.CurrencyExponent('2'),  #  CONSIDER  vary this when we vary the money type
-                        x.CardSecValInd(CardSecValInd),
-                        x.CardSecVal(credit_card.verification_value),
-                        x.AVSzip(fields['zip']),
-                        x.AVSaddress1(fields['address1']),
-                        x.AVSaddress2(fields['address2']),
-                        x.AVScity(fields['city']),
-                        x.AVSstate(fields['state']),
-                        x.AVSphoneNum(fields['phone']),
-                        x.AVSname(credit_card.first_name + ' ' + credit_card.last_name),
-                        x.AVScountryCode(self.censor_countries(fields)), #  and ensure this is ISO-compliant or we get a DTD fault
-                        #x.CustomerProfileFromOrderInd('A'), # TODO: make these optional
-                        #x.CustomerProfileOrderOverrideInd('NO'),
-                        x.OrderID(str(fields.get('order_id',gencode()))),
-                        x.Amount(grandTotalAmount)
-                        )
+        exp_code = ( '%02i' % credit_card.month) + str(credit_card.year)[-2:] #  CONSIDER  credit_card_format
+        return {'AccountNum': credit_card.number,
+                'Exp': exp_code,
+                'CardSecValInd': CardSecValInd,
+                'CardSecVal': credit_card.verification_value,
+                'AVSname': credit_card.first_name + ' ' + credit_card.last_name,}
+    
+    def build_order_address_request(self, fields):
+        return {'AVSzip': fields['zip'],
+                'AVSaddress1': fields['address1'],
+                'AVSaddress2': fields.get('address2', ''),
+                'AVScity': fields['city'],
+                'AVSstate': fields['state'],
+                'AVSphoneNum': fields['phone'],
+                'AVScountryCode': self.censor_countries(fields)}
+    
+    def build_order_authorization_request(self, authorization):
+        return {'TxRefNum':authorization}
+    
+    def build_order_money_request(self, money):
+        grandTotalAmount = '%.2f' % money.amount  #  CONSIDER  format AMOUNT like this better, everywhere
+        grandTotalAmount = grandTotalAmount.replace('.', '')  #  CONSIDER internationalize that and respect the
+        return {'CurrencyCode': money.currency.numeric,
+                'CurrencyExponent': '2',
+                'Amount': grandTotalAmount,}
+    
+    def build_create_card_store_request(self):
+        return {'CustomerProfileFromOrderInd': 'A',
+                'CustomerProfileOrderOverrideInd': 'NO',}
+    
+    def build_order_request(self, message_type, **kwargs):
+        parts = {'IndustryType': 'EC',  #  'EC'ommerce - a web buy
+                 'MessageType': message_type,
+                 'BIN': '000001',
+                 'MerchantID': kwargs['merchant_id'],
+                 'TerminalID': '001',}
+        if 'authorization' in kwargs:
+            parts.update(self.build_order_authorization_request(kwargs['authorization']))
+        if 'credit_card' in kwargs:
+            parts.update(self.build_order_credit_card_request(kwargs['credit_card']))
+        if 'address' in kwargs:
+            parts.update(self.build_order_address_request(kwargs['address']))
+        if message_type in ('A', 'AC') or True: #CONSIDER order_id is always needed
+            parts.update({'OrderID': str(kwargs.get('order_id', gencode()))})
+        if 'money' in kwargs:
+            parts.update(self.build_order_money_request(kwargs['money']))
+        if 'card_store' in kwargs:
+            parts.update({'CustomerRefNum':kwargs['card_store']})
+        if kwargs.get('register_card_store', False):
+            parts.update(self.build_create_card_store_request())
+        
+        entries = list()
+        #XML fields need to be in a certain order
+        for key in self.NEW_ORDER_FIELDS:
+            if key in parts:
+                entries.append(getattr(XML, key)(parts[key]))
+        
+        new_order = XML.NewOrder(*entries)
         return xStr(XML.Request(new_order))
+    
+    def build_profile_address_request(self, fields):
+        return {'CustomerZIP': fields['zip'],
+                'CustomerAddress1': fields['address1'],
+                'CustomerAddress2': fields.get('address2', ''),
+                'CustomerEmail': fields.get('email', ''),
+                'CustomerCity': fields['city'],
+                'CustomerState': fields['state'],
+                'CustomerPhone': fields['phone'],
+                'CustomerCountryCode': self.censor_countries(fields)}
+    
+    def build_profile_credit_card_request(self, credit_card):
+        exp_code = ( '%02i' % credit_card.month) + str(credit_card.year)[-2:]
+        return {'CCAccountNum': credit_card.number,
+                'CCExpireDate': exp_code,
+                'CustomerAccountType': 'CC',
+                'CustomerName': credit_card.first_name + ' ' + credit_card.last_name,}
+    
+    def build_profile_request(self, message_type, **kwargs):
+        parts = {'CustomerProfileAction': message_type, #CRUD
+                 'CustomerBin': '000001',
+                 'CustomerMerchantID': kwargs['merchant_id'],}
+        if 'credit_card' in kwargs:
+            parts.update(self.build_profile_credit_card_request(kwargs['credit_card']))
+        if 'address' in kwargs:
+            parts.update(self.build_profile_address_request(kwargs['address']))
+        if message_type == 'C':
+            parts.update(self.build_create_card_store_request())
+        if 'card_store' in kwargs:
+            parts.update({'CustomerRefNum':kwargs['card_store']})
+        
+        entries = list()
+        #XML fields need to be in a certain order
+        for key in self.PROFILE_FIELDS:
+            if key in parts:
+                entries.append(getattr(XML, key)(parts[key]))
+        
+        profile = XML.Profile(*entries)
+        return xStr(XML.Request(profile))
+    
+    NEW_ORDER_FIELDS = ['OrbitalConnectionUsername',
+			            'OrbitalConnectionPassword',
+			            'IndustryType',
+			            'MessageType',
+			            'BIN',
+			            'MerchantID',
+			            'TerminalID',
+			            'CardBrand',
+			            'AccountNum',
+			            'Exp',
+			            'CurrencyCode',
+			            'CurrencyExponent',
+			            'CardSecValInd',
+			            'CardSecVal',
+			            'DebitCardIssueNum',
+			            'DebitCardStartDate',
+			            'BCRtNum',
+			            'CheckDDA',
+			            'BankAccountType',
+			            'ECPAuthMethod',
+			            'BankPmtDelv',
+			            'AVSzip',
+			            'AVSaddress1',
+			            'AVSaddress2',
+			            'AVScity',
+			            'AVSstate',
+			            'AVSphoneNum',
+			            'AVSname',
+			            'AVScountryCode',
+			            'AVSDestzip',
+			            'AVSDestaddress1',
+			            'AVSDestaddress2',
+			            'AVSDestcity',
+			            'AVSDeststate',
+			            'AVSDestphoneNum',
+			            'AVSDestname',
+			            'AVSDestcountryCode',
+			            'CustomerProfileFromOrderInd',
+			            'CustomerRefNum',
+			            'CustomerProfileOrderOverrideInd',
+			            'Status',
+			            'AuthenticationECIInd',
+			            'CAVV',
+			            'XID',
+			            'PriorAuthID',
+			            'OrderID',
+			            'Amount',
+			            'Comments',
+			            'ShippingRef',
+			            'TaxInd',
+			            'Tax',
+			            'AMEXTranAdvAddn1',
+			            'AMEXTranAdvAddn2',
+			            'AMEXTranAdvAddn3',
+			            'AMEXTranAdvAddn4',
+			            'AAV',
+			            'SDMerchantName',
+			            'SDProductDescription',
+			            'SDMerchantCity',
+			            'SDMerchantPhone',
+			            'SDMerchantURL',
+			            'SDMerchantEmail',
+			            'RecurringInd',
+			            'EUDDCountryCode',
+			            'EUDDBankSortCode',
+			            'EUDDRibCode',
+			            'BMLCustomerIP',
+			            'BMLCustomerEmail',
+			            'BMLShippingCost',
+			            'BMLTNCVersion',
+			            'BMLCustomerRegistrationDate',
+			            'BMLCustomerTypeFlag',
+			            'BMLItemCategory',
+			            'BMLPreapprovalInvitationNum',
+			            'BMLMerchantPromotionalCode',
+			            'BMLCustomerBirthDate',
+			            'BMLCustomerSSN',
+			            'BMLCustomerAnnualIncome',
+			            'BMLCustomerResidenceStatus',
+			            'BMLCustomerCheckingAccount',
+			            'BMLCustomerSavingsAccount',
+			            'BMLProductDeliveryType',
+			            'BillerReferenceNumber',
+			            'MBType',
+			            'MBOrderIdGenerationMethod',
+			            'MBRecurringStartDate',
+			            'MBRecurringEndDate',
+			            'MBRecurringNoEndDateFlag',
+			            'MBRecurringMaxBillings',
+			            'MBRecurringFrequency',
+			            'MBDeferredBillDate',
+			            'MBMicroPaymentMaxDollarValue',
+			            'MBMicroPaymentMaxBillingDays',
+			            'MBMicroPaymentMaxTransactions',
+			            'TxRefNum',
+			            'PCOrderNum',
+			            'PCDestZip',
+			            'PCDestName',
+			            'PCDestAddress1',
+			            'PCDestAddress2',
+			            'PCDestCity',
+			            'PCDestState',
+			            'PC3FreightAmt',
+			            'PC3DutyAmt',
+			            'PC3DestCountryCd',
+			            'PC3ShipFromZip',
+			            'PC3DiscAmt',
+			            'PC3VATtaxAmt',
+			            'PC3VATtaxRate',
+			            'PC3AltTaxInd',
+			            'PC3AltTaxAmt',
+			            'PC3LineItemCount',
+			            'PC3LineItemArray',
+			            'PartialAuthInd',]
+    
+    PROFILE_FIELDS = ['OrbitalConnectionUsername',
+			        'OrbitalConnectionPassword',
+			        'CustomerBin',
+			        'CustomerMerchantID',
+			        'CustomerName',
+			        'CustomerRefNum',
+			        'CustomerAddress1',
+			        'CustomerAddress2',
+			        'CustomerCity',
+			        'CustomerState',
+			        'CustomerZIP',
+			        'CustomerEmail',
+			        'CustomerPhone',
+			        'CustomerCountryCode',
+			        'CustomerProfileAction',
+			        'CustomerProfileOrderOverrideInd',
+			        'CustomerProfileFromOrderInd',
+			        'OrderDefaultDescription',
+			        'OrderDefaultAmount',
+			        'CustomerAccountType',
+			        'Status',
+			        'CCAccountNum',
+			        'CCExpireDate',
+			        'ECPAccountDDA',
+			        'ECPAccountType',
+			        'ECPAccountRT',
+			        'ECPBankPmtDlv',
+			        'SwitchSoloStartDate',
+			        'SwitchSoloIssueNum',
+			        'MBType',
+			        'MBOrderIdGenerationMethod',
+			        'MBRecurringStartDate',
+			        'MBRecurringEndDate',
+			        'MBRecurringNoEndDateFlag',
+			        'MBRecurringMaxBillings',
+			        'MBRecurringFrequency',
+			        'MBDeferredBillDate',
+			        'MBMicroPaymentMaxDollarValue',
+			        'MBMicroPaymentMaxBillingDays',
+			        'MBMicroPaymentMaxTransactions',
+			        'MBCancelDate',
+			        'MBRestoreBillingDate',
+			        'MBRemoveFlag',
+			        'EUDDCountryCode',
+			        'EUDDBankSortCode',
+			        'EUDDRibCode',
+			        'SDMerchantName',
+			        'SDProductDescription',
+			        'SDMerchantCity',
+			        'SDMerchantPhone',
+			        'SDMerchantURL',
+			        'SDMerchantEmail',
+			        'BillerReferenceNumber',]
 
-#                        XML.email(fields['email']),
-#                      XML.expirationMonth(str(credit_card.month)),
-#                      XML.expirationYear(str(credit_card.year)),
-#                      XML.cardType('001')  #  TODO
 
     def censor_countries(self, fields):
         permitted_country = fields['country']
@@ -126,64 +340,42 @@ class PaymentechOrbital(Gateway):
             return ''
 
         return permitted_country
-
+    
     def parse(self, soap):
-        result = {}
-        keys  = self.soap_keys()
-        doc  = ET.fromstring(soap)
+        doc  = xmltodict(ET.fromstring(soap))
+        response_type = doc.keys()[0]
+        response = doc[response_type]
+        response_class = {'NewOrderResp':self.NewOrderResponse,
+                          'ProfileResp':self.ProfileResponse,}[response_type]
+        return response_class(self, response)
 
-        for key in keys:
-            nodes = doc.findall('.//' + key)
-            result[key] = len(nodes) and nodes[0].text or None
-        return result
-
-    def soap_keys(self):  #   CONSIDER  better name coz it's not always about the SOAP
-        return ( 'AccountNum',                'MerchantID',
-                 'ApprovalStatus',            'MessageType',
-                 'AuthCode',                  'OrderID',
-                 'AVSRespCode',               'ProcStatus',
-                 'CardBrand',                 'ProfileProcStatus',
-                 'CAVVRespCode',              'RecurringAdviceCd',
-                 'CustomerName',              'RespCode',
-                 'CustomerProfileMessage',    'RespMsg',
-                 'CustomerRefNum',            'RespTime',
-                 'CVV2RespCode',              'StatusMsg',
-                 'HostAVSRespCode',           'TerminalID',
-                 'HostCVV2RespCode',          'TxRefIdx',
-                 'HostRespCode',              'TxRefNum',
-                 'IndustryType', )  #  TODO  warn for each item in the message that ain't here
-
-    class Response(response.Response):
-        pass
+    class NewOrderResponse(response.Response):
+        def __init__(self, gateway, result):
+            success  = result['ApprovalStatus'] == '1'
+            message  = result['StatusMsg']
+            authorization = result['TxRefNum']
+            avs_resp_code = result.get('AVSRespCode', '') or ''
+            response.Response.__init__(self, success, message, result,
+                                       is_test=gateway.is_test,
+                                       authorization=authorization,
+                                       avs_result=avs_resp_code.strip(),
+                                       cvv_result=result['CVV2RespCode'],
+                                       card_store_id=result.get('CustomerRefNum', None),)
+    
+    class ProfileResponse(response.Response):
+        def __init__(self, gateway, result):
+            success  = result['ProfileProcStatus'] == '0'
+            message  = result['CustomerProfileMessage']
+            response.Response.__init__(self, success, message, result,
+                                       is_test=gateway.is_test,
+                                       card_store_id=result.get('CustomerRefNum', None),)
 
     def commit(self, request, **options):
         uri           = self.is_test and TEST_URL or LIVE_URL
-        request  = request  # CONSIDER  standardize this
-        # request       = self.build_request(request, **options)
         headers = self._generate_headers(request, **options)
 
-#        print uri, headers
-#        if headers['Merchant-id'] == '041756':
- #           request = request.replace('AccountNum', 'AcountNum')
-  #          headers['Content-length'] = len(request)
-   # TODO done with this yet?        print request
-
         self._log(request)
-        result   = self.parse(self.post_webservice(uri, request, headers))  #  CONSIDER  no version of post_webservice needs options
-
-        success  = result['ApprovalStatus'] == '1'  #  CONSIDER  these belong to the response not the gateway
-        message  = result['StatusMsg']
-        authorization = result['TxRefNum']
-        avs_resp_code = result.get('AVSRespCode', '') or ''
-
-        r = self.__class__.Response( success, message, result,
-                                     is_test=self.is_test,
-                                     authorization=authorization,
-                                     avs_result=avs_resp_code.strip(),
-                                     cvv_result=result['CVV2RespCode']  #  CONSIDER  what about the 2?
-                                    )
-        r.result = result  #  TODO  use params for something else
-        return r
+        return self.parse(self.post_webservice(uri, request, headers))
 
     def _log(self, request):
         import re

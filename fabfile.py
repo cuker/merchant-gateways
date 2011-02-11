@@ -13,7 +13,10 @@ def _pip_install(requirements='REQUIREMENTS', environment='.'):
         if response.failed:
             raise Exception("Failed to install requirements", response)
 
-def test():
+def test(plain=False):
     local('virtualenv .')
     _pip_install()
-    local('bin/python setup.py test --xml', capture=False)
+    if plain:
+        local('bin/python setup.py test', capture=False)
+    else:
+        local('bin/python setup.py test --xml', capture=False)

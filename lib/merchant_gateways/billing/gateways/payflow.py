@@ -43,14 +43,13 @@ class Payflow(Gateway):
         passed = result['Result'] == '0'
         message = passed and 'Approved' or 'Declined'
 
-        response = Payflow.Response( passed, message, None, # TODO response[:result] == "0", response[:message], response,
+        response = self.Response( passed, message, result,
             is_test=self.is_test,
             authorization=result.get('PNRef', result.get('RPRef', None)),  #  TODO  test the RPRef
             cvv_result = CVV_CODE[result.get('CvResult', None)],  #  TODO  default_dict to the rescue!
             avs_result = result.get('AvsResult', None),
             card_store_id = result.get('PNRef', None),
-            )  #  TODO  stash the response in self.response
-        response.result = result
+            )
         return response
 
     def purchase(self, money, credit_card, card_store_id=None, **options):  #  TODO every purchase can work on a cc or ref!
@@ -155,17 +154,7 @@ xmlns="http://www.paypal.com/XMLPay">
         return XML(_where_to, *elements)
 
     class Response(response.Response):
-        def avs_result(self):
-            'TODO'
-          #  print self.__dict__
-
-# TODO      def profile_id
-#        @params['profile_id']
- #     end
-
-#      def payment_history
-#        @payment_history ||= @params['rp_payment_result'].collect{ |result| result.stringify_keys } rescue []
-#      end
+        pass
 
     def parse(self, data):  #  TODO  use self.message
         response = {}

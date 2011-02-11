@@ -181,7 +181,11 @@ class PaymentechOrbitalMockServer(object):
         location = path.join(path.dirname(__file__), 'schemas', 'paymentech_orbital', 'Request_PTI50.xsd')
         schema_doc = etree.XMLSchema(etree.parse(open(location, 'r')))
         xml = etree.XML(msg)
-        schema_doc.assertValid(xml)
+        try:
+            schema_doc.assertValid(xml)
+        except:
+            print msg
+            raise
 
     def validate_response(self, msg):
         from lxml import etree
@@ -192,7 +196,7 @@ class PaymentechOrbitalMockServer(object):
         schema_doc.assertValid(xml)
 
     def receive(self, data):
-        for key in ['NewOrder']:
+        for key in ['NewOrder', 'Profile']:
             if key in data:
                 return getattr(self, key.lower())(data[key])
         assert False, 'Unrecognized action'
@@ -211,8 +215,8 @@ class PaymentechOrbitalMockServer(object):
     def neworder(self, data):
         response = self.common_response(data)
         response.update(XMLDict([('CardBrand', 'MC'),
-                                 ('AccountNum', data['AccountNum']),
-                                 ('OrderID', data['OrderID']),
+                                 ('AccountNum', data.get('AccountNum')),
+                                 ('OrderID', data.get('OrderID', '')),
                                  ('TxRefNum', '4A785F5106CCDC41A936BFF628BF73036FEC5401'),
                                  ('TxRefIdx', '1'),
                                  ('ProcStatus','0'),
@@ -229,7 +233,7 @@ class PaymentechOrbitalMockServer(object):
                                  ('HostAVSRespCode', 'I3'),
                                  ('HostCVV2RespCode', 'M'),
                                  ('CustomerRefNum', '2145108'),
-                                 ('CustomerName', data['AVSname']),
+                                 ('CustomerName', data.get('AVSname')),
                                  ('ProfileProcStatus', '0'),
                                  ('CustomerProfileMessage', 'Profile Created'),
                                  ('RespTime', '121825'),
@@ -238,6 +242,40 @@ class PaymentechOrbitalMockServer(object):
                                  ('RedeemedAmount', ''),
                                  ('RemainingBalance', ''),
                                  ('CountryFraudFilterStatus', ''),
-                                 ('IsoCountryCode', data['AVScountryCode']),]))
+                                 ('IsoCountryCode', data.get('AVScountryCode', '')),]))
         return {'NewOrderResp':response}
+    
+    def profile(self, data):
+        response = XMLDict([('CustomerBin', data['CustomerBin']),
+                            ('CustomerMerchantID', data['CustomerMerchantID']),
+                            ('CustomerName', data['CustomerName']),
+                            ('CustomerRefNum', 'CUSTOMERREFNUM'),
+                            ('CustomerProfileAction', 'CREATE'),
+                            ('ProfileProcStatus', '0'),
+                            ('CustomerProfileMessage', 'Profile Request Processed'),
+                            ('CustomerAddress1', data['CustomerAddress1']),
+                            ('CustomerAddress2', data.get('CustomerAddress2', '')),
+                            ('CustomerCity', data['CustomerCity']),
+                            ('CustomerState', data['CustomerState']),
+                            ('CustomerZIP', data['CustomerZIP']),
+                            ('CustomerEmail', data.get('CustomerEmail', '')),
+                            ('CustomerPhone', data['CustomerPhone']),
+                            ('CustomerCountryCode', data['CustomerCountryCode']),
+                            ('CustomerProfileOrderOverrideInd', data['CustomerProfileOrderOverrideInd']),
+                            ('OrderDefaultDescription', data.get('OrderDefaultDescription', '')),
+                            ('OrderDefaultAmount', data.get('OrderDefaultAmount', '')),
+                            ('CustomerAccountType', data['CustomerAccountType']),
+                            ('Status', data.get('Status', 'A')),
+                            ('CardBrand', data.get('CardBrand', '')),
+                            ('CCAccountNum', data['CCAccountNum']),
+                            ('CCExpireDate', data['CCExpireDate']),
+                            ('ECPAccountDDA',''),
+                            ('ECPAccountType',''),
+                            ('ECPAccountRT',''),
+                            ('ECPBankPmtDlv',''),
+                            ('SwitchSoloStartDate',''),
+                            ('SwitchSoloIssueNum',''),
+                            ('BillerReferenceNumber',''),
+                            ('RespTime',''),])
+        return {'ProfileResp': response}
 

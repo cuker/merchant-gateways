@@ -104,7 +104,7 @@ class Gateway(object):
 
     def setup_address_hash(self, **options):
         'Create all address hash key value pairs so that we still function if we were only provided with one or two of them'
-
+        #TODO deprecate this as it only serves to allow people to be ambigious
         self.options = options # or self.options
         options['billing_address'] = options.get('billing_address', options.get('address', {}))
         options['shipping_address'] = options.get('shipping_address', {})
