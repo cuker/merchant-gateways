@@ -25,7 +25,8 @@ LIVE_URL = 'https://orbital1.paymentech.net/authorize'
  #  CONSIDER  if orbital1 fails, switch to orbital2. And fall back after a while...
 
 class PaymentechOrbital(Gateway):
-
+    CARD_STORE = True
+    
     def authorize(self, money, credit_card, **options):
         assert isinstance(money, Money)
         options.update(self.options)
@@ -102,7 +103,7 @@ class PaymentechOrbital(Gateway):
                  'TerminalID': '001',}
         if 'authorization' in kwargs:
             parts.update(self.build_order_authorization_request(kwargs['authorization']))
-        if 'credit_card' in kwargs:
+        if kwargs.get('credit_card'):
             parts.update(self.build_order_credit_card_request(kwargs['credit_card']))
         if 'address' in kwargs:
             parts.update(self.build_order_address_request(kwargs['address']))
@@ -110,8 +111,8 @@ class PaymentechOrbital(Gateway):
             parts.update({'OrderID': str(kwargs.get('order_id', gencode()))})
         if 'money' in kwargs:
             parts.update(self.build_order_money_request(kwargs['money']))
-        if 'card_store' in kwargs:
-            parts.update({'CustomerRefNum':kwargs['card_store']})
+        if kwargs.get('card_store_id'):
+            parts.update({'CustomerRefNum':kwargs['card_store_id']})
         if kwargs.get('register_card_store', False):
             parts.update(self.build_create_card_store_request())
         
@@ -145,14 +146,14 @@ class PaymentechOrbital(Gateway):
         parts = {'CustomerProfileAction': message_type, #CRUD
                  'CustomerBin': '000001',
                  'CustomerMerchantID': kwargs['merchant_id'],}
-        if 'credit_card' in kwargs:
+        if kwargs.get('credit_card'):
             parts.update(self.build_profile_credit_card_request(kwargs['credit_card']))
         if 'address' in kwargs:
             parts.update(self.build_profile_address_request(kwargs['address']))
         if message_type == 'C':
             parts.update(self.build_create_card_store_request())
-        if 'card_store' in kwargs:
-            parts.update({'CustomerRefNum':kwargs['card_store']})
+        if kwargs.get('card_store_id'):
+            parts.update({'CustomerRefNum':kwargs['card_store_id']})
         
         entries = list()
         #XML fields need to be in a certain order

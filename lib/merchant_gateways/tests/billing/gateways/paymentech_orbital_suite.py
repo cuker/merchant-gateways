@@ -214,6 +214,12 @@ class PaymentechOrbitalMockServer(object):
     
     def neworder(self, data):
         response = self.common_response(data)
+        if data['MessageType'] in ('A', 'AC'):
+            assert data.get('AccountNum') or data.get('CustomerRefNum')
+        elif data['MessageType'] in ('FC', 'R'):
+            assert data.get('TxRefNum')
+        else:
+            assert False, 'Invalid Message Type: %s' % data['MessageType']
         response.update(XMLDict([('CardBrand', 'MC'),
                                  ('AccountNum', data.get('AccountNum')),
                                  ('OrderID', data.get('OrderID', '')),
