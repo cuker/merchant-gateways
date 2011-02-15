@@ -1,3 +1,4 @@
+from __future__ import with_statement
 
 from merchant_gateways.tests.test_helper import MerchantGatewaysWebserviceTestSuite
 from lxml.builder import ElementMaker
