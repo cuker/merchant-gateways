@@ -12,9 +12,9 @@ from lxml.builder import ElementMaker
 XML = ElementMaker()
 from money import Money
 import sys
-sys.path.insert(0, '/home/phlip/tools/braintree-2.2.1')
+import datetime
 from merchant_gateways.lib.post import post  #  CONSIDER  move me to gateway.py
-
+import hashlib
 from pprint import pprint
 
 #  TODO  bake all this:
@@ -131,26 +131,46 @@ class BraintreeOrange(Gateway):
     def commit(self, action, money, request, **options):  #  TODO  why we pass money here?
         url = BraintreeOrange.TEST_URI  #  TODO  or LIVE_URI
 
-        request['username'] = self.options['login']  #  TODO  rename request to parameters
-        request['password'] = self.options['password']  #  TODO  use the default_dict
+        request['key_id'] = self.options['login']  #  TODO  rename request to parameters
+        #request['key'] = self.options['password']  #  TODO  use the default_dict
         if action:  request['type'] = action
         request['orderid']  = str(options['order_id'])
 
         request['currency'] = 'USD'  #  FIXME  fix higher up
-
+        hash = [request['orderid'], request['amount']]
+        
         for key, value in options.items():
             if 'merchant_defined_field_' in key:  #  CONSIDER  have we seen this before?
                 request[key] = value
 
-        if options.has_key('card_store_id'):  #  FIXME  make me more standard and generic
+        if options.get('card_store_id', None):  #  FIXME  make me more standard and generic
             request['customer_vault_id'] = options['card_store_id']
-
+            hash.append(request['customer_vault_id'])
+        for key, value in request.items():
+            if value is None:
+                del request[key]
+        #logfile = open('/tmp/vixpay.log', 'a')
+        request['time'] = datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S')
+        hash.append(request['time'])
+        hash.append(self.options['password'])
+        hash = '|'.join(hash)
+        #logfile.write('Prehash: %s\n' % hash)
+        hash_browns = hashlib.md5()
+        hash_browns.update(hash)
+        request['hash'] = hash_browns.hexdigest()
+        message = dict(request)
+        if 'ccnumber' in message:
+            message['ccnumber'] = message['ccnumber'][-4:]
+        if 'cvv' in message:
+            message['cvv'] = 'XXX'
+        #logfile.write('Send (%s):%s\n' % (url, message))
         raw_result = self.post_webservice(url, request)
         self.result = self.parse(raw_result)
         message  = self.result.get('responsetext', '')  #  TODO  what is this for auth? (And use a default_dict already)
         success  = self.result.get('response', '') == '1'  #  TODO  what about 2 or 3?
         trans_id = self.result.get('transactionid', '')
-
+        #logfile.write('Got: %s\n' % self.result)
+        #logfile.close()
         self.response = BraintreeOrange.Response( success, message, self.result,
                                                   authorization=trans_id,
                                                   is_test=True,  #  TODO
