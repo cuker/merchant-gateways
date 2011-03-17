@@ -402,6 +402,6 @@ class PaymentechOrbital(Gateway):
                   "Content-transfer-encoding": "text",  #  CONSIDER  nobody tests this, either...
                   "Request-number": "1",
                   "Document-type": "Request",
-                  "Content-length": len(request),
+                  "Content-length": str(len(request)),
                   "Merchant-id": options['merchant_id']  #  CONSIDER  useful error message if it's not there
                   }
