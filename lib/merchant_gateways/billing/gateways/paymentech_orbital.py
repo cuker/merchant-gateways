@@ -347,7 +347,8 @@ class PaymentechOrbital(Gateway):
         response_type = doc.keys()[0]
         response = doc[response_type]
         response_class = {'NewOrderResp':self.NewOrderResponse,
-                          'ProfileResp':self.ProfileResponse,}[response_type]
+                          'ProfileResp':self.ProfileResponse,
+                          'QuickResp':self.QuickResponse,}[response_type]
         return response_class(self, response)
 
     class NewOrderResponse(response.Response):
@@ -370,6 +371,13 @@ class PaymentechOrbital(Gateway):
             response.Response.__init__(self, success, message, result,
                                        is_test=gateway.is_test,
                                        card_store_id=result.get('CustomerRefNum', None),)
+    
+    class QuickResponse(response.Response):
+        def __init__(self, gateway, result):
+            success  = False
+            message  = result['StatusMsg']
+            response.Response.__init__(self, success, message, result,
+                                       is_test=gateway.is_test,)
 
     def commit(self, request, **options):
         uri           = self.is_test and TEST_URL or LIVE_URL
