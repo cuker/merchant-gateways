@@ -42,7 +42,7 @@ class PaymentechOrbital(Gateway):
     def capture(self, money, authorization, **options):
         assert isinstance(money, Money)
         options.update(self.options)
-        message = self.build_order_request('FC', money=money, authorization=authorization, **options)
+        message = self.build_capture_request(money=money, authorization=authorization, **options)
         return self.commit(message, **self.options)
     
     def void(self, authorization, **options):
@@ -94,6 +94,33 @@ class PaymentechOrbital(Gateway):
     def build_create_card_store_request(self):
         return {'CustomerProfileFromOrderInd': 'A',
                 'CustomerProfileOrderOverrideInd': 'NO',}
+    
+    def build_capture_request(self, **kwargs):
+        parts = {'BIN': '000001',
+                 'MerchantID': kwargs['merchant_id'],
+                 'TerminalID': '001',}
+        if 'authorization' in kwargs:
+            parts.update(self.build_order_authorization_request(kwargs['authorization']))
+        if kwargs.get('credit_card'):
+            parts.update(self.build_order_credit_card_request(kwargs['credit_card']))
+        if 'address' in kwargs:
+            parts.update(self.build_order_address_request(kwargs['address']))
+        parts.update({'OrderID': str(kwargs.get('order_id', gencode()))})
+        if 'money' in kwargs:
+            parts.update(self.build_order_money_request(kwargs['money']))
+        if kwargs.get('card_store_id'):
+            parts.update({'CustomerRefNum':kwargs['card_store_id']})
+        if kwargs.get('register_card_store', False):
+            parts.update(self.build_create_card_store_request())
+        
+        entries = list()
+        #XML fields need to be in a certain order
+        for key in self.CAPTURE_FIELDS:
+            if key in parts:
+                entries.append(getattr(XML, key)(parts[key]))
+        
+        new_order = XML.MarkForCapture(*entries)
+        return xStr(XML.Request(new_order))
     
     def build_order_request(self, message_type, **kwargs):
         parts = {'IndustryType': 'EC',  #  'EC'ommerce - a web buy
@@ -279,6 +306,40 @@ class PaymentechOrbital(Gateway):
 			            'PC3LineItemArray',
 			            'PartialAuthInd',]
     
+    CAPTURE_FIELDS = ["OrbitalConnectionUsername",
+                      "OrbitalConnectionPassword",
+                      "OrderID",
+                    "Amount",
+                    "TaxInd",
+                    "Tax",
+                    "BIN",
+                    "MerchantID",
+                    "TerminalID",
+                    "TxRefNum",
+                    "PCOrderNum",
+                    "PCDestZip",
+                    "PCDestName",
+                    "PCDestAddress1",
+                    "PCDestAddress2",
+                    "PCDestCity",
+                    "PCDestState",
+                    "AMEXTranAdvAddn1",
+                    "AMEXTranAdvAddn2",
+                    "AMEXTranAdvAddn3",
+                    "AMEXTranAdvAddn4",
+                    "PC3FreightAmt",
+                    "PC3DutyAmt",
+                    "PC3DestCountryCd",
+                    "PC3ShipFromZip",
+                    "PC3DiscAmt",
+                    "PC3VATtaxAmt",
+                    "PC3VATtaxRate",
+                    "PC3AltTaxInd",
+                    "PC3AltTaxID",
+                    "PC3AltTaxAmt",
+                    "PC3LineItemCount",
+                    "PC3LineItemArray",]
+    
     PROFILE_FIELDS = ['OrbitalConnectionUsername',
 			        'OrbitalConnectionPassword',
 			        'CustomerBin',
@@ -348,7 +409,8 @@ class PaymentechOrbital(Gateway):
         response = doc[response_type]
         response_class = {'NewOrderResp':self.NewOrderResponse,
                           'ProfileResp':self.ProfileResponse,
-                          'QuickResp':self.QuickResponse,}[response_type]
+                          'QuickResp':self.QuickResponse,
+                          'MarkForCaptureResp':self.NewOrderResponse,}[response_type]
         return response_class(self, response)
 
     class NewOrderResponse(response.Response):
@@ -361,7 +423,7 @@ class PaymentechOrbital(Gateway):
                                        is_test=gateway.is_test,
                                        authorization=authorization,
                                        avs_result=avs_resp_code.strip(),
-                                       cvv_result=result['CVV2RespCode'],
+                                       cvv_result=result.get('CVV2RespCode', None),
                                        card_store_id=result.get('CustomerRefNum', None),)
     
     class ProfileResponse(response.Response):
