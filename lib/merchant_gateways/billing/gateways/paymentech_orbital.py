@@ -416,7 +416,7 @@ class PaymentechOrbital(Gateway):
     class NewOrderResponse(response.Response):
         def __init__(self, gateway, result):
             success  = result['ApprovalStatus'] == '1'
-            message  = result['StatusMsg']
+            message  = result.get('StatusMsg', '')
             authorization = result['TxRefNum']
             avs_resp_code = result.get('AVSRespCode', '') or ''
             response.Response.__init__(self, success, message, result,
