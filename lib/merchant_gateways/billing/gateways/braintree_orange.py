@@ -123,6 +123,9 @@ class BraintreeOrange(Gateway):
         request['password'] = self.options['password']  #  TODO  use the default_dict
         if action:  request['type'] = action
 
+        if 'processor_id' in options and options['processor_id'] != '':
+            request['processor_id'] = options['processor_id']
+
         for key, value in options.items():
             if 'merchant_defined_field_' in key:  #  CONSIDER  have we seen this before?
                 request[key] = value
