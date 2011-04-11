@@ -197,7 +197,7 @@ class PaymentechOrbitalMockServer(object):
         schema_doc.assertValid(xml)
 
     def receive(self, data):
-        for key in ['NewOrder', 'Profile', 'MarkForCapture']:
+        for key in ['NewOrder', 'Profile', 'MarkForCapture', 'Reversal']:
             if key in data:
                 return getattr(self, key.lower())(data[key])
         assert False, 'Unrecognized action'
@@ -212,6 +212,18 @@ class PaymentechOrbitalMockServer(object):
                         ('MessageType', data['MessageType']),
                         ('MerchantID', data['MerchantID']),
                         ('TerminalID', data['TerminalID']),])
+    
+    def reversal(self, data):
+        response = XMLDict([('MerchantID', data['MerchantID']),
+                            ('TerminalID', data['TerminalID']),
+                             ('OrderID', data.get('OrderID', '')),
+                             ('TxRefNum', '4A785F5106CCDC41A936BFF628BF73036FEC5401'),
+                             ('TxRefIdx', '1'),
+                             ('OutstandingAmt', '0'),
+                             ('ProcStatus','0'),
+                             ('StatusMsg', 'Approved'),
+                             ('RespTime', '121825'),])
+        return {'ReversalResp':response}
     
     def markforcapture(self, data):
         response = XMLDict([('MerchantID', data['MerchantID']),

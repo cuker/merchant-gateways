@@ -47,7 +47,7 @@ class PaymentechOrbital(Gateway):
     
     def void(self, authorization, **options):
         options.update(self.options)
-        message = self.build_order_request('R', authorization=authorization, **options)
+        message = self.build_reversal_request(authorization=authorization, **options)
         return self.commit(message, **self.options)
     
     def credit(self, money, authorization, **options):
@@ -94,6 +94,22 @@ class PaymentechOrbital(Gateway):
     def build_create_card_store_request(self):
         return {'CustomerProfileFromOrderInd': 'A',
                 'CustomerProfileOrderOverrideInd': 'NO',}
+    
+    def build_reversal_request(self, **kwargs):
+        parts = {'BIN': '000001',
+                 'MerchantID': kwargs['merchant_id'],
+                 'TerminalID': '001',}
+        parts.update(self.build_order_authorization_request(kwargs['authorization']))
+        parts.update({'OrderID': str(kwargs.get('order_id', gencode()))})
+        
+        entries = list()
+        #XML fields need to be in a certain order
+        for key in self.REVERSAL_FIELDS:
+            if key in parts:
+                entries.append(getattr(XML, key)(parts[key]))
+        
+        new_order = XML.Reversal(*entries)
+        return xStr(XML.Request(new_order))
     
     def build_capture_request(self, **kwargs):
         parts = {'BIN': '000001',
@@ -190,6 +206,18 @@ class PaymentechOrbital(Gateway):
         
         profile = XML.Profile(*entries)
         return xStr(XML.Request(profile))
+    
+    REVERSAL_FIELDS = ['OrbitalConnectionUsername',
+			        'OrbitalConnectionPassword',
+			        'TxRefNum',
+			        'TxRefIdx',
+			        'AdjustedAmt',
+			        'OrderID',
+			        'BIN',
+			        'MerchantID',
+			        'TerminalID',
+			        'ReversalRetryNumber',
+			        'OnlineReversalInd',]
     
     NEW_ORDER_FIELDS = ['OrbitalConnectionUsername',
 			            'OrbitalConnectionPassword',
@@ -410,6 +438,7 @@ class PaymentechOrbital(Gateway):
         response_class = {'NewOrderResp':self.NewOrderResponse,
                           'ProfileResp':self.ProfileResponse,
                           'QuickResp':self.QuickResponse,
+                          'ReversalResp':self.ReversalResponse,
                           'MarkForCaptureResp':self.NewOrderResponse,}[response_type]
         return response_class(self, response)
 
@@ -440,6 +469,15 @@ class PaymentechOrbital(Gateway):
             message  = result['StatusMsg']
             response.Response.__init__(self, success, message, result,
                                        is_test=gateway.is_test,)
+    
+    class ReversalResponse(response.Response):
+        def __init__(self, gateway, result):
+            success  = result['ProcStatus'] == '0'
+            message  = result.get('StatusMsg', '')
+            authorization = result['TxRefNum']
+            response.Response.__init__(self, success, message, result,
+                                       is_test=gateway.is_test,
+                                       authorization=authorization,)
 
     def commit(self, request, **options):
         uri           = self.is_test and TEST_URL or LIVE_URL

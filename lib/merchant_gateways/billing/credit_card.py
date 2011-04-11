@@ -1,6 +1,8 @@
 import re
 from datetime import datetime
 
+from merchant_gateways import MerchantGatewayError
+
 #  CONSIDER the card should raise an error if the type is not understood
     #  CONSIDER  always credit_card never creditcard
 
@@ -260,8 +262,7 @@ class CreditCard(object):
         for name, matcher in CARD_COMPANIES.items():
             if re.search(matcher, self.number):
                 return name
-
-        assert False, 'woah nelly TODO real exception system'
+        raise MerchantGatewayError, 'Unrecognized card type'
 
 CARD_COMPANIES = {
     'visa': '^4\d{12}(\d{3})?$',
