@@ -116,14 +116,17 @@ class Cybersource(Gateway):
                         ('cvNumber', credit_card.verification_value),
                         ('cardType', self.get_cybersource_card_type(credit_card)),
                        ])
+    
+    def build_grand_total(self, money):
+        return XMLDict([('currency', money.currency.code),
+                        ('grandTotalAmount', money.amount),])
 
     def build_authorization_request(self, money, credit_card, **options):
         entries = XMLDict([('merchantID', self.merchant_id),
                            ('merchantReferenceCode', self.get_merchant_reference_code(options)),])
         if 'address' in options:
             entries['billTo'] = self.build_bill_to(credit_card, options['address'])
-        entries['purchaseTotals'] = XMLDict([('currency', money.currency),
-                                             ('grandTotalAmount', money.amount),])
+        entries['purchaseTotals'] = self.build_grand_total(money)
         entries['card'] = self.build_card(credit_card)
         entries['ccAuthService'] = XMLDict(attrib={'run':'true'})
         return self.build_soap(entries)
@@ -131,8 +134,7 @@ class Cybersource(Gateway):
     def build_capture_request(self, money, authorization, **options):
         entries = XMLDict([('merchantID', self.merchant_id),
                            ('merchantReferenceCode', self.get_merchant_reference_code(options)),])
-        entries['purchaseTotals'] = XMLDict([('currency', money.currency),
-                                             ('grandTotalAmount', money.amount),])
+        entries['purchaseTotals'] = self.build_grand_total(money)
         tokens = self.parse_tokens(authorization)
         entries['orderRequestToken'] = tokens['request_token']
         entries['ccCaptureService'] = XMLDict([('authRequestID', tokens['request_id'])], 
@@ -144,8 +146,7 @@ class Cybersource(Gateway):
                            ('merchantReferenceCode', self.get_merchant_reference_code(options)),])
         if 'address' in options:
             entries['billTo'] = self.build_bill_to(credit_card, options['address'])
-        entries['purchaseTotals'] = XMLDict([('currency', money.currency),
-                                             ('grandTotalAmount', money.amount),])
+        entries['purchaseTotals'] = self.build_grand_total(money)
         entries['card'] = self.build_card(credit_card)
         entries['ccAuthService'] = XMLDict(attrib={'run':'true'})
         entries['ccCaptureService'] = XMLDict(attrib={'run':'true'})
@@ -156,8 +157,7 @@ class Cybersource(Gateway):
                            ('merchantReferenceCode', self.get_merchant_reference_code(options)),])
         #TODO do we need money?
         if 'money' in options:
-            entries['purchaseTotals'] = XMLDict([('currency', options['money'].currency),
-                                                 ('grandTotalAmount', options['money'].amount),])
+            entries['purchaseTotals'] = self.build_grand_total(options['money'])
         else:
             entries['purchaseTotals'] = XMLDict([('currency', 'USD'),
                                                  ('grandTotalAmount', 100),])
@@ -172,8 +172,7 @@ class Cybersource(Gateway):
                            ('merchantReferenceCode', self.get_merchant_reference_code(options)),])
         if 'address' in options and 'credit_card' in options:
             entries['billTo'] = self.build_bill_to(options['credit_card'], options['address'])
-        entries['purchaseTotals'] = XMLDict([('currency', money.currency),
-                                             ('grandTotalAmount', money.amount),])
+        entries['purchaseTotals'] = self.build_grand_total(money)
         if 'credit_card' in options:
             entries['card'] = self.build_card(options['credit_card'])
         tokens = self.parse_tokens(authorization)
