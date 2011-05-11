@@ -53,7 +53,7 @@ class Cybersource(Gateway):
         return self.CREDIT_CARD_CODES.get(credit_card.card_type, '005') #TODO is this accurate?
     
     def get_merchant_reference_code(self, options):
-        return options.get('order_id', 'foo')
+        return options.get('order_id', 'foo') #TODO should we raise en error instead?
     
     def build_bill_to(self, credit_card, address):
         return XMLDict([('firstName', credit_card.first_name),
@@ -166,7 +166,6 @@ class Cybersource(Gateway):
                                'body': body,}
 
     def parse(self, response):
-        print response
         doc  = etree.XML(response)
         result = xmltodict(doc, strip_namespaces=True)
         if 'Body' in result:
