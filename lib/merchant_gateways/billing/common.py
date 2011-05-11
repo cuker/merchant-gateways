@@ -311,17 +311,20 @@ def listtoxml(iterable, parent):
     for value in iterable:
         dicttoxml(value, parent)
 
-def xmltodict(element):
+def xmltodict(element, strip_namespaces=False):
     ret = XMLDict(attrib=element.attrib)
     if element.text:
         ret.text = element.text
     for item in element.getchildren():
+        tag = item.tag
+        if strip_namespaces:
+            tag = tag.split('}')[-1]
         if item.text:
-            ret.appendlist(item.tag, item.text)
+            ret.appendlist(tag, item.text)
         if len(element.getchildren()):
-            subitem = xmltodict(item)
+            subitem = xmltodict(item, strip_namespaces)
             if subitem:
-                ret.appendlist(item.tag, subitem)
+                ret.appendlist(tag, subitem)
     return ret
 
 #lxml quickies

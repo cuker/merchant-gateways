@@ -13,9 +13,9 @@ class Cybersource(Gateway):
                          'american_express': '003',
                          'discover': '004',}
     
-    def __init__(self, merchant_id, merchant_reference_code, **options):
+    def __init__(self, merchant_id, api_key, **options):
         self.merchant_id = merchant_id
-        self.merchant_reference_code = merchant_reference_code
+        self.api_key = api_key
         super(Cybersource, self).__init__(**options)
 
     def authorize(self, money, credit_card, **options):
@@ -52,6 +52,9 @@ class Cybersource(Gateway):
     def get_cybersource_card_type(self, credit_card):
         return self.CREDIT_CARD_CODES.get(credit_card.card_type, '005') #TODO is this accurate?
     
+    def get_merchant_reference_code(self, options):
+        return options.get('order_id', 'foo')
+    
     def build_bill_to(self, credit_card, address):
         return XMLDict([('firstName', credit_card.first_name),
                         ('lastName', credit_card.last_name),
@@ -61,8 +64,8 @@ class Cybersource(Gateway):
                         ('state', address['state']),
                         ('postalCode', address['zip']),
                         ('country', address['country']),
-                        #('phoneNumber', ''),
-                        #email
+                        ('phoneNumber', address.get('phone')),
+                        ('email', address.get('email', 'none@none.com')), #TODO test server complains if there is no email
                         ])
     
     def build_card(self, credit_card):
@@ -75,37 +78,29 @@ class Cybersource(Gateway):
 
     def build_authorization_request(self, money, credit_card, **options):
         entries = XMLDict([('merchantID', self.merchant_id),
-                           ('merchantReferenceCode', self.merchant_reference_code),])
+                           ('merchantReferenceCode', self.get_merchant_reference_code(options)),])
         if 'address' in options:
             entries['billTo'] = self.build_bill_to(credit_card, options['address'])
         entries['purchaseTotals'] = XMLDict([('currency', money.currency),
                                              ('grandTotalAmount', money.amount),])
         entries['card'] = self.build_card(credit_card)
         entries['ccAuthService'] = XMLDict(attrib={'run':'true'})
-        root = ET.Element('requestMessage')
-        root.attrib['xmlns'] = self.namespace
-        dicttoxml(entries, root)
-        ret = ET.tostring(root)
-        return ret
+        return self.build_soap(entries)
     
     def build_capture_request(self, money, authorization, **options):
         entries = XMLDict([('merchantID', self.merchant_id),
-                           ('merchantReferenceCode', self.merchant_reference_code),])
+                           ('merchantReferenceCode', self.get_merchant_reference_code(options)),])
         entries['purchaseTotals'] = XMLDict([('currency', money.currency),
                                              ('grandTotalAmount', money.amount),])
         tokens = self.parse_tokens(authorization)
         entries['orderRequestToken'] = tokens['request_token']
         entries['ccCaptureService'] = XMLDict([('authRequestID', tokens['request_id'])], 
                                               attrib={'run':'true'})
-        root = ET.Element('requestMessage')
-        root.attrib['xmlns'] = self.namespace
-        dicttoxml(entries, root)
-        ret = ET.tostring(root)
-        return ret
+        return self.build_soap(entries)
     
     def build_purchase_request(self, money, credit_card, **options):
         entries = XMLDict([('merchantID', self.merchant_id),
-                           ('merchantReferenceCode', self.merchant_reference_code),])
+                           ('merchantReferenceCode', self.get_merchant_reference_code(options)),])
         if 'address' in options:
             entries['billTo'] = self.build_bill_to(credit_card, options['address'])
         entries['purchaseTotals'] = XMLDict([('currency', money.currency),
@@ -113,15 +108,11 @@ class Cybersource(Gateway):
         entries['card'] = self.build_card(credit_card)
         entries['ccAuthService'] = XMLDict(attrib={'run':'true'})
         entries['ccCaptureService'] = XMLDict(attrib={'run':'true'})
-        root = ET.Element('requestMessage')
-        root.attrib['xmlns'] = self.namespace
-        dicttoxml(entries, root)
-        ret = ET.tostring(root)
-        return ret
+        return self.build_soap(entries)
     
     def build_reversal_request(self, authorization, **options):
         entries = XMLDict([('merchantID', self.merchant_id),
-                           ('merchantReferenceCode', self.merchant_reference_code),])
+                           ('merchantReferenceCode', self.get_merchant_reference_code(options)),])
         #TODO do we need money?
         if 'money' in options:
             entries['purchaseTotals'] = XMLDict([('currency', options['money'].currency),
@@ -133,15 +124,11 @@ class Cybersource(Gateway):
         entries['orderRequestToken'] = tokens['request_token']
         entries['ccAuthReversalService'] = XMLDict([('authRequestID', tokens['request_id'])], 
                                               attrib={'run':'true'})
-        root = ET.Element('requestMessage')
-        root.attrib['xmlns'] = self.namespace
-        dicttoxml(entries, root)
-        ret = ET.tostring(root)
-        return ret
+        return self.build_soap(entries)
     
     def build_credit_request(self, money, authorization, **options):
         entries = XMLDict([('merchantID', self.merchant_id),
-                           ('merchantReferenceCode', self.merchant_reference_code),])
+                           ('merchantReferenceCode', self.get_merchant_reference_code(options)),])
         if 'address' in options and 'credit_card' in options:
             entries['billTo'] = self.build_bill_to(options['credit_card'], options['address'])
         entries['purchaseTotals'] = XMLDict([('currency', money.currency),
@@ -152,16 +139,38 @@ class Cybersource(Gateway):
         entries['orderRequestToken'] = tokens['request_token']
         entries['ccCreditService'] = XMLDict([('captureRequestID', tokens['request_id'])], 
                                              attrib={'run':'true'})
+        return self.build_soap(entries)
+    
+    def build_soap(self, xml_dict):
+        #TODO build this up properly
+        soap_payload = '''<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+            <soapenv:Header>
+                <wsse:Security soapenv:mustUnderstand="1" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
+                    <wsse:UsernameToken>
+                        <wsse:Username>%(merchant_id)s</wsse:Username>
+                        <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">%(api_key)s</wsse:Password>
+                    </wsse:UsernameToken>
+                </wsse:Security>
+            </soapenv:Header>
+            <soapenv:Body>
+            %(body)s
+            </soapenv:Body>
+        </soapenv:Envelope>
+        '''
         root = ET.Element('requestMessage')
         root.attrib['xmlns'] = self.namespace
-        dicttoxml(entries, root)
-        ret = ET.tostring(root)
-        return ret
+        dicttoxml(xml_dict, root)
+        body = ET.tostring(root)
+        return soap_payload % {'merchant_id': self.merchant_id,
+                               'api_key': self.api_key,
+                               'body': body,}
 
     def parse(self, response):
-        response = response.replace('xmlns="%s"' % self.namespace, '')
+        print response
         doc  = etree.XML(response)
-        result = xmltodict(doc)
+        result = xmltodict(doc, strip_namespaces=True)
+        if 'Body' in result:
+            result = result['Body']['replyMessage']
         return result
 
     class Response(response.Response):
@@ -177,7 +186,7 @@ class Cybersource(Gateway):
 
         result = self.parse(self.post_webservice(url, request, {}))
         
-        if 'ccAuthReply' in result:
+        if 'ccAuthReply' in result and 'authorizationCode' in result['ccAuthReply']:
             authorization = ';'.join([result['requestToken'], result['ccAuthReply']['authorizationCode']])
         else:
             authorization = result['requestToken']

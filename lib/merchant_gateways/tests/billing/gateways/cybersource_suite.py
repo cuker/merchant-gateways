@@ -1,8 +1,5 @@
 from __future__ import with_statement
 
-from lxml.builder import ElementMaker
-XML = ElementMaker()
-
 from merchant_gateways.billing.common import xmltodict, dicttoxml, ET, XMLDict
 
 class CybersourceMockServer(object):
@@ -14,12 +11,14 @@ class CybersourceMockServer(object):
     def __call__(self, url, msg, headers):
         if self.failure:
             return self.failure
-        self.validate_request(msg)
+        #self.validate_request(msg)
         msg = msg.replace('xmlns="%s"' % self.namespace, '')
         data = xmltodict(ET.fromstring(msg))
+        if '{http://schemas.xmlsoap.org/soap/envelope/}Body' in data:
+            data = data['{http://schemas.xmlsoap.org/soap/envelope/}Body']['requestMessage']
         response = self.receive(data)
         ret = ET.tostring(self.send(data, response))
-        self.validate_response(ret)
+        #self.validate_response(ret)
         return ret
     
     def validate_request(self, msg):
@@ -46,6 +45,7 @@ class CybersourceMockServer(object):
         for key in ['ccAuthService', 'ccCaptureService', 'ccCreditService', 'ccAuthReversalService']:
             if key in data:
                 return getattr(self, key.lower())(data)
+        print data.keys()
         assert False, 'Unrecognized action'
 
     def send(self, data, response):

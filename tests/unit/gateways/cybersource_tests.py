@@ -7,7 +7,7 @@ from mock import Mock
 class CybersourceTests(GatewayTestCase):
 
     def get_gateway(self):
-        return Cybersource(merchant_id='infodev', merchant_reference_code='482046C3A7E94F5')
+        return Cybersource(merchant_id='infodev', api_key='482046C3A7E94F5')
 
     def get_success_mock(self):
         return Mock(side_effect=CybersourceMockServer())
