@@ -84,9 +84,9 @@ class Cybersource(Gateway):
     
     def parse_tokens(self, authorization):
         if ';' in authorization:
-            request_token, request_id = authorization.split(';')[:2]
+            request_id, request_token = authorization.split(';')[:2]
         else:
-            request_token, request_id = authorization, authorization
+            request_id, request_token = authorization, authorization
         return {'request_token':request_token,
                 'request_id':request_id,}
     
@@ -225,10 +225,7 @@ class Cybersource(Gateway):
 
         result = self.parse(self.post_webservice(url, request, {}))
         
-        if 'ccAuthReply' in result and 'authorizationCode' in result['ccAuthReply']:
-            authorization = ';'.join([result['requestToken'], result['ccAuthReply']['authorizationCode']])
-        else:
-            authorization = result['requestToken']
+        authorization = ';'.join([result['requestID'], result['requestToken']])
         
         message = self.RESPONSE_CODES.get(result['reasonCode'], 'Response code: %s' % result['reasonCode'])
         
