@@ -234,7 +234,7 @@ class Cybersource(Gateway):
         message = self.RESPONSE_CODES.get(result['reasonCode'], 'Response code: %s' % result['reasonCode'])
         
         response = Cybersource.Response( success=result['decision'] == 'ACCEPT', 
-                                         message='',
+                                         message=message,
                                          result=result,
                                          is_test=self.is_test,
                                          authorization=authorization,
