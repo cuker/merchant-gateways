@@ -6,12 +6,53 @@ from merchant_gateways.billing.common import xmltodict, dicttoxml, ET, XMLDict
 
 class Cybersource(Gateway):
     namespace = 'urn:schemas-cybersource-com:transaction-data-1.59'
+    
     TEST_URL = 'https://ics2wstest.ic3.com/commerce/1.x/transactionProcessor'
     LIVE_URL = 'https://ics2ws.ic3.com/commerce/1.x/transactionProcessor'
+    
     CREDIT_CARD_CODES = {'visa': '001',
                          'master': '002',
                          'american_express': '003',
                          'discover': '004',}
+    
+    RESPONSE_CODES = {'100' : "Successful transaction",
+        '101' : "Request is missing one or more required fields" ,
+        '102' : "One or more fields contains invalid data",
+        '150' : "General failure",
+        '151' : "The request was received but a server time-out occurred",
+        '152' : "The request was received, but a service timed out",
+        '200' : "The authorization request was approved by the issuing bank but declined by CyberSource because it did not pass the AVS check",
+        '201' : "The issuing bank has questions about the request",
+        '202' : "Expired card",
+        '203' : "General decline of the card",
+        '204' : "Insufficient funds in the account",
+        '205' : "Stolen or lost card",
+        '207' : "Issuing bank unavailable",
+        '208' : "Inactive card or card not authorized for card-not-present transactions",
+        '209' : "American Express Card Identifiction Digits (CID) did not match",
+        '210' : "The card has reached the credit limit",
+        '211' : "Invalid card verification number",
+        '221' : "The customer matched an entry on the processor's negative file",
+        '230' : "The authorization request was approved by the issuing bank but declined by CyberSource because it did not pass the card verification check",
+        '231' : "Invalid account number",
+        '232' : "The card type is not accepted by the payment processor",
+        '233' : "General decline by the processor",
+        '234' : "A problem exists with your CyberSource merchant configuration",
+        '235' : "The requested amount exceeds the originally authorized amount",
+        '236' : "Processor failure",
+        '237' : "The authorization has already been reversed",
+        '238' : "The authorization has already been captured",
+        '239' : "The requested transaction amount must match the previous transaction amount",
+        '240' : "The card type sent is invalid or does not correlate with the credit card number",
+        '241' : "The request ID is invalid",
+        '242' : "You requested a capture, but there is no corresponding, unused authorization record.",
+        '243' : "The transaction has already been settled or reversed",
+        '244' : "The bank account number failed the validation check",
+        '246' : "The capture or credit is not voidable because the capture or credit information has already been submitted to your processor",
+        '247' : "You requested a credit for a capture that was previously voided",
+        '250' : "The request was received, but a time-out occurred with the payment processor",
+        '254' : "Your CyberSource account is prohibited from processing stand-alone refunds",
+        '255' : "Your CyberSource account is not configured to process the service in the country you specified", }
     
     def __init__(self, merchant_id, api_key, **options):
         self.merchant_id = merchant_id
@@ -189,6 +230,8 @@ class Cybersource(Gateway):
             authorization = ';'.join([result['requestToken'], result['ccAuthReply']['authorizationCode']])
         else:
             authorization = result['requestToken']
+        
+        message = self.RESPONSE_CODES.get(result['reasonCode'], 'Response code: %s' % result['reasonCode'])
         
         response = Cybersource.Response( success=result['decision'] == 'ACCEPT', 
                                          message='',
