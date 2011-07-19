@@ -114,7 +114,9 @@ class Cybersource(Gateway):
                         ('expirationMonth', credit_card.month),
                         ('expirationYear', credit_card.year),
                         ('cvNumber', credit_card.verification_value),
-                        ('cardType', self.get_cybersource_card_type(credit_card)),
+                        # ('cardType', self.get_cybersource_card_type(credit_card)), 
+                        # TODO - fix the value we get from the get_cybersource_card_type call - it is always returing '005', which is "Diner's Club."
+                        # I am commenting it out for now, because it's optional for all card types; except for JCB, which we don't accept.
                        ])
     
     def build_grand_total(self, money):
