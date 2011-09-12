@@ -55,11 +55,12 @@ class Payflow(Gateway):
 
         # self.result = parse(ssl_post(test? ? TEST_URL : LIVE_URL, request, headers))'''
 
-        passed = result['Result'] == '0'
+        passed = result['Result'] in ('0', '126')
         message = passed and 'Approved' or 'Declined'
 
         response = self.Response( passed, message, result,
             is_test=self.is_test,
+            fraud_review= (result['Result'] == '126'),
             authorization=result.get('PNRef', result.get('RPRef', None)),  #  TODO  test the RPRef
             cvv_result = CVV_CODE[result.get('CvResult', None)],  #  TODO  default_dict to the rescue!
             avs_result = result.get('AvsResult', None),
@@ -188,7 +189,7 @@ xmlns="http://www.paypal.com/XMLPay">
         root = xml.xpath('..//paypal:TransactionResult', namespaces=namespaces)[0]
         for node in root.xpath('*', namespace='paypal', namespaces=namespaces):
             response[node.tag.split('}')[-1]] = node.text
-        if response.get('Result') != '0':
+        if response.get('Result') not in ('0', '126'):
             raise MerchantGatewayError(response.get('Message', 'No error message given'), response)
         '''
         root = REXML::XPath.first(xml, "//ResponseData")
