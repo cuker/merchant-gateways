@@ -68,7 +68,7 @@ class GatewayTestCase(unittest.TestCase):
         address = self.get_dummy_billing_address()
         ship_address = self.get_dummy_shipping_address()
         with patch.object(gateway, 'post_webservice', mock_server) as mock_do:
-            response = gateway.card_store(credit_card, address=address, ship_address=ship_address)
+            response = gateway.card_store(credit_card, address=address, ship_address=ship_address, ip_address='127.0.0.1')
         self.assertTrue(response.card_store_id)
         self.assertTrue(response.success)
     
@@ -81,7 +81,7 @@ class GatewayTestCase(unittest.TestCase):
         address = self.get_dummy_billing_address()
         ship_address = self.get_dummy_shipping_address()
         with patch.object(gateway, 'post_webservice', mock_server) as mock_do:
-            response = gateway.authorize(Money(100, 'USD'), credit_card, address=address, ship_address=ship_address)
+            response = gateway.authorize(Money(100, 'USD'), credit_card, address=address, ship_address=ship_address, ip_address='127.0.0.1')
         self.assertTrue(response.authorization)
         self.assertTrue(response.success)
     

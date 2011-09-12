@@ -132,6 +132,10 @@ xmlns="http://www.paypal.com/XMLPay">
         
         invoice = list()
         
+        ip_address = options.get('ip_address', None)
+        if ip_address:
+            invoice.append(XML.CustIP(ip_address))
+        
         bill_to_address = options.get('address', None)
         if bill_to_address:
             invoice.append(self.add_address('BillTo', **bill_to_address))
