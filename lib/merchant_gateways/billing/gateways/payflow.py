@@ -129,14 +129,22 @@ xmlns="http://www.paypal.com/XMLPay">
         transaction_type = TRANSACTIONS[action]
           # amount=self.options['amount'] ) # TODO all options in options - no exceptions
         formatted_amount = '%.2f' % money.amount  #  TODO  rename to money; merge with grandTotalAmount system
-        bill_to_address = options.get('address', {})  #  TODO  billing_address etc???
+        
+        invoice = list()
+        
+        bill_to_address = options.get('address', None)
+        if bill_to_address:
+            invoice.append(self.add_address('BillTo', **bill_to_address))
+        
+        ship_to_address = options.get('ship_address', None)
+        if ship_to_address:
+            invoice.append(self.add_address('ShipTo', **ship_to_address))
+        
+        invoice.append(XML.TotalAmt(formatted_amount, Currency=str(money.currency.code)))
 
         request = XML(transaction_type,
                     XML.PayData(
-                      XML.Invoice(
-                          self.add_address('BillTo', **bill_to_address),
-                          XML.TotalAmt(formatted_amount, Currency=str(money.currency.code))
-                      ),
+                      XML.Invoice(*invoice),
                       XML.Tender(
                           self.add_credit_card(credit_card)
                       )))
@@ -155,6 +163,8 @@ xmlns="http://www.paypal.com/XMLPay">
             else:
                 phone = '+'+phone
             elements.append(XML.Phone(phone))
+        if address.get('email', '').strip():
+            elements.append(XML.EMail(address.get('email', '').strip()))
         elements.append(XML.Address(
                               XML.Street(address['address1']),
                               XML.City(address['city']),
