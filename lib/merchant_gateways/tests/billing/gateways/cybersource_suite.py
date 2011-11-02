@@ -114,4 +114,3 @@ class CybersourceMockServer(object):
                            ])
         return response
 
-

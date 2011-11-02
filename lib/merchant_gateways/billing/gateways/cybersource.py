@@ -119,6 +119,17 @@ class Cybersource(Gateway):
                         # I am commenting it out for now, because it's optional for all card types; except for JCB, which we don't accept.
                        ])
     
+    def build_business_rules(self, options):
+        parts = list()
+        def check_options(key):
+            if options.get(key, False):
+                parts.append((key, options[key]))
+        
+        for option in ['ignoreAVSResult', 'ignoreCVResult', 'ignoreDAVResult', 'ignoreExportResult', 'ignoreValidateResult', 'declineAVSFlags', 'scoreThreshold']:
+            check_options(option)
+        if parts:
+            return XMLDict(parts)
+    
     def build_grand_total(self, money):
         return XMLDict([('currency', money.currency.code),
                         ('grandTotalAmount', money.amount),])
@@ -131,6 +142,9 @@ class Cybersource(Gateway):
         entries['purchaseTotals'] = self.build_grand_total(money)
         entries['card'] = self.build_card(credit_card)
         entries['ccAuthService'] = XMLDict(attrib={'run':'true'})
+        business_rules = self.build_business_rules(options)
+        if business_rules:
+            entries['businessRules'] = business_rules
         return self.build_soap(entries)
     
     def build_capture_request(self, money, authorization, **options):
@@ -141,6 +155,9 @@ class Cybersource(Gateway):
         entries['orderRequestToken'] = tokens['request_token']
         entries['ccCaptureService'] = XMLDict([('authRequestID', tokens['request_id'])], 
                                               attrib={'run':'true'})
+        business_rules = self.build_business_rules(options)
+        if business_rules:
+            entries['businessRules'] = business_rules
         return self.build_soap(entries)
     
     def build_purchase_request(self, money, credit_card, **options):
@@ -152,6 +169,9 @@ class Cybersource(Gateway):
         entries['card'] = self.build_card(credit_card)
         entries['ccAuthService'] = XMLDict(attrib={'run':'true'})
         entries['ccCaptureService'] = XMLDict(attrib={'run':'true'})
+        business_rules = self.build_business_rules(options)
+        if business_rules:
+            entries['businessRules'] = business_rules
         return self.build_soap(entries)
     
     def build_reversal_request(self, authorization, **options):
@@ -167,6 +187,9 @@ class Cybersource(Gateway):
         entries['orderRequestToken'] = tokens['request_token']
         entries['ccAuthReversalService'] = XMLDict([('authRequestID', tokens['request_id'])], 
                                               attrib={'run':'true'})
+        business_rules = self.build_business_rules(options)
+        if business_rules:
+            entries['businessRules'] = business_rules
         return self.build_soap(entries)
     
     def build_credit_request(self, money, authorization, **options):
@@ -181,6 +204,9 @@ class Cybersource(Gateway):
         entries['orderRequestToken'] = tokens['request_token']
         entries['ccCreditService'] = XMLDict([('captureRequestID', tokens['request_id'])], 
                                              attrib={'run':'true'})
+        business_rules = self.build_business_rules(options)
+        if business_rules:
+            entries['businessRules'] = business_rules
         return self.build_soap(entries)
     
     def build_soap(self, xml_dict):
