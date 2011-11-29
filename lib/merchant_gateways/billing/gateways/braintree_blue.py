@@ -24,8 +24,6 @@ class BraintreeBlue(Gateway):  # CONSIDER most of this belongs in a class SmartP
 
         # print self.options
 
-        braintree.Configuration.configure(braintree.Environment.Sandbox, 'vixsw', '1632859', '2TyFqF68hEF43z84wsu8Rs5H24RbW52V' )    #  TODO  remove me
-
         braintree.Configuration.configure(
             braintree.Environment.Sandbox,  #  TODO the vaunted is_test should key this!!
             self.options.get('merchant_id', 'config_error TODO'),
