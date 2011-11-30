@@ -10,14 +10,15 @@ class MerchantGatewaysBraintreeBlueSuite:
 
         with patch('braintree.util.http.Http.post') as mock_do:
             mock_do.return_value = returns
-            lamb()
+            self.response = lamb()
             call_args = mock_do.call_args[0]
 
-        self.response = getattr(self.gateway, 'response', {})  #  TODO  all web service mockers do this
+        #self.response = getattr(self.gateway, 'response', {})  #  TODO  all web service mockers do this
         return call_args
 
     def successful_authorization_response(self):
         return {u'transaction': {u'amount': u'100.00',
+                  u'tax_amount': None,
                   u'avs_error_response_code': None,
                   u'avs_postal_code_response_code': u'I',
                   u'avs_street_address_response_code': u'I',
@@ -79,6 +80,7 @@ class MerchantGatewaysBraintreeBlueSuite:
 
     def successful_purchase_response(self):  #  TODO  aaand use me!
         return {u'transaction': {u'amount': u'100.00',
+                  u'tax_amount': None,
                   u'avs_error_response_code': None,
                   u'avs_postal_code_response_code': u'I',
                   u'avs_street_address_response_code': u'I',  #  TODO  put them in the CVVResult and AVSResult objects!

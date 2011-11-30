@@ -217,8 +217,8 @@ class MerchantGatewaysWebserviceTestSuite(object):
 
     def mock_gateway_webservice(self, returns, lamb):
         self.gateway.post_webservice = Mock(return_value=returns)  #  TODO  stop relying on this member!
-        lamb()
-        self.response = self.gateway.response  #  TODO  take out redundant occurences of this
+        self.response = lamb()
+        #self.response = self.gateway.response  #  TODO  take out redundant occurences of this
 
 
 class MerchantGatewaysTestSuite( MerchantGatewaysUtilitiesTestSuite,
@@ -246,11 +246,11 @@ class MerchantGatewaysTestSuite( MerchantGatewaysUtilitiesTestSuite,
 
     def assert_success(self):
         #  TODO assert is_test
-        self.assertTrue(isinstance(self.response, self.gateway_response_type()))
+        self.assertTrue(isinstance(self.response, self.gateway_response_type()), str(self.response))
         self.assertTrue(self.response.success, 'Response should not fail: ' + pformat(self.response.__dict__))
 
     def assert_failure(self):
-        self.assertTrue(isinstance(self.response, self.gateway_response_type()))
+        self.assertTrue(isinstance(self.response, self.gateway_response_type()), str(self.response))
             #~ clean_backtrace do
         self.assertFalse(self.response.success, 'Response should fail: ' + pformat(self.response.__dict__))
 
@@ -264,11 +264,12 @@ class MerchantGatewaysTestSuite( MerchantGatewaysUtilitiesTestSuite,
             '''All gateways authorize with these inputs and outputs'''
 
             self.options['description'] = 'Chamber of Secrets'
-
+            
             self.mock_gateway_webservice(self.successful_authorization_response(),
                 lambda: self.gateway.authorize(self.money, self.credit_card, **self.options) )
-
-            self.response = self.gateway.response
+            
+            assert self.response
+            #self.response = self.gateway.response
             assert self.response.is_test
             self.assert_success()
             self.assert_successful_authorization()
@@ -285,8 +286,9 @@ class MerchantGatewaysTestSuite( MerchantGatewaysUtilitiesTestSuite,
         def test_successful_purchase(self):
             self.mock_gateway_webservice(self.successful_purchase_response(),
                 lambda: self.gateway.purchase(self.money, self.credit_card, **self.options) )
-
-            self.response = self.gateway.response  #  CONSIDER move inside ??
+            
+            assert self.response
+            #self.response = self.gateway.response  #  CONSIDER move inside ??
             assert self.response.is_test
             self.assert_success()
             self.assert_successful_purchase()

@@ -133,7 +133,7 @@ class AuthorizeNet(Gateway):
     def capture(self, money, authorization, options = {}, order_id=None): # FIXME  this MUST use **options!!!
         post = {'trans_id': authorization}
         self.add_customer_data(post, options)
-        self.commit('PRIOR_AUTH_CAPTURE', money, post)
+        return self.commit('PRIOR_AUTH_CAPTURE', money, post)
 
       # Void a previous transaction
       #
@@ -142,7 +142,7 @@ class AuthorizeNet(Gateway):
       # * <tt>authorization</tt> - The authorization returned from the previous authorize request.
     def void(self, authorization, options = {}):
         post = {'trans_id': authorization}
-        self.commit('VOID', None, post)
+        return self.commit('VOID', None, post)
 
 
       # Credit an account.
@@ -167,7 +167,7 @@ class AuthorizeNet(Gateway):
                      card_num= options['card_number'] )
 
         self.add_invoice(post, **options)
-        self.commit('CREDIT', money, post)
+        return self.commit('CREDIT', money, post)
 
     def commit(self, action, money, parameters):
         if not action == 'VOID':

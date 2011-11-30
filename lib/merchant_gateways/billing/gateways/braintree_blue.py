@@ -17,6 +17,7 @@ class BraintreeBlue(Gateway):  # CONSIDER most of this belongs in a class SmartP
             options['environment'] = braintree.Environment.Sandbox
         else:
             options['environment'] = braintree.Environment.Production
+        braintree.Configuration.configure(**options)
         configuration = Configuration(**options)
         return BraintreeGateway(configuration)
 
@@ -66,7 +67,9 @@ class BraintreeBlue(Gateway):  # CONSIDER most of this belongs in a class SmartP
             params['shipping'] = self.create_address(options['shipping_address'])
         result = gateway.transaction.create(params)
 
-        return self.wrap_result(result)
+        response = self.wrap_result(result)
+        print response
+        return response
 
 
     def purchase(self, money, credit_card=None, card_store_id=None, **options):
