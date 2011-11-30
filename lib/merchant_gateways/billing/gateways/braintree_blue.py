@@ -9,25 +9,19 @@ from braintree.transaction import Transaction
 
 class BraintreeBlue(Gateway):  # CONSIDER most of this belongs in a class SmartPs, which is Braintree's actual implementation
     def get_configured_gateway(self):
-        #TODO grab specific options
-        configuration = Configuration(**self.options)
+        options = {'environment':'',
+                   'merchant_id':self.options.get('merchant_id'),
+                   'public_key':self.options.get('public_key'),
+                   'private_key':self.options.get('private_key'),}
+        if self.gateway_mode != 'live':
+            options['environment'] = braintree.Environment.Sandbox
+        else:
+            options['environment'] = braintree.Environment.Production
+        configuration = Configuration(**options)
         return BraintreeGateway(configuration)
 
     class Response(response.Response):
         pass
-
-    def generate_payment_info(self, money, credit_card):
-        braintree.Configuration.use_unsafe_ssl = True  #  TODO  either remove this, or call it early and often
-        exp = '%02i/%i' % (credit_card.month, credit_card.year)
-        info = {
-                "amount": '%.02f' % money.amount,
-                "credit_card": {
-                    "number": credit_card.number,  #  TODO  nearby test on this
-                    "expiration_date": exp
-                }}
-        if getattr(credit_card, 'custom_fields', None):
-            info["custom_fields"] = credit_card.custom_fields
-        return info
     
     def create_address(self, address):
         return {
@@ -70,7 +64,7 @@ class BraintreeBlue(Gateway):  # CONSIDER most of this belongs in a class SmartP
             params['billing'] = self.create_address(options['address'])
         if 'shipping_address' in options:
             params['shipping'] = self.create_address(options['shipping_address'])
-        result = gateway.transaction_gateway.create(params)
+        result = gateway.transaction.create(params)
 
         return self.wrap_result(result)
 
@@ -85,12 +79,12 @@ class BraintreeBlue(Gateway):  # CONSIDER most of this belongs in a class SmartP
             amount = money.amount
         else:
             amount = None
-        result = gateway.transaction_gateway.submit_for_settlement(authorization, amount)
+        result = gateway.transaction.submit_for_settlement(authorization, amount)
         return self.wrap_result(result)
 
     def void(self, authorization, **options):
         gateway = self.get_configured_gateway()
-        result = gateway.transaction_gateway.void(authorization)
+        result = gateway.transaction.void(authorization)
         return self.wrap_result(result)
 
     def credit(self, money, authorization, **options):
@@ -98,7 +92,7 @@ class BraintreeBlue(Gateway):  # CONSIDER most of this belongs in a class SmartP
         params = {'amount': abs(money.amount),
                   'type': Transaction.Type.Credit,
                   "payment_method_token": authorization,}
-        result = gateway.transaction_gateway.create(params)
+        result = gateway.transaction.create(params)
 
         return self.wrap_result(result)
 
