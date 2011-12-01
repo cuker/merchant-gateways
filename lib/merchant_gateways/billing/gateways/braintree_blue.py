@@ -50,7 +50,7 @@ class BraintreeBlue(Gateway):  # CONSIDER most of this belongs in a class SmartP
     def wrap_result(self, result):
         return self.Response(result.is_success, result.transaction.processor_response_text, result,
                                  is_test = self.gateway_mode == 'test',
-                                 authorization = result.transaction.processor_authorization_code
+                                 authorization = result.transaction.id
                                 )
 
     def authorize(self, money, credit_card=None, card_store_id=None, **options):
