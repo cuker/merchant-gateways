@@ -8,6 +8,8 @@ from braintree.braintree_gateway import BraintreeGateway
 from braintree.transaction import Transaction
 
 class BraintreeBlue(Gateway):  # CONSIDER most of this belongs in a class SmartPs, which is Braintree's actual implementation
+    CARD_STORE = True
+    
     def get_configured_gateway(self):
         options = {'environment':'',
                    'merchant_id':self.options.get('merchant_id'),
@@ -29,8 +31,8 @@ class BraintreeBlue(Gateway):  # CONSIDER most of this belongs in a class SmartP
             'first_name': address['firstname'],
             'last_name': address['lastname'],
             'company': address['company'],
-            'street_address': address['street1'],
-            'extended_address': address['street2'],
+            'street_address': address['address1'],
+            'extended_address': address['address2'],
             'locality': address['city'],
             'region': address['state'],
             'postal_code': address['zip'],
@@ -48,9 +50,16 @@ class BraintreeBlue(Gateway):  # CONSIDER most of this belongs in a class SmartP
         return data
     
     def wrap_result(self, result):
-        return self.Response(result.is_success, result.transaction.processor_response_text, result,
+        if hasattr(result, 'errors') and result.errors.deep_errors:
+            message = ';\n'.join(error.message for error in result.errors.deep_errors)
+        else:
+            message = result.transaction.processor_response_text
+        authorization = None
+        if result.transaction:
+            authorization = result.transaction.id
+        return self.Response(result.is_success, message, result,
                                  is_test = self.gateway_mode == 'test',
-                                 authorization = result.transaction.id
+                                 authorization = authorization,
                                 )
 
     def authorize(self, money, credit_card=None, card_store_id=None, **options):
@@ -59,16 +68,17 @@ class BraintreeBlue(Gateway):  # CONSIDER most of this belongs in a class SmartP
                   'type': Transaction.Type.Sale,}
         if credit_card:
             params['credit_card'] = self.create_credit_card(credit_card)
+            if 'address' in options:
+                params['billing'] = self.create_address(options.pop('address'))
         else:
-            params['customer_id'] = card_store_id
-        if 'address' in options:
-            params['billing'] = self.create_address(options['address'])
-        if 'shipping_address' in options:
-            params['shipping'] = self.create_address(options['shipping_address'])
+            params['payment_method_token'] = card_store_id
+            options.pop('address', None)
+        if 'ship_address' in options:
+            params['shipping'] = self.create_address(options.pop('ship_address'))
+        if options:
+            params['options'] = options
         result = gateway.transaction.create(params)
-
         response = self.wrap_result(result)
-        print response
         return response
 
 
@@ -89,7 +99,12 @@ class BraintreeBlue(Gateway):  # CONSIDER most of this belongs in a class SmartP
         gateway = self.get_configured_gateway()
         result = gateway.transaction.void(authorization)
         return self.wrap_result(result)
-
+    
+    def refund(self, money, authorization, **options):
+        gateway = self.get_configured_gateway()
+        result = gateway.transaction.refund(authorization, abs(money.amount))
+        return self.wrap_result(result)
+    
     def credit(self, money, authorization, **options):
         gateway = self.get_configured_gateway()
         params = {'amount': abs(money.amount),
