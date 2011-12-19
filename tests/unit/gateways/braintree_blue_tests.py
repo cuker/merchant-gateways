@@ -23,7 +23,7 @@ class BraintreeBlueTests( MerchantGatewaysBraintreeBlueSuite, MerchantGatewaysTe
 
     def assert_successful_authorization(self):
         self.assert_equal('fbyrfg',   self.response.result.transaction.id)
-        self.assert_equal('54173',    self.response.authorization)
+        self.assert_equal('fbyrfg',    self.response.authorization)
         self.assert_equal('Approved', self.response.message)
         self.assert_equal('1000',     self.response.result.transaction.processor_response_code)
 
@@ -35,7 +35,7 @@ class BraintreeBlueTests( MerchantGatewaysBraintreeBlueSuite, MerchantGatewaysTe
 
     def assert_successful_purchase(self):  #  TODO  need this now!
         self.assert_equal('8y5jn6',   self.response.result.transaction.id)
-        self.assert_equal('54158',    self.response.authorization)
+        self.assert_equal('8y5jn6',    self.response.authorization)
         self.assert_equal('Approved', self.response.message)
         self.assert_equal('1000',     self.response.result.transaction.processor_response_code)
 

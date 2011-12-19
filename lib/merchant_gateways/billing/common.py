@@ -296,6 +296,8 @@ def pytoxml(key, obj, parent):
         if obj is not None:
             if isinstance(obj, basestring):
                 container.text = obj
+            elif isinstance(obj, bool):
+                container.text = obj and 'true' or 'false'
             else:
                 container.text = unicode(obj)
 

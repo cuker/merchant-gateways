@@ -75,6 +75,10 @@ class BraintreeBlue(Gateway):  # CONSIDER most of this belongs in a class SmartP
             options.pop('address', None)
         if 'ship_address' in options:
             params['shipping'] = self.create_address(options.pop('ship_address'))
+        
+        #remove unsupported options
+        options.pop('order_id', None)
+        options.pop('description', None)
         if options:
             params['options'] = options
         result = gateway.transaction.create(params)
