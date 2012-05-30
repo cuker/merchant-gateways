@@ -4,10 +4,9 @@ from lxml import etree
 
 from merchant_gateways.billing.common import xmltodict, dicttoxml, ET, XMLDict
 
-from money import Money
-
 class Cybersource(Gateway):
-    namespace = 'urn:schemas-cybersource-com:transaction-data-1.59'
+    version = '1.71'
+    namespace = 'urn:schemas-cybersource-com:transaction-data-%s' % version
     
     CARD_STORE = True
     
@@ -90,7 +89,11 @@ class Cybersource(Gateway):
         return self.commit(request)
     
     def card_store(self, credit_card, **options):
-        message = self.build_subscription_request(credit_card=credit_card, **options)
+        options.setdefault('subscription', {})
+        options['subscription']['frequency'] = 'on-demand'
+        options['subscription']['amount'] = 0
+        options['subscription']['auto_renew'] = False
+        message = self.build_create_subscription_request(credit_card=credit_card, **options)
         return self.commit(message, **self.options)
     
     def parse_tokens(self, authorization):
@@ -145,18 +148,40 @@ class Cybersource(Gateway):
         return XMLDict([('currency', money.currency.code),
                         ('grandTotalAmount', money.amount),])
     
-    def build_subscription_request(self, credit_card, **options):
-        money = Money(0, 'USD')
-        response = self.authorize(money, credit_card=credit_card, **options)
-        result = response.result
-        
+    def build_subscription_info(self, options):
+        suboptions = options.get('subscription', {})
+        params = list()
+        class unset(object):
+            pass
+        for src_key, dst_key, default in [('subscription_id', 'subscriptionID', unset),
+                                 ('status', 'status', unset),
+                                 ('amount', 'amount', unset),
+                                 ('occurrences', 'numerofPayments', unset),
+                                 ('auto_renew', 'automaticRenew', unset),
+                                 ('frequency', 'frequency', unset),
+                                 ('startDate', 'start_date', unset),
+                                 ('endDate', 'end_date', unset),
+                                 ('approval_required', 'approvalRequired', False),
+                                 ('event', 'event', unset),
+                                 ('bill_payment', 'billPayment', unset),]:
+            if src_key in suboptions:
+                params.append((dst_key, suboptions[src_key]))
+            elif default != unset:
+                params.append((dst_key, default))
+        return XMLDict(params)
+    
+    def build_create_subscription_request(self, credit_card, **options):
         entries = XMLDict([('merchantID', self.merchant_id),
                            ('merchantReferenceCode', self.get_merchant_reference_code(options)),])
-        entries['paySubscriptionCreateService'] = XMLDict([('paymentRequestID', result['requestID']),
-                                                           ('paymentRequestToken', result['requestToken']),
-                                                           ('disableAutoAuth', 'true'),], attrib={'run':'true'})
-        entries['recurringSubscriptionInfo'] = XMLDict([('amount', 0),
-                                                        ('numberOfPayments', 0),])
+        if 'address' in options:
+            entries['billTo'] = self.build_bill_to(credit_card, options['address'])
+        entries['card'] = self.build_card(credit_card)
+        entries['subscription'] = {'paymentMethod':'credit card'}
+        entries['paySubscriptionCreateService'] = XMLDict(attrib={'run':'true'})
+        entries['recurringSubscriptionInfo'] = self.build_subscription_info(options)
+        business_rules = self.build_business_rules(options)
+        if business_rules:
+            entries['businessRules'] = business_rules
         return self.build_soap(entries)
 
     def build_authorization_request(self, money, credit_card=None, card_store_id=None, **options):
@@ -168,7 +193,9 @@ class Cybersource(Gateway):
         if credit_card:
             entries['card'] = self.build_card(credit_card)
         else:
-            entries['subscription'] = card_store_id
+            options.setdefault('subscription', {})
+            options['subscription']['subscription_id'] = card_store_id
+            entries['recurringSubscriptionInfo'] = self.build_subscription_info(options)
         entries['ccAuthService'] = XMLDict(attrib={'run':'true'})
         business_rules = self.build_business_rules(options)
         if business_rules:
@@ -197,7 +224,9 @@ class Cybersource(Gateway):
         if credit_card:
             entries['card'] = self.build_card(credit_card)
         else:
-            entries['subscription'] = card_store_id
+            options.setdefault('subscription', {})
+            options['subscription']['subscription_id'] = card_store_id
+            entries['recurringSubscriptionInfo'] = self.build_subscription_info(options)
         entries['ccAuthService'] = XMLDict(attrib={'run':'true'})
         entries['ccCaptureService'] = XMLDict(attrib={'run':'true'})
         business_rules = self.build_business_rules(options)

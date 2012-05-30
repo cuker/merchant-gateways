@@ -3,7 +3,8 @@ from __future__ import with_statement
 from merchant_gateways.billing.common import xmltodict, dicttoxml, ET, XMLDict
 
 class CybersourceMockServer(object):
-    namespace = 'urn:schemas-cybersource-com:transaction-data-1.59'
+    version = '1.71'
+    namespace = 'urn:schemas-cybersource-com:transaction-data-%s' % version
     
     def __init__(self, failure=None):
         self.failure = failure
@@ -24,7 +25,7 @@ class CybersourceMockServer(object):
     def validate_request(self, msg):
         from lxml import etree
         from os import path
-        location = path.join(path.dirname(__file__), 'schemas', 'cybersource', 'CyberSourceTransaction_1.59.xsd')
+        location = path.join(path.dirname(__file__), 'schemas', 'cybersource', 'CyberSourceTransaction_%s.xsd' % self.version)
         schema_doc = etree.XMLSchema(etree.parse(open(location, 'r')))
         xml = etree.XML(msg)
         try:
@@ -36,7 +37,7 @@ class CybersourceMockServer(object):
     def validate_response(self, msg):
         from lxml import etree
         from os import path
-        location = path.join(path.dirname(__file__), 'schemas', 'cybersource', 'CyberSourceTransaction_1.59.xsd')
+        location = path.join(path.dirname(__file__), 'schemas', 'cybersource', 'CyberSourceTransaction_%s.xsd' % self.version)
         schema_doc = etree.XMLSchema(etree.parse(open(location, 'r')))
         xml = etree.XML(msg)
         schema_doc.assertValid(xml)
