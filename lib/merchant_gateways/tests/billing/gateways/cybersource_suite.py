@@ -42,7 +42,7 @@ class CybersourceMockServer(object):
         schema_doc.assertValid(xml)
 
     def receive(self, data):
-        for key in ['ccAuthService', 'ccCaptureService', 'ccCreditService', 'ccAuthReversalService']:
+        for key in ['ccAuthService', 'ccCaptureService', 'ccCreditService', 'ccAuthReversalService', 'paySubscriptionCreateService']:
             if key in data:
                 return getattr(self, key.lower())(data)
         print data.keys()
@@ -111,6 +111,16 @@ class CybersourceMockServer(object):
                                                         ('amount', data['purchaseTotals']['grandTotalAmount']),
                                                         ('authorizationCode', '1094820975023470'),
                                                     ])),
+                           ])
+        return response
+    
+    def paysubscriptioncreateservice(self, data):
+        response = XMLDict([('merchantReferenceCode', data['merchantReferenceCode']),
+                            ('requestID', '0305782650000167905080'),
+                            ('requestToken', 'AA4JUrWguaLLQxMUGwxSWVdPS1BIRk5IMUwA2yCv'),
+                            ('decision', 'ACCEPT'),
+                            ('reasonCode', '100'),
+                            ('subscriptionID', 'subid435d3f433'),
                            ])
         return response
 

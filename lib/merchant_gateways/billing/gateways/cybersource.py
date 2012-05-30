@@ -4,8 +4,12 @@ from lxml import etree
 
 from merchant_gateways.billing.common import xmltodict, dicttoxml, ET, XMLDict
 
+from money import Money
+
 class Cybersource(Gateway):
     namespace = 'urn:schemas-cybersource-com:transaction-data-1.59'
+    
+    CARD_STORE = True
     
     TEST_URL = 'https://ics2wstest.ic3.com/commerce/1.x/transactionProcessor'
     LIVE_URL = 'https://ics2ws.ic3.com/commerce/1.x/transactionProcessor'
@@ -59,15 +63,18 @@ class Cybersource(Gateway):
         self.api_key = api_key
         super(Cybersource, self).__init__(**options)
 
-    def authorize(self, money, credit_card, **options):
-        message = self.build_authorization_request(money, credit_card, **options)
+    def authorize(self, money, credit_card=None, card_store_id=None, **options):
+        if card_store_id:
+            message = self.build_authorization_request(money, card_store_id=card_store_id, **options)
+        else:
+            message = self.build_authorization_request(money, credit_card=credit_card, **options)
         return self.commit(message)
     
     def purchase(self, money, credit_card=None, card_store_id=None, **options):
         if card_store_id:
-            assert False, 'TODO'
+            message = self.build_purchase_request(money, card_store_id=card_store_id, **options)
         else:
-            message = self.build_authorization_request(money, credit_card, **options)
+            message = self.build_purchase_request(money, credit_card=credit_card, **options)
         return self.commit(message)
     
     def void(self, authorization, **options):
@@ -81,6 +88,10 @@ class Cybersource(Gateway):
     def capture(self, money, authorization, **options):
         request = self.build_capture_request(money, authorization, **options)
         return self.commit(request)
+    
+    def card_store(self, credit_card, **options):
+        message = self.build_subscription_request(credit_card=credit_card, **options)
+        return self.commit(message, **self.options)
     
     def parse_tokens(self, authorization):
         if ';' in authorization:
@@ -133,14 +144,31 @@ class Cybersource(Gateway):
     def build_grand_total(self, money):
         return XMLDict([('currency', money.currency.code),
                         ('grandTotalAmount', money.amount),])
+    
+    def build_subscription_request(self, credit_card, **options):
+        money = Money(0, 'USD')
+        response = self.authorize(money, credit_card=credit_card, **options)
+        result = response.result
+        
+        entries = XMLDict([('merchantID', self.merchant_id),
+                           ('merchantReferenceCode', self.get_merchant_reference_code(options)),])
+        entries['paySubscriptionCreateService'] = XMLDict([('paymentRequestID', result['requestID']),
+                                                           ('paymentRequestToken', result['requestToken']),
+                                                           ('disableAutoAuth', 'true'),], attrib={'run':'true'})
+        entries['recurringSubscriptionInfo'] = XMLDict([('amount', 0),
+                                                        ('numberOfPayments', 0),])
+        return self.build_soap(entries)
 
-    def build_authorization_request(self, money, credit_card, **options):
+    def build_authorization_request(self, money, credit_card=None, card_store_id=None, **options):
         entries = XMLDict([('merchantID', self.merchant_id),
                            ('merchantReferenceCode', self.get_merchant_reference_code(options)),])
         if 'address' in options:
             entries['billTo'] = self.build_bill_to(credit_card, options['address'])
         entries['purchaseTotals'] = self.build_grand_total(money)
-        entries['card'] = self.build_card(credit_card)
+        if credit_card:
+            entries['card'] = self.build_card(credit_card)
+        else:
+            entries['subscription'] = card_store_id
         entries['ccAuthService'] = XMLDict(attrib={'run':'true'})
         business_rules = self.build_business_rules(options)
         if business_rules:
@@ -160,13 +188,16 @@ class Cybersource(Gateway):
             entries['businessRules'] = business_rules
         return self.build_soap(entries)
     
-    def build_purchase_request(self, money, credit_card, **options):
+    def build_purchase_request(self, money, credit_card=None, card_store_id=None, **options):
         entries = XMLDict([('merchantID', self.merchant_id),
                            ('merchantReferenceCode', self.get_merchant_reference_code(options)),])
         if 'address' in options:
             entries['billTo'] = self.build_bill_to(credit_card, options['address'])
         entries['purchaseTotals'] = self.build_grand_total(money)
-        entries['card'] = self.build_card(credit_card)
+        if credit_card:
+            entries['card'] = self.build_card(credit_card)
+        else:
+            entries['subscription'] = card_store_id
         entries['ccAuthService'] = XMLDict(attrib={'run':'true'})
         entries['ccCaptureService'] = XMLDict(attrib={'run':'true'})
         business_rules = self.build_business_rules(options)
@@ -262,6 +293,7 @@ class Cybersource(Gateway):
                                          result=result,
                                          is_test=self.is_test,
                                          authorization=authorization,
-                                         transaction=authorization,)
+                                         transaction=authorization,
+                                         card_store_id=result.get('subscriptionID', None),)
         return response
 
