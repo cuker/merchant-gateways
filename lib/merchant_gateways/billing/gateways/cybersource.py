@@ -111,8 +111,8 @@ class Cybersource(Gateway):
         return options.get('order_id', 'foo') #TODO should we raise en error instead?
     
     def build_bill_to(self, credit_card, address):
-        return XMLDict([('firstName', credit_card.first_name),
-                        ('lastName', credit_card.last_name),
+        return XMLDict([('firstName', credit_card and credit_card.first_name or address['first_name']),
+                        ('lastName', credit_card and credit_card.last_name or address['last_name']),
                         ('street1', address['address1']),
                         ('street2', address.get('address2','')),
                         ('city', address['city']),
