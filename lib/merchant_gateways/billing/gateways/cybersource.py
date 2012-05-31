@@ -177,8 +177,8 @@ class Cybersource(Gateway):
             entries['billTo'] = self.build_bill_to(credit_card, options['address'])
         entries['card'] = self.build_card(credit_card)
         entries['subscription'] = {'paymentMethod':'credit card'}
-        entries['paySubscriptionCreateService'] = XMLDict(attrib={'run':'true'})
         entries['recurringSubscriptionInfo'] = self.build_subscription_info(options)
+        entries['paySubscriptionCreateService'] = XMLDict(attrib={'run':'true'})
         business_rules = self.build_business_rules(options)
         if business_rules:
             entries['businessRules'] = business_rules
@@ -317,12 +317,16 @@ class Cybersource(Gateway):
         
         message = self.RESPONSE_CODES.get(result['reasonCode'], 'Response code: %s' % result['reasonCode'])
         
+        card_store_id = None
+        if 'paySubscriptionCreateReply' in result and 'subscriptionID' in result['paySubscriptionCreateReply']:
+            card_store_id = result['paySubscriptionCreateReply']['subscriptionID']
+        
         response = Cybersource.Response( success=result['decision'] == 'ACCEPT', 
                                          message=message,
                                          result=result,
                                          is_test=self.is_test,
                                          authorization=authorization,
                                          transaction=authorization,
-                                         card_store_id=result.get('subscriptionID', None),)
+                                         card_store_id=card_store_id,)
         return response
 

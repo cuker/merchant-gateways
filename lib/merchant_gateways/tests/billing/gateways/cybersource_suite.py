@@ -12,14 +12,14 @@ class CybersourceMockServer(object):
     def __call__(self, url, msg, headers):
         if self.failure:
             return self.failure
-        #self.validate_request(msg)
+        self.validate_request(msg)
         msg = msg.replace('xmlns="%s"' % self.namespace, '')
         data = xmltodict(ET.fromstring(msg))
         if '{http://schemas.xmlsoap.org/soap/envelope/}Body' in data:
             data = data['{http://schemas.xmlsoap.org/soap/envelope/}Body']['requestMessage']
         response = self.receive(data)
         ret = ET.tostring(self.send(data, response))
-        #self.validate_response(ret)
+        self.validate_response(ret)
         return ret
     
     def validate_request(self, msg):
@@ -28,8 +28,9 @@ class CybersourceMockServer(object):
         location = path.join(path.dirname(__file__), 'schemas', 'cybersource', 'CyberSourceTransaction_%s.xsd' % self.version)
         schema_doc = etree.XMLSchema(etree.parse(open(location, 'r')))
         xml = etree.XML(msg)
+        body = list(xml.find('{http://schemas.xmlsoap.org/soap/envelope/}Body'))[0]
         try:
-            schema_doc.assertValid(xml)
+            schema_doc.assertValid(body)
         except:
             print msg
             raise
@@ -118,10 +119,11 @@ class CybersourceMockServer(object):
     def paysubscriptioncreateservice(self, data):
         response = XMLDict([('merchantReferenceCode', data['merchantReferenceCode']),
                             ('requestID', '0305782650000167905080'),
-                            ('requestToken', 'AA4JUrWguaLLQxMUGwxSWVdPS1BIRk5IMUwA2yCv'),
                             ('decision', 'ACCEPT'),
                             ('reasonCode', '100'),
-                            ('subscriptionID', 'subid435d3f433'),
+                            ('requestToken', 'AA4JUrWguaLLQxMUGwxSWVdPS1BIRk5IMUwA2yCv'),
+                            ('paySubscriptionCreateReply', XMLDict([('reasonCode', '100'),
+                                                                    ('subscriptionID', 'subid435d3f433'),])),
                            ])
         return response
 
