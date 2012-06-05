@@ -153,7 +153,7 @@ class Cybersource(Gateway):
         params = list()
         class unset(object):
             pass
-        for src_key, dst_key, default in [('subscription_id', 'subscriptionID', unset),
+        for src_key, dst_key, default in [('subscription_id', 'subscriptionID', None),
                                  ('status', 'status', unset),
                                  ('amount', 'amount', unset),
                                  ('occurrences', 'numerofPayments', unset),
@@ -175,6 +175,7 @@ class Cybersource(Gateway):
                            ('merchantReferenceCode', self.get_merchant_reference_code(options)),])
         if 'address' in options:
             entries['billTo'] = self.build_bill_to(credit_card, options['address'])
+        entries['purchaseTotals'] = XMLDict([('currency', 'USD')])
         entries['card'] = self.build_card(credit_card)
         entries['subscription'] = {'paymentMethod':'credit card'}
         entries['recurringSubscriptionInfo'] = self.build_subscription_info(options)
