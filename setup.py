@@ -30,4 +30,5 @@ setup(
         'Topic :: Software Development :: Testing',
     ],
     test_suite='tests.testrunner.runtests',
+    include_package_data = True,
 )

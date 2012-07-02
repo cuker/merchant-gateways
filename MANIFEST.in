@@ -1,0 +1,1 @@
+recursive-include lib/merchant_gateways/tests/billing/gateways/schemas *
