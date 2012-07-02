@@ -7,11 +7,11 @@ if __name__ == '__main__':
         os.environ['XML_OUTPUT'] = 'True'
 
 setup(
-    name = "merchant_gateways",  #  TODO  merchant-gateways ?
+    name = "merchant-gateways",  #  TODO  merchant-gateways ?
     version = "0.0.1",
     author = "Cuker Interactive",
-    author_email = "TODO@morethanseven.net",
-    url = "http://github.com/cuker/merchant_gateways/",
+    author_email = "jasonk@cukerinteractive.com",
+    url = "http://github.com/cuker/merchant-gateways/",
 
     packages = find_packages('lib'),
     package_dir = {'':'lib'},
