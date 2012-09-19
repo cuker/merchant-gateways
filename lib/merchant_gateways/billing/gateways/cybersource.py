@@ -13,10 +13,10 @@ class Cybersource(Gateway):
     TEST_URL = 'https://ics2wstest.ic3.com/commerce/1.x/transactionProcessor'
     LIVE_URL = 'https://ics2ws.ic3.com/commerce/1.x/transactionProcessor'
     
-    CREDIT_CARD_CODES = {'visa': '001',
-                         'master': '002',
-                         'american_express': '003',
-                         'discover': '004',}
+    CREDIT_CARD_CODES = {'V': '001',
+                         'M': '002',
+                         'A': '003',
+                         'D': '004',}
     
     RESPONSE_CODES = {'100' : "Successful transaction",
         '101' : "Request is missing one or more required fields" ,
@@ -105,7 +105,7 @@ class Cybersource(Gateway):
                 'request_id':request_id,}
     
     def get_cybersource_card_type(self, credit_card):
-        return self.CREDIT_CARD_CODES.get(credit_card.card_type, '005') #TODO is this accurate?
+        return self.CREDIT_CARD_CODES.get(credit_card.card_type, '001') #TODO is this accurate?
     
     def get_merchant_reference_code(self, options):
         return options.get('order_id', 'foo') #TODO should we raise en error instead?
@@ -128,9 +128,7 @@ class Cybersource(Gateway):
                         ('expirationMonth', credit_card.month),
                         ('expirationYear', credit_card.year),
                         ('cvNumber', credit_card.verification_value),
-                        # ('cardType', self.get_cybersource_card_type(credit_card)), 
-                        # TODO - fix the value we get from the get_cybersource_card_type call - it is always returing '005', which is "Diner's Club."
-                        # I am commenting it out for now, because it's optional for all card types; except for JCB, which we don't accept.
+                        ('cardType', self.get_cybersource_card_type(credit_card)),
                        ])
     
     def build_business_rules(self, options):
