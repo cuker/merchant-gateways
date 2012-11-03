@@ -115,7 +115,59 @@ class Gateway(object):
         #  TODO  log(got) here!
         #print got
         return got
-
+    
+    def parse_address_from_post(self, post_data, prefix='bill'):
+        address = {}
+        value_found = False
+        for key in ('first_name', 'last_name', 'address1', 'address2', 'city', 'state', 'country', 'zip', 'email'):
+            f_key = prefix+"_"+key
+            if f_key in post_data:
+                value_found = True
+            address[key] = post_data.get(f_key, None)
+        if value_found:
+            return address
+        else:
+            return None
+    
+    def process_direct_post(self, post_data, decrypted_data):
+        #should return dict containing: response, credit_card, passthrough, amount, currency_code
+        from merchant_gateways.billing.credit_card import CreditCard
+        from money import Money
+        
+        amount = decrypted_data['amount']
+        currency_code = decrypted_data['currency_code']
+        money = Money(amount, currency_code)
+        credit_card = CreditCard(number=post_data['cc_number'],
+                                 month=post_data['cc_exp_month'],
+                                 year=post_data['cc_exp_year'],
+                                 first_name=post_data['bill_first_name'],
+                                 last_name=post_data['bill_last_name'],
+                                 verification_value=post_data['cc_ccv'],)
+        options = decrypted_data.get('options', {})
+        func = getattr(self, decrypted_data['action'])
+        
+        address = self.parse_address_from_post(post_data)
+        if address:
+            options['address'] = address
+        ship_address = self.parse_address_from_post(post_data, prefix='ship')
+        if ship_address:
+            options['ship_address'] = ship_address
+        
+        response = func(money=money, credit_card=credit_card, **options)
+        
+        passthrough_fields = decrypted_data.get('passthrough', [])
+        passthrough = {}
+        for key in passthrough_fields:
+            if key.startswith('cc_'):
+                continue
+            if key in post_data:
+                passthrough[key] = post_data[key]
+        
+        return {'response':response,
+                'credit_card':credit_card,
+                'amount':amount,
+                'currency_code':currency_code,
+                'passthrough':passthrough,}
 
 class default_dict(dict):  #  TODO  move to utils
     """
