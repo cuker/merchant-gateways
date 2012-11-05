@@ -21,8 +21,8 @@ class Response(object):
         self.avs_code = self.options.get('avs_result')
         self.cvv_code = self.options.get('cvv_result')
 
-        if self.avs_result:  self.avs_result = AVSResult(code=self.avs_code)
-        if self.cvv_result:  self.cvv_result = CVVResult(code=self.cvv_code)
+        if self.avs_code:  self.avs_result = AVSResult(code=self.avs_code)
+        if self.cvv_code:  self.cvv_result = CVVResult(code=self.cvv_code)
 
     def to_dict(self):  #  TODO  find a use for this
         return {'success': self.success,
